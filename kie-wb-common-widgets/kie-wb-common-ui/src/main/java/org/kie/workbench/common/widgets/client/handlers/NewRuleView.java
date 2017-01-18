@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.workbench.common.widgets.client.handlers.lpr;
+package org.kie.workbench.common.widgets.client.handlers;
 
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;

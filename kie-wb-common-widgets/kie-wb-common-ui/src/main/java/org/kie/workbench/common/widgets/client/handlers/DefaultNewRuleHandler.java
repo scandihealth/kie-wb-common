@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.workbench.common.widgets.client.handlers.lpr;
+package org.kie.workbench.common.widgets.client.handlers;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,10 +29,6 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.kie.workbench.common.services.shared.validation.ValidationService;
-import org.kie.workbench.common.widgets.client.handlers.DefaultNewResourceHandler;
-import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
-import org.kie.workbench.common.widgets.client.handlers.PackageContextProvider;
-import org.kie.workbench.common.widgets.client.handlers.PackageListBox;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.PlaceManager;

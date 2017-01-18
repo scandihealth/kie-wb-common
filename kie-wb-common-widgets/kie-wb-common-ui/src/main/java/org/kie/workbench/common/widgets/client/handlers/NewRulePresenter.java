@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.kie.workbench.common.widgets.client.handlers.lpr;
+package org.kie.workbench.common.widgets.client.handlers;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.guvnor.common.services.project.model.Package;
-import org.kie.workbench.common.widgets.client.handlers.PackageContextProvider;
 import org.kie.workbench.common.widgets.client.resources.i18n.NewItemPopupConstants;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.commons.validation.PortablePreconditions;

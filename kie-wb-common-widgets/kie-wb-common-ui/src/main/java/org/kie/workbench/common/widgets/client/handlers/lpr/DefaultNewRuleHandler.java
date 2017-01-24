@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.workbench.common.widgets.client.handlers;
+package org.kie.workbench.common.widgets.client.handlers.lpr;
 
 import java.util.LinkedList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.project.context.ProjectContext;
-import org.guvnor.common.services.project.model.Package;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -35,7 +33,6 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.ext.editor.commons.client.validation.ValidatorWithReasonCallback;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.PathPlaceRequest;
@@ -45,12 +42,9 @@ import org.uberfire.workbench.type.ResourceTypeDefinition;
 /**
  * Handler for the creation of new Items that require a Name and Path
  */
-public abstract class DefaultNewRuleHandler implements NewRuleHandler, PackageContextProvider {
+public abstract class DefaultNewRuleHandler implements NewRuleHandler {
 
     protected final List<Pair<String, ? extends IsWidget>> extensions = new LinkedList<Pair<String, ? extends IsWidget>>();
-
-    @Inject
-    protected PackageListBox packagesListBox;
 
     @Inject
     protected ProjectContext context;
@@ -73,14 +67,12 @@ public abstract class DefaultNewRuleHandler implements NewRuleHandler, PackageCo
     //Package-protected constructor for tests. In an ideal world we'd move to Constructor injection
     //however that would require every sub-class of this abstract class to also have Constructor
     //injection.. and that's a lot of refactoring just to be able to test.
-    DefaultNewRuleHandler( final PackageListBox packagesListBox,
-                           final ProjectContext context,
+    DefaultNewRuleHandler( final ProjectContext context,
                            final Caller<KieProjectService> projectService,
                            final Caller<ValidationService> validationService,
                            final PlaceManager placeManager,
                            final Event<NotificationEvent> notificationEvent,
                            final BusyIndicatorView busyIndicatorView ) {
-        this.packagesListBox = packagesListBox;
         this.context = context;
         this.projectService = projectService;
         this.validationService = validationService;
@@ -93,31 +85,14 @@ public abstract class DefaultNewRuleHandler implements NewRuleHandler, PackageCo
         //Zero argument constructor for CDI proxies
     }
 
-    @PostConstruct
-    private void setupExtensions() {
-        this.extensions.add( Pair.newPair( CommonConstants.INSTANCE.ItemPathSubheading(),
-                packagesListBox ) );
-    }
-
     @Override
     public List<Pair<String, ? extends IsWidget>> getExtensions() {
-        this.packagesListBox.setContext( context,
-                true );
         return this.extensions;
     }
 
     @Override
-    public void validate( final String baseFileName,
-                          final ValidatorWithReasonCallback callback ) {
-        if ( packagesListBox.getSelectedPackage() == null ) {
-            ErrorPopup.showMessage( CommonConstants.INSTANCE.MissingPath() );
-            callback.onFailure();
-            return;
-        }
-
-        final String fileName = buildFileName( baseFileName,
-                getResourceType() );
-
+    public void validate( final String baseFileName, final ValidatorWithReasonCallback callback ) {
+        final String fileName = buildFileName( baseFileName, getResourceType() );
         validationService.call( new RemoteCallback<Boolean>() {
             @Override
             public void callback( final Boolean response ) {
@@ -148,11 +123,6 @@ public abstract class DefaultNewRuleHandler implements NewRuleHandler, PackageCo
                 newRulePresenter.show( DefaultNewRuleHandler.this );
             }
         };
-    }
-
-    @Override
-    public Package getPackage() {
-        return packagesListBox.getSelectedPackage();
     }
 
     protected String buildFileName( final String baseFileName,

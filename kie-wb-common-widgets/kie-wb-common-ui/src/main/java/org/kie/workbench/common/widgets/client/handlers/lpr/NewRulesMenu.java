@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.workbench.common.widgets.client.handlers;
+package org.kie.workbench.common.widgets.client.handlers.lpr;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,50 +62,24 @@ public class NewRulesMenu {
         this.projectContext = projectContext;
     }
 
-    private MenuItem projectMenuItem;
-
     @PostConstruct
     public void setup() {
-
         addNewRuleHandlers();
-
         sortMenuItemsByCaption();
-
-        addProjectMenuItem();
     }
 
     private void addNewRuleHandlers() {
         final Collection<IOCBeanDef<NewRuleHandler>> handlerBeans = iocBeanManager.lookupBeans( NewRuleHandler.class );
-
         for ( final IOCBeanDef<NewRuleHandler> handlerBean : handlerBeans ) {
             addMenuItem( handlerBean.getInstance() );
         }
     }
 
     private void addMenuItem( final NewRuleHandler newRuleHandler ) {
-
         if ( newRuleHandler.canCreate() ) {
-
             final MenuItem menuItem = getMenuItem( newRuleHandler );
-
-            newRuleHandlers.put( newRuleHandler,
-                    menuItem );
-
-            if ( isProjectMenuItem( newRuleHandler ) ) {
-                this.projectMenuItem = menuItem;
-            } else {
-                items.add( menuItem );
-            }
-        }
-    }
-
-    /*
-    * We set the project menu item first if it is in.
-     */
-    private void addProjectMenuItem() {
-        if ( projectMenuItem != null ) {
-            items.add( 0,
-                    projectMenuItem );
+            newRuleHandlers.put( newRuleHandler, menuItem );
+            items.add( menuItem );
         }
     }
 
@@ -131,25 +105,9 @@ public class NewRulesMenu {
         } ).endMenu().build().getItems().get( 0 );
     }
 
-    private boolean isProjectMenuItem( final NewRuleHandler activeHandler ) {
-        return activeHandler.getClass().getName().contains( "NewProjectHandler" );
-    }
-
     public List<MenuItem> getMenuItems() {
         enableMenuItemsForContext();
-
         return items;
-    }
-
-    public List<MenuItem> getMenuItemsWithoutProject() {
-        enableMenuItemsForContext();
-
-        if ( projectMenuItem != null && items.contains( projectMenuItem ) ) {
-            return items.subList( 1,
-                    items.size() );
-        } else {
-            return items;
-        }
     }
 
     @SuppressWarnings("unused")

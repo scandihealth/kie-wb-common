@@ -38,8 +38,6 @@ public interface NewItemPopupConstants
 
     String packageName();
 
-    String extensions();
-
     String resourceNamePlaceholder();
 
 }

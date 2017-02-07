@@ -31,7 +31,7 @@
             </b:FormGroup>
 
             <b:FormGroup ui:field="handlerExtensionsGroup">
-                <b:FormLabel text="{i18n.extensions}" addStyleNames="col-md-3"/>
+                <b:FormLabel text="{i18n.packageName}" addStyleNames="col-md-3"/>
                 <b:Column size="MD_9">
                     <g:FlowPanel ui:field="handlerExtensions"/>
                 </b:Column>

@@ -32,6 +32,7 @@ import org.guvnor.common.services.project.context.ProjectContext;
 import org.guvnor.common.services.project.context.ProjectContextChangeEvent;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -43,7 +44,7 @@ import org.uberfire.workbench.model.menu.MenuItem;
 public class NewRulesMenu {
 
     private SyncBeanManager iocBeanManager;
-    private NewRulePresenter newRulePresenter;
+    private NewResourcePresenter newResourcePresenter;
     private ProjectContext projectContext;
 
     private final List<MenuItem> items = new ArrayList<MenuItem>();
@@ -55,10 +56,10 @@ public class NewRulesMenu {
 
     @Inject
     public NewRulesMenu( final SyncBeanManager iocBeanManager,
-                         final NewRulePresenter newRulePresenter,
+                         final NewResourcePresenter newResourcePresenter,
                          final ProjectContext projectContext ) {
         this.iocBeanManager = iocBeanManager;
-        this.newRulePresenter = newRulePresenter;
+        this.newResourcePresenter = newResourcePresenter;
         this.projectContext = projectContext;
     }
 
@@ -99,7 +100,7 @@ public class NewRulesMenu {
         return MenuFactory.newSimpleItem( description ).respondsWith( new Command() {
             @Override
             public void execute() {
-                final Command command = activeHandler.getCommand( newRulePresenter );
+                final Command command = activeHandler.getCommand( newResourcePresenter );
                 command.execute();
             }
         } ).endMenu().build().getItems().get( 0 );

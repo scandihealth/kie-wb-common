@@ -15,148 +15,34 @@
  */
 package org.kie.workbench.common.widgets.client.handlers.lpr;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.guvnor.common.services.project.context.ProjectContext;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
-import org.kie.workbench.common.services.shared.validation.ValidationService;
+import org.kie.workbench.common.widgets.client.handlers.DefaultNewResourceHandler;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
-import org.uberfire.backend.vfs.Path;
-import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.commons.data.Pair;
-import org.uberfire.ext.editor.commons.client.validation.ValidatorWithReasonCallback;
-import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
-import org.uberfire.mvp.Command;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.PathPlaceRequest;
-import org.uberfire.workbench.events.NotificationEvent;
-import org.uberfire.workbench.type.ResourceTypeDefinition;
 
 /**
- * Handler for the creation of new Items that require a Name and Path
+ * Specialized new resource handler used when creating new rules in LPR
  */
-public abstract class DefaultNewRuleHandler implements NewRuleHandler {
-
-    protected final List<Pair<String, ? extends IsWidget>> extensions = new LinkedList<Pair<String, ? extends IsWidget>>();
+public abstract class DefaultNewRuleHandler extends DefaultNewResourceHandler implements NewRuleHandler {
 
     @Inject
-    protected ProjectContext context;
-
-    @Inject
-    protected Caller<KieProjectService> projectService;
-
-    @Inject
-    protected Caller<ValidationService> validationService;
-
-    @Inject
-    protected PlaceManager placeManager;
-
-    @Inject
-    protected Event<NotificationEvent> notificationEvent;
-
-    @Inject
-    private BusyIndicatorView busyIndicatorView;
-
-    //Package-protected constructor for tests. In an ideal world we'd move to Constructor injection
-    //however that would require every sub-class of this abstract class to also have Constructor
-    //injection.. and that's a lot of refactoring just to be able to test.
-    DefaultNewRuleHandler( final ProjectContext context,
-                           final Caller<KieProjectService> projectService,
-                           final Caller<ValidationService> validationService,
-                           final PlaceManager placeManager,
-                           final Event<NotificationEvent> notificationEvent,
-                           final BusyIndicatorView busyIndicatorView ) {
-        this.context = context;
-        this.projectService = projectService;
-        this.validationService = validationService;
-        this.placeManager = placeManager;
-        this.notificationEvent = notificationEvent;
-        this.busyIndicatorView = busyIndicatorView;
-    }
-
-    public DefaultNewRuleHandler() {
-        //Zero argument constructor for CDI proxies
-    }
+    private PerspectiveManager perspectiveManager;
 
     @Override
     public List<Pair<String, ? extends IsWidget>> getExtensions() {
-        return this.extensions;
-    }
-
-    @Override
-    public void validate( final String baseFileName, final ValidatorWithReasonCallback callback ) {
-        final String fileName = buildFileName( baseFileName, getResourceType() );
-        validationService.call( new RemoteCallback<Boolean>() {
-            @Override
-            public void callback( final Boolean response ) {
-                if ( Boolean.TRUE.equals( response ) ) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure( CommonConstants.INSTANCE.InvalidFileName0( baseFileName ) );
-                }
-            }
-        } ).isFileNameValid( fileName );
-    }
-
-    @Override
-    public void acceptContext( final ProjectContext context,
-                               final Callback<Boolean, Void> callback ) {
-        if ( context == null ) {
-            callback.onSuccess( false );
-        } else {
-            callback.onSuccess( context.getActiveProject() != null );
+        List<Pair<String, ? extends IsWidget>> extensions = super.getExtensions();
+        PerspectiveActivity currentPerspective = perspectiveManager.getCurrentPerspective();
+        if ( currentPerspective != null && "LPRPerspective".equals( currentPerspective.getIdentifier() ) ) {
+            //we do not want to show the packages in LPR
+            extensions = new ArrayList<Pair<String, ? extends IsWidget>>( extensions ); //create new copy of list to not affect other perspectives
+            extensions.remove( Pair.newPair( CommonConstants.INSTANCE.ItemPathSubheading(), packagesListBox ) ); //remove packages list box
         }
-    }
-
-    @Override
-    public Command getCommand( final NewRulePresenter newRulePresenter ) {
-        return new Command() {
-            @Override
-            public void execute() {
-                newRulePresenter.show( DefaultNewRuleHandler.this );
-            }
-        };
-    }
-
-    protected String buildFileName( final String baseFileName,
-                                    final ResourceTypeDefinition resourceType ) {
-        final String suffix = resourceType.getSuffix();
-        final String prefix = resourceType.getPrefix();
-        final String extension = !(suffix == null || "".equals( suffix )) ? "." + resourceType.getSuffix() : "";
-        if ( baseFileName.endsWith( extension ) ) {
-            return prefix + baseFileName;
-        }
-        return prefix + baseFileName + extension;
-    }
-
-    protected void notifySuccess() {
-        notificationEvent.fire( new NotificationEvent( CommonConstants.INSTANCE.ItemCreatedSuccessfully(), NotificationEvent.NotificationType.SUCCESS ) );
-    }
-
-    protected RemoteCallback<Path> getSuccessCallback( final NewRulePresenter presenter ) {
-        return new RemoteCallback<Path>() {
-
-            @Override
-            public void callback( final Path path ) {
-                busyIndicatorView.hideBusyIndicator();
-                presenter.complete();
-                notifySuccess();
-                final PlaceRequest place = new PathPlaceRequest( path );
-                placeManager.goTo( place );
-            }
-
-        };
-    }
-
-    @Override
-    public boolean canCreate() {
-        return true;
+        return extensions;
     }
 }

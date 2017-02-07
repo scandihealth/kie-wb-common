@@ -21,80 +21,14 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.project.context.ProjectContext;
 import org.guvnor.common.services.project.model.Package;
+import org.kie.workbench.common.widgets.client.handlers.NewResourceHandler;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.ext.editor.commons.client.validation.ValidatorWithReasonCallback;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.type.ResourceTypeDefinition;
 
 /**
- * Definition of Handler to support creation of new resources
+ * Tagging interface for denoting new resource handlers that are rule-related
  */
-public interface NewRuleHandler {
-
-    /**
-     * A description of the new resource type
-     * @return
-     */
-    String getDescription();
-
-    /**
-     * An icon representing the new resource type
-     * @return
-     */
-    IsWidget getIcon();
-
-    /**
-     * Get the ResourceType represented by the Handler
-     * @return resource type
-     */
-    ResourceTypeDefinition getResourceType();
-
-    /**
-     * Asks if the resource handler can be created or not.
-     * For example a lack of a certain role can return false.
-     *
-     * @return If true this resource handler can be added.
-     */
-    boolean canCreate();
-
-    /**
-     * An entry-point for the creation of the new resource
-     * @param pkg the Package context where new resource should be created
-     * @param baseFileName the base name of the new resource
-     * @param presenter underlying presenter
-     */
-    void create( final Package pkg,
-                 final String baseFileName,
-                 final NewRulePresenter presenter );
-
-    /**
-     * Return a List of Widgets that the NewRuleHandler can use to gather additional parameters for the
-     * new resource. The List is of Pairs, where each Pair consists of a String caption and IsWidget editor.
-     * @return null if no extension is provided
-     */
-    List<Pair<String, ? extends IsWidget>> getExtensions();
-
-    /**
-     * Provide NewRuleHandler with the ability to validate additional parameters before the creation of the new resource
-     * @param baseFileName The base file name for the new item (excluding extension)
-     * @param callback Callback depending on validation result
-     */
-    void validate( final String baseFileName,
-                   final ValidatorWithReasonCallback callback );
-
-    /**
-     * Indicates if the NewRuleHandler can create a resource to this path
-     * @return
-     */
-    void acceptContext( final ProjectContext context,
-                        final Callback<Boolean, Void> callback );
-
-    /**
-     * A command to execute instead of defaulting to the NewResourceView.
-     * If this returns null the NewResourceView is shown by default.
-     * @param newRulePresenter
-     * @return
-     */
-    Command getCommand( final NewRulePresenter newRulePresenter );
-
+public interface NewRuleHandler extends NewResourceHandler {
 }

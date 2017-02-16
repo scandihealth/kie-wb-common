@@ -34,6 +34,7 @@ import org.guvnor.common.services.project.model.Project;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
+import org.guvnor.structure.repositories.RepositoryService;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.screens.explorer.model.FolderItem;
 import org.kie.workbench.common.screens.explorer.model.FolderItemType;
@@ -66,6 +67,9 @@ public class ProjectExplorerContentResolver {
     private ExplorerServiceHelper explorerServiceHelper;
 
     @Inject
+    private RepositoryService repositoryService;
+
+    @Inject
     protected User identity;
 
     @Inject
@@ -81,9 +85,55 @@ public class ProjectExplorerContentResolver {
         this.explorerServiceHelper = explorerServiceHelper;
     }
 
+    private ProjectExplorerContentQuery setFixedContent(ProjectExplorerContentQuery query)
+    {
+        if(query.getOrganizationalUnit() == null && query.getRepository() == null && query.getBranch() == null)
+        {
+            final String fixedOrganizationalunit = System.getProperty( "org.kie.server.fixed.organizationalunit" );
+            if(fixedOrganizationalunit != null && !fixedOrganizationalunit.trim().isEmpty())
+            {
+                OrganizationalUnit ou = organizationalUnitService.getOrganizationalUnit( fixedOrganizationalunit );
+                if(ou != null)
+                {
+                    final String fixedRepository = System.getProperty("org.kie.server.fixed.repository");
+                    if(fixedRepository != null && !fixedRepository.trim().isEmpty())
+                    {
+                        Repository repo = repositoryService.getRepository(fixedRepository);
+                        if(repo != null)
+                        {
+                            final String fixedBranch = System.getProperty("org.kie.server.fixed.branch");
+                            if(fixedBranch != null && !fixedBranch.isEmpty())
+                            {
+
+                                if(repo.getBranches().contains( fixedBranch ))
+                                {
+                                    final String fixedProject = System.getProperty("org.kie.server.fixed.project");
+                                    if(fixedProject != null && !fixedProject.isEmpty())
+                                    {
+                                        Map<String, Project> projects = getProjects(repo, fixedBranch);
+
+                                        if(projects.containsKey(fixedProject))
+                                        {
+                                            Project proj = projects.get(fixedProject);
+                                            return new ProjectExplorerContentQuery(ou, repo, fixedBranch, proj, query.getOptions());
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return query;
+    }
+
     public ProjectExplorerContent resolve( final ProjectExplorerContentQuery query ) {
 
-        final Content content = setupSelectedItems( query );
+        final ProjectExplorerContentQuery tmpQuery = setFixedContent( query );
+
+        final Content content = setupSelectedItems( tmpQuery );
 
         //Content may contain invalid state, e.g. Repository deleted, Project deleted etc so validate and reset as appropriate
         setSelectedOrganizationalUnit( content );

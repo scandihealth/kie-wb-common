@@ -18,9 +18,15 @@ package org.kie.workbench.common.widgets.metadata.client.widget;
 
 import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
 
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
+import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.TextBox;
+//import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
+import org.uberfire.ext.widgets.common.client.common.DatePicker;
 import org.kie.workbench.common.widgets.metadata.client.resources.ImageResources;
 import org.kie.workbench.common.widgets.metadata.client.resources.i18n.MetadataConstants;
 import org.uberfire.backend.vfs.impl.LockInfo;
@@ -40,6 +46,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Date;
 
 /**
  * This displays the metadata for a versionable artifact. It also captures
@@ -77,6 +85,14 @@ public class MetadataWidget
     TextBox external;
     @UiField
     TextBox source;
+    @UiField
+    CheckBox inProduction;
+    @UiField
+    CheckBox isDraft;
+    @UiField
+    DatePicker validFrom;
+    @UiField
+    DatePicker validTo;
     @UiField
     FormControlStatic lockedBy;
     @UiField
@@ -146,6 +162,46 @@ public class MetadataWidget
         } );
 
         setLockStatus(metadata.getLockInfo());
+
+        Long validFromTS = metadata.getValidFrom();
+        validFrom.setValue( new Date(validFromTS ));
+        validFrom.addValueChangeHandler(new ValueChangeHandler<Date>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Date> event) {
+                Date date = validFrom.getValue();
+                Long validFromTimeStramp = date.getTime();
+                metadata.setValidFrom(validFromTimeStramp);
+            }
+        });
+
+        Long validToTS = metadata.getValidTo();
+        validTo.setValue(new Date(validToTS));
+        validTo.addValueChangeHandler(new ValueChangeHandler<Date>() {
+              @Override
+              public void onValueChange(ValueChangeEvent<Date> event) {
+                    Date date = validTo.getValue();
+                    Long validToTimestamp = date.getTime();
+                    metadata.setValidTo(validToTimestamp);
+              }
+          });
+
+        isDraft.setValue(metadata.isDraft());
+        isDraft.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                boolean x = isDraft.getValue();
+                metadata.setDraft(x);
+            }
+        });
+
+        inProduction.setValue(metadata.isInProduction());
+        inProduction.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                boolean z = inProduction.getValue();
+                metadata.setInProduction(z);
+            }
+        });
     }
 
     public void setLockStatus(final LockInfo lockInfo) {

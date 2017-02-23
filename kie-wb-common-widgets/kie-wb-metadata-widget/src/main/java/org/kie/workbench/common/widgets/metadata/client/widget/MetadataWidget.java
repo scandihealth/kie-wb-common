@@ -26,6 +26,7 @@ import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.TextBox;
 //import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
+import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.uberfire.ext.widgets.common.client.common.DatePicker;
 import org.kie.workbench.common.widgets.metadata.client.resources.ImageResources;
 import org.kie.workbench.common.widgets.metadata.client.resources.i18n.MetadataConstants;
@@ -47,6 +48,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 
 /**
@@ -103,6 +105,12 @@ public class MetadataWidget
     public MetadataWidget( BusyIndicatorView busyIndicatorView ) {
         this.busyIndicatorView = busyIndicatorView;
         initWidget( uiBinder.createAndBindUi( this ) );
+    }
+
+    @PostConstruct
+    public void init() {
+        validFrom.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        validTo.setFormat( ApplicationPreferences.getDroolsDateFormat() );
     }
 
     public void setContent( final Metadata metadata,

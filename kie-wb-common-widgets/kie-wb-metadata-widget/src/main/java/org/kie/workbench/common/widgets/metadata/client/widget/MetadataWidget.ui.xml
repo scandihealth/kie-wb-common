@@ -85,27 +85,27 @@
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="Dette er en test" addStyleNames="col-md-3"/>
+                            <b:FormLabel text="{i18n.ProductionMetaData}" addStyleNames="col-md-3"/>
                             <b:Column size="MD_9">
-                                <b:CheckBox ui:field="inProduction" title='Ingen tip'/>
+                                <b:CheckBox ui:field="inProduction" title='{i18n.ProductionMetaDataTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="Er dette en kladde?" addStyleNames="col-md-3"/>
+                            <b:FormLabel text="{i18n.DraftMetaData}" addStyleNames="col-md-3"/>
                             <b:Column size="MD_9">
-                                <b:CheckBox ui:field="isDraft" title='Ingen tip'/>
+                                <b:CheckBox ui:field="isDraft" title='{i18n.DraftMetaDataTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="Er dette en kladde?" addStyleNames="col-md-3"/>
+                            <b:FormLabel text="{i18n.ValidFromMetaData}" addStyleNames="col-md-3"/>
                             <b:Column size="MD_9">
-                                <uf:DatePicker ui:field="validFrom" title='Ingen tip'/>
+                                <uf:DatePicker ui:field="validFrom" title='{i18n.ValidFromMetaDataTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="Er dette en kladde?" addStyleNames="col-md-3"/>
+                            <b:FormLabel text="{i18n.ValidToMetaData}" addStyleNames="col-md-3"/>
                             <b:Column size="MD_9">
-                                <uf:DatePicker ui:field="validTo" title='Ingen tip'/>
+                                <uf:DatePicker ui:field="validTo" title='{i18n.ValidToMetaDataTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>

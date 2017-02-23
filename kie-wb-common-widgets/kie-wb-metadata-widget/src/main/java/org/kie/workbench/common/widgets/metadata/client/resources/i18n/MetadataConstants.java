@@ -43,6 +43,22 @@ public interface MetadataConstants extends
 
     String OtherMetaData();
 
+    String ProductionMetaData();
+
+    String ProductionMetaDataTip();
+
+    String DraftMetaData();
+
+    String DraftMetaDataTip();
+
+    String ValidFromMetaData();
+
+    String ValidFromMetaDataTip();
+
+    String ValidToMetaData();
+
+    String ValidToMetaDataTip();
+
     String AShortDescriptionOfTheSubjectMatter();
 
     String TypeMetaData();

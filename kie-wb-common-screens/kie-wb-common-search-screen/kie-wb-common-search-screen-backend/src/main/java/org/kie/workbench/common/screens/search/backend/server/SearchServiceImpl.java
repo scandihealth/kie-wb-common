@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
+import org.guvnor.common.services.shared.metadata.model.LprRuleType;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
@@ -157,6 +158,8 @@ public class SearchServiceImpl implements SearchService {
                 attrs.put( "lastModifiedTime", toDateRange( pageRequest.getLastModifiedBefore(),
                                                             pageRequest.getLastModifiedAfter() ) );
             }
+
+            attrs.put("lprmeta.type", LprRuleType.RuleType.NORMAL);
 
             //hits is an approximation at this stage, since we've not filtered by Authorised Project
             final int totalNumHitsEstimate = ioSearchService.searchByAttrsHits( attrs,

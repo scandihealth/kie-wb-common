@@ -51,13 +51,13 @@ public interface MetadataConstants extends
 
     String DraftMetaDataTip();
 
-    String ValidFromMetaData();
+    String RecievedValidFromDateMetaData();
 
-    String ValidFromMetaDataTip();
+    String RecievedValidFromDateMetaDataTip();
 
-    String ValidToMetaData();
+    String RecievedValidToDateMetaData();
 
-    String ValidToMetaDataTip();
+    String RecievedValidToDateMetaDataTip();
 
     String AShortDescriptionOfTheSubjectMatter();
 
@@ -128,6 +128,19 @@ public interface MetadataConstants extends
     String Preview();
 
     String LockMetaData();
+
+        String ErrorNumberMetaData();
+
+        String ErrorNumberTip();
+
+        String ErrorTextMetaData();
+
+        String ErrorTextTip();
+        String RuleGroupMetaData();
+        String RuleGroupTip();
+
+        String ErrorTypeMetaData();
+        String ErrorTypeTip();
 
     String LockedByHint();
     

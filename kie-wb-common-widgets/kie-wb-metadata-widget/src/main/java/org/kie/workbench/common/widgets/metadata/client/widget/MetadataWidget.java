@@ -18,11 +18,14 @@ package org.kie.workbench.common.widgets.metadata.client.widget;
 
 import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
 
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.ui.*;
+import org.guvnor.common.services.shared.metadata.model.LprErrorType;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.gwtbootstrap3.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.DropDown;
 import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.TextBox;
 //import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
@@ -33,20 +36,14 @@ import org.kie.workbench.common.widgets.metadata.client.resources.i18n.MetadataC
 import org.uberfire.backend.vfs.impl.LockInfo;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
+import org.uberfire.ext.widgets.common.client.common.NumericLongTextBox;
 import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.mvp.Command;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.Widget;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
@@ -64,6 +61,10 @@ public class MetadataWidget
             UiBinder<Widget, MetadataWidget> {
 
     }
+
+    private static final String ERROR_TYPE_WARNING = "Advarsel";
+    private static final String ERROR_TYPE_ERROR = "Fejl";
+    private static final String ERROR_TYPE_FATAL = "Fatal";
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
@@ -92,9 +93,17 @@ public class MetadataWidget
     @UiField
     CheckBox isDraft;
     @UiField
-    DatePicker validFrom;
+    DatePicker recievedValidFromDate;
     @UiField
-    DatePicker validTo;
+    DatePicker recievedValidToDate;
+    @UiField
+    NumericLongTextBox errorNumber;
+    @UiField
+    TextBox errorText;
+    @UiField
+    ListBox ruleGroup;
+    @UiField
+    ListBox errorType;
     @UiField
     FormControlStatic lockedBy;
     @UiField
@@ -109,8 +118,11 @@ public class MetadataWidget
 
     @PostConstruct
     public void init() {
-        validFrom.setFormat( ApplicationPreferences.getDroolsDateFormat() );
-        validTo.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        recievedValidFromDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        recievedValidToDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        ruleGroup.setMultipleSelect(false);
+
+
     }
 
     public void setContent( final Metadata metadata,
@@ -130,6 +142,7 @@ public class MetadataWidget
     }
 
     private void loadData() {
+        initComponents();
 
         tags.setContent( metadata, this.readOnly );
 
@@ -171,25 +184,25 @@ public class MetadataWidget
 
         setLockStatus(metadata.getLockInfo());
 
-        Long validFromTS = metadata.getValidFrom();
-        validFrom.setValue( new Date(validFromTS ));
-        validFrom.addValueChangeHandler(new ValueChangeHandler<Date>() {
+        Long recievedValidFromDateTS = metadata.getRecievedValidFromDate();
+        recievedValidFromDate.setValue( new Date(recievedValidFromDateTS ));
+        recievedValidFromDate.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
             public void onValueChange(ValueChangeEvent<Date> event) {
-                Date date = validFrom.getValue();
-                Long validFromTimeStramp = date.getTime();
-                metadata.setValidFrom(validFromTimeStramp);
+                Date date = recievedValidFromDate.getValue();
+                Long recievedValidFromTimeStramp = date.getTime();
+                metadata.setRecievedValidFromDate(recievedValidFromTimeStramp);
             }
         });
 
-        Long validToTS = metadata.getValidTo();
-        validTo.setValue(new Date(validToTS));
-        validTo.addValueChangeHandler(new ValueChangeHandler<Date>() {
+        Long validToTS = metadata.getRecievedValidToDate();
+        recievedValidToDate.setValue(new Date(validToTS));
+        recievedValidToDate.addValueChangeHandler(new ValueChangeHandler<Date>() {
               @Override
               public void onValueChange(ValueChangeEvent<Date> event) {
-                    Date date = validTo.getValue();
-                    Long validToTimestamp = date.getTime();
-                    metadata.setValidTo(validToTimestamp);
+                    Date date = recievedValidToDate.getValue();
+                    Long recievedValidToTimestamp = date.getTime();
+                    metadata.setRecievedValidFromDate(recievedValidToTimestamp);
               }
           });
 
@@ -210,6 +223,107 @@ public class MetadataWidget
                 metadata.setInProduction(z);
             }
         });
+
+        errorNumber.setText(metadata.getErrorNumber().toString());
+        errorNumber.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                String z = errorNumber.getValue();
+                final Long lValue = Long.parseLong(z, 10);
+                metadata.setErrorNumber(lValue);
+            }
+        });
+
+        errorText.setValue(metadata.getErrorText());
+        errorText.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                metadata.setErrorText(errorText.getText());
+            }
+        });
+
+        selectItemInListBox(ruleGroup, metadata.getRuleGroup());
+        ruleGroup.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent changeEvent) {
+                metadata.setRuleGroup(ruleGroup.getSelectedValue());
+            }
+        });
+
+        selectItemInListBox(errorType, metadata.getErrorType().toString());
+        errorType.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent changeEvent) {
+                final String sErrorType = errorType.getSelectedItemText();
+                if(ERROR_TYPE_WARNING.equals(sErrorType))
+                    metadata.setErrorType(LprErrorType.WARNING);
+                else if(ERROR_TYPE_ERROR.equals(sErrorType))
+                    metadata.setErrorType(LprErrorType.ERROR);
+                else if(ERROR_TYPE_FATAL.equals(sErrorType))
+                    metadata.setErrorType(LprErrorType.FATAL);
+
+            }
+        });
+    }
+
+    private void initComponents() {
+        String[] ruleGroups = new String[] { ""
+                ,"LPR.MOBST"
+                ,"LPR.ULYKK"
+                ,"FIXED.LPR.SKSKO"
+                ,"LPR.STEDF"
+                ,"LPR.OKOMB"
+                ,"FIXED.LPR.PASSV"
+                ,"LPR.INDUD"
+                ,"FIXED.DUSAS.SPEC"
+                ,"LPR.INDUD/SKSKO/MOBST"
+                ,"LPR.PSYKI"
+                ,"FIXED.,VENTE"
+                ,"FIXED.LPR.OPERA"
+                ,"FIXED.LPR.BOBST"
+                ,"LPR.INDUD/BESØG"
+                ,"LPR.INDUD/SKSKO"
+                ,"LPR.BESØG"
+                ,"LPR.SKSKO"
+                ,"LPR.INDUD/PASSV"
+                ,"LPR.PATIENT"
+                ,"LPR.PASSV"
+                ,"FIXED.LPR.MOBST"
+                ,"FIXED.LPR.DIAGN"
+                ,"FIXED.LPR.STEDF"
+                ,"FIXED.LPR.OKOMB"
+                ,"LPR.INDUD/VENTE"
+                ,"LPR.VENTE"
+                ,"LPR.OPERA"
+                ,"DUSAS"
+                ,"FIXED.LPR.INDUD"
+                ,"LPR.BOBST"
+                ,"DUSAS.SPEC"
+                ,"FIXED.LPR.PSYKI"
+                ,"LPR.Psykiatri"};
+
+        for (String sRuleGroup : ruleGroups ) {
+            ruleGroup.addItem(sRuleGroup);
+        }
+        ruleGroup.setSelectedIndex(0);
+
+        String[] errorTypes = new String[] {"", ERROR_TYPE_WARNING, ERROR_TYPE_ERROR, ERROR_TYPE_FATAL};
+        for (String sErrorType : errorTypes ) {
+            errorType.addItem(sErrorType);
+        }
+        errorType.setSelectedIndex(0);
+    }
+
+    private void selectItemInListBox(ListBox listBox, String itemText) {
+        int itemCount = listBox.getItemCount();
+        for (int i = 0; i < itemCount; i++) {
+            String text = listBox.getItemText(i);
+            if (text.equals(itemText)) {
+                listBox.setSelectedIndex(i);
+                //DomEvent.fireNativeEvent(Document.get().createChangeEvent(), listBox);
+                return;
+            }
+        }
     }
 
     public void setLockStatus(final LockInfo lockInfo) {

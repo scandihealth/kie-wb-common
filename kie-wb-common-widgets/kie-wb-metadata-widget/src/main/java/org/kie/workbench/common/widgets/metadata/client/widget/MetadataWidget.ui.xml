@@ -97,15 +97,15 @@
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.ValidFromMetaData}" addStyleNames="col-md-3"/>
+                            <b:FormLabel text="{i18n.RecievedValidFromDateMetaData}" addStyleNames="col-md-3"/>
                             <b:Column size="MD_9">
-                                <uf:DatePicker ui:field="validFrom" title='{i18n.ValidFromMetaDataTip}'/>
+                                <uf:DatePicker ui:field="recievedValidFromDate" title='{i18n.RecievedValidFromDateMetaDataTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.ValidToMetaData}" addStyleNames="col-md-3"/>
+                            <b:FormLabel text="{i18n.RecievedValidToDateMetaData}" addStyleNames="col-md-3"/>
                             <b:Column size="MD_9">
-                                <uf:DatePicker ui:field="validTo" title='{i18n.ValidToMetaDataTip}'/>
+                                <uf:DatePicker ui:field="recievedValidToDate" title='{i18n.RecievedValidToDateMetaDataTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
@@ -113,6 +113,30 @@
                             <b:Column size="MD_9">
                             	<b:FormControlStatic addStyleNames="{style.forceUnlock}" ui:field="lockedBy" />
                                 <gwt:PushButton addStyleNames="btn btn-default {style.forceUnlock}" ui:field="unlock" text='{i18n.ForceUnlockCaption}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.ErrorNumberMetaData}" addStyleNames="col-md-3"/>
+                            <b:Column size="MD_9">
+                                <uf:NumericLongTextBox ui:field="errorNumber" title='{i18n.ErrorNumberTip}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.ErrorTextMetaData}" addStyleNames="col-md-3"/>
+                            <b:Column size="MD_9">
+                                <b:TextBox ui:field="errorText" title='{i18n.ErrorTextTip}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.RuleGroupMetaData}" addStyleNames="col-md-3"/>
+                            <b:Column size="MD_9">
+                                <gwt:ListBox ui:field="ruleGroup" title='{i18n.RuleGroupTip}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.ErrorTypeMetaData}" addStyleNames="col-md-3"/>
+                            <b:Column size="MD_9">
+                                <gwt:ListBox ui:field="errorType" title='{i18n.ErrorTypeTip}'/>
                             </b:Column>
                         </b:FormGroup>
                     </b:FieldSet>                    

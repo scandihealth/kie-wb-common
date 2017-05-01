@@ -28,7 +28,6 @@ import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.DropDown;
 import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.TextBox;
-//import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.uberfire.ext.widgets.common.client.common.DatePicker;
 import org.kie.workbench.common.widgets.metadata.client.resources.ImageResources;
@@ -225,9 +224,9 @@ public class MetadataWidget
         });
 
         errorNumber.setText(metadata.getErrorNumber().toString());
-        errorNumber.addClickHandler(new ClickHandler() {
+        errorNumber.addValueChangeHandler(new ValueChangeHandler<String>() {
             @Override
-            public void onClick(ClickEvent event) {
+            public void onValueChange(ValueChangeEvent<String> event) {
                 String z = errorNumber.getValue();
                 final Long lValue = Long.parseLong(z, 10);
                 metadata.setErrorNumber(lValue);
@@ -235,9 +234,9 @@ public class MetadataWidget
         });
 
         errorText.setValue(metadata.getErrorText());
-        errorText.addClickHandler(new ClickHandler() {
+        errorText.addValueChangeHandler(new ValueChangeHandler<String>() {
             @Override
-            public void onClick(ClickEvent clickEvent) {
+            public void onValueChange(ValueChangeEvent<String> event) {
                 metadata.setErrorText(errorText.getText());
             }
         });

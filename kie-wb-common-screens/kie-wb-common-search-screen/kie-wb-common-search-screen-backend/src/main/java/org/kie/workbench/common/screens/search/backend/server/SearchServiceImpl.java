@@ -159,7 +159,7 @@ public class SearchServiceImpl implements SearchService {
                                                             pageRequest.getLastModifiedAfter() ) );
             }
 
-            attrs.put("lprmeta.type", LprRuleType.RuleType.NORMAL);
+            //attrs.put("lprmeta.type", LprRuleType.RuleType.NORMAL);
 
             //hits is an approximation at this stage, since we've not filtered by Authorised Project
             final int totalNumHitsEstimate = ioSearchService.searchByAttrsHits( attrs,

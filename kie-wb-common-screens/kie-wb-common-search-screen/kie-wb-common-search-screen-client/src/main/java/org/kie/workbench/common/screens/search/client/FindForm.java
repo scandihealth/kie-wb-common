@@ -30,16 +30,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
+import org.guvnor.common.services.shared.metadata.model.LprErrorType;
+import org.gwtbootstrap3.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.Alert;
-import org.gwtbootstrap3.client.ui.Column;
-import org.gwtbootstrap3.client.ui.Form;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.PanelCollapse;
-import org.gwtbootstrap3.client.ui.PanelGroup;
-import org.gwtbootstrap3.client.ui.PanelHeader;
-import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.extras.typeahead.client.base.StringDataset;
@@ -53,6 +48,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.type.ClientResourceType;
 import org.uberfire.client.workbench.type.ClientTypeRegistry;
 import org.uberfire.ext.widgets.common.client.common.DatePicker;
+import org.uberfire.ext.widgets.common.client.common.NumericLongTextBox;
 
 @Dependent
 @WorkbenchScreen(identifier = "FindForm")
@@ -67,6 +63,10 @@ public class FindForm
 
     private static FindFormBinder uiBinder = GWT.create( FindFormBinder.class );
 
+    private static final String ERROR_TYPE_WARNING = "Advarsel";
+    private static final String ERROR_TYPE_ERROR = "Fejl";
+    private static final String ERROR_TYPE_FATAL = "Fatal";
+
     @Inject
     private ClientTypeRegistry clientTypeRegistry;
 
@@ -78,6 +78,24 @@ public class FindForm
 
     @UiField
     Form form;
+
+    @UiField
+    NumericLongTextBox errorNumberNumericTextBox;
+
+    @UiField
+    TextBox errorTextTextBox;
+
+    @UiField
+    ListBox ruleGroupListBox;
+
+    @UiField
+    ListBox errorTypeListBox;
+
+    @UiField
+    DatePicker recievedValidFromDate;
+
+    @UiField
+    DatePicker recievedValidToDate;
 
     @UiField
     TextBox sourceTextBox;
@@ -160,6 +178,55 @@ public class FindForm
         }} ) );
     }
 
+    @Override
+    protected void onLoad() {
+        String[] ruleGroups = new String[] { ""
+                ,"LPR.MOBST"
+                ,"LPR.ULYKK"
+                ,"FIXED.LPR.SKSKO"
+                ,"LPR.STEDF"
+                ,"LPR.OKOMB"
+                ,"FIXED.LPR.PASSV"
+                ,"LPR.INDUD"
+                ,"FIXED.DUSAS.SPEC"
+                ,"LPR.INDUD/SKSKO/MOBST"
+                ,"LPR.PSYKI"
+                ,"FIXED.,VENTE"
+                ,"FIXED.LPR.OPERA"
+                ,"FIXED.LPR.BOBST"
+                ,"LPR.INDUD/BESØG"
+                ,"LPR.INDUD/SKSKO"
+                ,"LPR.BESØG"
+                ,"LPR.SKSKO"
+                ,"LPR.INDUD/PASSV"
+                ,"LPR.PATIENT"
+                ,"LPR.PASSV"
+                ,"FIXED.LPR.MOBST"
+                ,"FIXED.LPR.DIAGN"
+                ,"FIXED.LPR.STEDF"
+                ,"FIXED.LPR.OKOMB"
+                ,"LPR.INDUD/VENTE"
+                ,"LPR.VENTE"
+                ,"LPR.OPERA"
+                ,"DUSAS"
+                ,"FIXED.LPR.INDUD"
+                ,"LPR.BOBST"
+                ,"DUSAS.SPEC"
+                ,"FIXED.LPR.PSYKI"
+                ,"LPR.Psykiatri"};
+
+        for (String sRuleGroup : ruleGroups ) {
+            ruleGroupListBox.addItem(sRuleGroup);
+        }
+        ruleGroupListBox.setSelectedIndex(0);
+
+        String[] errorTypes = new String[] {"", ERROR_TYPE_WARNING, ERROR_TYPE_ERROR, ERROR_TYPE_FATAL};
+        for (String sErrorType : errorTypes ) {
+            errorTypeListBox.addItem(sErrorType);
+        }
+        errorTypeListBox.setSelectedIndex(0);
+    }
+
     @UiHandler("clear")
     public void onClearClick( final ClickEvent e ) {
         form.reset();
@@ -170,6 +237,41 @@ public class FindForm
         errorPanel.clear();
         formGroup.setValidationState( ValidationState.NONE );
         final Map<String, Object> metadata = new HashMap<String, Object>();
+        if( !errorNumberNumericTextBox.getText().trim().isEmpty() &&
+                errorNumberNumericTextBox.isValidValue(errorNumberNumericTextBox.getText().trim(), false)) {
+            if( Long.parseLong( errorNumberNumericTextBox.getText().trim() ) > 0 ) {
+                metadata.put("lprmeta.errorNumber", errorNumberNumericTextBox.getText().trim());
+            }
+        }
+        if(!errorTextTextBox.getText().trim().isEmpty()) {
+            metadata.put( "lprmeta.errorText", errorTextTextBox.getText().trim() );
+        }
+
+        if(!ruleGroupListBox.getSelectedItemText().trim().isEmpty()) {
+            metadata.put( "lprmeta.ruleGroup", ruleGroupListBox.getSelectedItemText().trim() );
+        }
+
+        if(!errorTypeListBox.getSelectedItemText().trim().isEmpty()) {
+            String errorTypeSearch = "";
+            final String sErrorType = errorTypeListBox.getSelectedItemText().trim();
+            if(ERROR_TYPE_WARNING.equals(sErrorType))
+                errorTypeSearch = "WARNING";
+            else if(ERROR_TYPE_ERROR.equals(sErrorType))
+                errorTypeSearch = "ERROR";
+            else if(ERROR_TYPE_FATAL.equals(sErrorType))
+                errorTypeSearch = "FATAL";
+
+            metadata.put( "lprmeta.errorType", errorTypeSearch );
+        }
+
+        if(recievedValidFromDate.getValue() != null && recievedValidFromDate.getValue().getTime() > 0) {
+            metadata.put( "lprmeta.recievedValidFromDate", recievedValidFromDate.getValue().getTime() );
+        }
+
+        if(recievedValidToDate.getValue() != null && recievedValidToDate.getValue().getTime() > 0) {
+            metadata.put( "lprmeta.recievedValidToDate", recievedValidToDate.getValue().getTime() );
+        }
+
         if ( !sourceTextBox.getText().trim().isEmpty() ) {
             metadata.put( "dcore.source[0]", sourceTextBox.getText().trim() );
         }

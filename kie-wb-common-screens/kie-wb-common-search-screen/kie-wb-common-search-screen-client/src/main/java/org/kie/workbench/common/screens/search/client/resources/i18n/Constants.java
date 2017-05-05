@@ -40,6 +40,30 @@ public interface Constants
 
     String SearchForm();
 
+    String ErrorNumberMetaData();
+
+    String ErrorNumberTip();
+
+    String ErrorTextMetaData();
+
+    String ErrorTextTip();
+
+    String RuleGroupMetaData();
+
+    String RuleGroupMetaDataTip();
+
+    String ErrorTypeMetaData();
+
+    String ErrorTypeMetaDataTip();
+
+    String RecievedValidFromDateMetaData();
+
+    String RecievedValidFromDateMetaDataTip();
+
+    String RecievedValidToDateMetaData();
+
+    String RecievedValidToDateMetaDataTip();
+
     String Source();
 
     String SourceTip();

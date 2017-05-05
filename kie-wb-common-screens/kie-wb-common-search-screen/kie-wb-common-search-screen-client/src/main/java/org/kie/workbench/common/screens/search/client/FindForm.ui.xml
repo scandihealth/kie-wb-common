@@ -20,7 +20,8 @@
              xmlns:b3="urn:import:org.gwtbootstrap3.extras.typeahead.client.ui"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:qr="urn:import:org.kie.workbench.common.screens.search.client.widgets"
-             xmlns:ufext="urn:import:org.uberfire.ext.widgets.common.client.common">
+             xmlns:ufext="urn:import:org.uberfire.ext.widgets.common.client.common"
+             xmlns:uf="urn:import:org.uberfire.ext.widgets.common.client.common">
 
   <ui:with field="i18n" type="org.kie.workbench.common.screens.search.client.resources.i18n.Constants"/>
 
@@ -47,6 +48,72 @@
                 <b:Form type="HORIZONTAL" ui:field="form">
                   <b:FieldSet>
                     <b:FormGroup ui:field="formGroup">
+                      <b:FormGroup>
+                        <b:FormLabel for="errornumber" addStyleNames="col-md-2">
+                          <ui:text from="{i18n.ErrorNumberMetaData}"/>
+                        </b:FormLabel>
+                        <b:Column size="MD_3">
+                          <b:Tooltip title="{i18n.ErrorNumberTip}" placement="RIGHT" trigger="FOCUS">
+                            <uf:NumericLongTextBox b:id="errornumber" ui:field="errorNumberNumericTextBox"/>
+                          </b:Tooltip>
+                        </b:Column>
+                      </b:FormGroup>
+
+                      <b:FormGroup>
+                        <b:FormLabel for="errorText" addStyleNames="col-md-2">
+                          <ui:text from="{i18n.ErrorTextMetaData}"/>
+                        </b:FormLabel>
+                        <b:Column size="MD_3">
+                          <b:Tooltip title="{i18n.ErrorTextTip}" placement="RIGHT" trigger="FOCUS">
+                            <b:TextBox b:id="errorText" ui:field="errorTextTextBox"/>
+                          </b:Tooltip>
+                        </b:Column>
+                      </b:FormGroup>
+
+                      <b:FormGroup>
+                        <b:FormLabel for="RuleGroup" addStyleNames="col-md-2">
+                          <ui:text from="{i18n.RuleGroupMetaData}" />
+                        </b:FormLabel>
+                        <b:Column size="MD_3">
+                          <b:Tooltip title="{i18n.RuleGroupMetaDataTip}" placement="RIGHT" trigger="FOCUS">
+                            <b:ListBox b:id="RuleGroup" ui:field="ruleGroupListBox"/>
+                          </b:Tooltip>
+                        </b:Column>
+                      </b:FormGroup>
+
+                      <b:FormGroup>
+                        <b:FormLabel for="errorType" addStyleNames="col-md-2">
+                          <ui:text from="{i18n.ErrorTypeMetaData}"/>
+                        </b:FormLabel>
+                        <b:Column size="MD_3">
+                          <b:Tooltip title="{i18n.ErrorTypeMetaDataTip}" placement="RIGHT" trigger="FOCUS">
+                            <b:ListBox b:id="errorType" ui:field="errorTypeListBox"/>
+                          </b:Tooltip>
+                        </b:Column>
+                      </b:FormGroup>
+
+                      <b:FormGroup>
+                        <b:FormLabel for="recievedValidFrom" addStyleNames="col-md-2">
+                          <ui:text from="{i18n.RecievedValidFromDateMetaData}"/>
+                        </b:FormLabel>
+                        <b:Column size="MD_3">
+                          <b:Tooltip title="{i18n.RecievedValidFromDateMetaDataTip}" placement="RIGHT" trigger="FOCUS">
+                            <uf:DatePicker b:id="recievedValidFrom" ui:field="recievedValidFromDate"/>
+                          </b:Tooltip>
+                        </b:Column>
+                      </b:FormGroup>
+
+                      <b:FormGroup>
+                        <b:FormLabel for="recievedValidTo" addStyleNames="col-md-2">
+                          <ui:text from="{i18n.RecievedValidToDateMetaData}"/>
+                        </b:FormLabel>
+                        <b:Column size="MD_3">
+                          <b:Tooltip title="{i18n.RecievedValidToDateMetaDataTip}" placement="RIGHT" trigger="FOCUS">
+                            <uf:DatePicker b:id="recievedValidTo" ui:field="recievedValidToDate"/>
+                          </b:Tooltip>
+                        </b:Column>
+                      </b:FormGroup>
+
                       <b:FormGroup>
                         <b:FormLabel for="source" addStyleNames="col-md-2">
                           <ui:text from="{i18n.Source}"/>

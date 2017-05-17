@@ -17,6 +17,7 @@
 package org.kie.workbench.common.screens.search.client;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -311,12 +312,16 @@ public class FindForm
 
         boolean hasSomeDateValue = false;
 
+        Date searchCreatedAfter = null;
         if ( createdAfter.getValue() != null ) {
             hasSomeDateValue = true;
+            searchCreatedAfter = createdAfter.getValue();
         }
 
+        Date searchCreatedBefore = null;
         if ( createdBefore.getValue() != null ) {
             hasSomeDateValue = true;
+            searchCreatedBefore = createdBefore.getValue();
         }
 
         if ( lastModifiedAfter.getValue() != null ) {
@@ -328,16 +333,18 @@ public class FindForm
         }
 
         if ( metadata.size() == 0 && !hasSomeDateValue ) {
-            formGroup.setValidationState( ValidationState.ERROR );
-            Alert alert = new Alert( Constants.INSTANCE.AtLeastOneFieldMustBeSet(), AlertType.DANGER );
-            alert.setVisible( true );
-            alert.setDismissable( true );
-            errorPanel.add( alert );
-            return;
+//            formGroup.setValidationState( ValidationState.ERROR );
+//            Alert alert = new Alert( Constants.INSTANCE.AtLeastOneFieldMustBeSet(), AlertType.DANGER );
+//            alert.setVisible( true );
+//            alert.setDismissable( true );
+//            errorPanel.add( alert );
+//            return;
+            searchCreatedAfter = new Date(Long.MIN_VALUE);
+            searchCreatedBefore = new Date(2500, 12, 12, 23, 59);
         }
 
         final SearchResultTable queryTable = new SearchResultTable( new QueryMetadataPageRequest( metadata,
-                                                                                                  createdAfter.getValue(), createdBefore.getValue(),
+                searchCreatedAfter, searchCreatedBefore,
                                                                                                   lastModifiedAfter.getValue(), lastModifiedBefore.getValue(),
                                                                                                   0, null ) );
         simplePanel.clear();

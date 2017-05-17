@@ -38,9 +38,11 @@ import org.uberfire.ext.editor.commons.client.BaseEditor;
 import org.uberfire.ext.editor.commons.client.file.SaveOperationService;
 import org.uberfire.ext.editor.commons.client.menu.MenuItems;
 import org.uberfire.client.workbench.widgets.multipage.Page;
+import org.uberfire.ext.editor.commons.client.resources.i18n.CommonConstants;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -49,6 +51,11 @@ public abstract class KieEditor
         implements KieEditorWrapperView.KieEditorWrapperPresenter {
 
     protected Menus menus;
+
+    private MenuItem deleteDraftMenuItem;
+    private MenuItem moveToProductionMenuItem;
+    private MenuItem archiveMenuItem;
+    private MenuItem simulateMenuItem;
 
     @Inject
     protected KieEditorWrapperView kieView;
@@ -203,6 +210,11 @@ public abstract class KieEditor
         this.overviewWidget.setContent( overview, versionRecordManager.getPathToLatest() );
         this.metadata = overview.getMetadata();
 
+        deleteDraftMenuItem.setEnabled( false );
+//        if(deleteDraftMenuItem != null && metadata != null) {
+//            deleteDraftMenuItem.setEnabled(metadata.isDraft());
+//        }
+
         kieView.clear();
 
         kieView.addMainEditorPage( baseView );
@@ -214,6 +226,7 @@ public abstract class KieEditor
                                          overviewWidget.refresh( versionRecordManager.getVersion() );
                                      }
                                  } );
+
 
     }
 
@@ -229,6 +242,10 @@ public abstract class KieEditor
      * If you want to customize the menu override this method.
      */
     protected void makeMenuBar() {
+        deleteDraftMenuItem = MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.DeleteDraft() ).endMenu().build().getItems().get(0);
+        moveToProductionMenuItem = MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.MoveToProduction() ).endMenu().build().getItems().get(0);
+        archiveMenuItem = MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.Archive() ).endMenu().build().getItems().get(0);
+        simulateMenuItem = MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.Simulate() ).endMenu().build().getItems().get(0);
         menus = menuBuilder
                 .addSave( versionRecordManager.newSaveMenuItem( new Command() {
                     @Override
@@ -243,6 +260,10 @@ public abstract class KieEditor
                 .addDelete( versionRecordManager.getPathToLatest() )
                 .addValidate( onValidate() )
                 .addNewTopLevelMenu( versionRecordManager.buildMenu() )
+                .addDeleteDraft( deleteDraftMenuItem, versionRecordManager.getCurrentPath() )
+                .addMoveToProduction( moveToProductionMenuItem, versionRecordManager.getCurrentPath())
+                .addArchive( archiveMenuItem, versionRecordManager.getCurrentPath() )
+                .addSimulate( simulateMenuItem, versionRecordManager.getCurrentPath() )
                 .build();
     }
 

@@ -210,10 +210,6 @@ public abstract class KieEditor
         this.overviewWidget.setContent( overview, versionRecordManager.getPathToLatest() );
         this.metadata = overview.getMetadata();
 
-        deleteDraftMenuItem.setEnabled( false );
-//        if(deleteDraftMenuItem != null && metadata != null) {
-//            deleteDraftMenuItem.setEnabled(metadata.isDraft());
-//        }
 
         kieView.clear();
 
@@ -227,7 +223,26 @@ public abstract class KieEditor
                                      }
                                  } );
 
+        updateEnabledStateOnMenuItems();
 
+    }
+
+    protected void updateEnabledStateOnMenuItems() {
+        if(this.metadata != null) {
+            for (MenuItem mi : menus.getItemsMap().values()) {
+                if (CommonConstants.INSTANCE.DeleteDraft().equals(mi.getCaption())) {
+                    mi.setEnabled(this.metadata.isDraft());
+                }
+                if(CommonConstants.INSTANCE.MoveToProduction().equals(mi.getCaption())) {
+                    boolean enabled = (!this.metadata.isDraft() && versionRecordManager.isCurrentLatest() && !this.metadata.isInProduction());
+                    mi.setEnabled(enabled);
+                }
+                if(CommonConstants.INSTANCE.Archive().equals(mi.getCaption())) {
+                    boolean enabled = (!this.metadata.isDraft() && versionRecordManager.isCurrentLatest());
+                    mi.setEnabled(enabled);
+                }
+            }
+        }
     }
 
     protected void OnClose() {

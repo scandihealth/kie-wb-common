@@ -15,10 +15,10 @@
 
 package org.kie.workbench.common.widgets.metadata.client.resources.i18n;
 
+import java.util.Date;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
-
-import java.util.Date;
 
 public interface MetadataConstants extends
         Messages {
@@ -51,13 +51,13 @@ public interface MetadataConstants extends
 
     String DraftMetaDataTip();
 
-    String RecievedValidFromDateMetaData();
+    String RuleValidFromMetaData();
 
-    String RecievedValidFromDateMetaDataTip();
+    String RuleValidFromMetaDataTip();
 
-    String RecievedValidToDateMetaData();
+    String RuleValidToMetaData();
 
-    String RecievedValidToDateMetaDataTip();
+    String RuleValidToMetaDataTip();
 
     String AShortDescriptionOfTheSubjectMatter();
 

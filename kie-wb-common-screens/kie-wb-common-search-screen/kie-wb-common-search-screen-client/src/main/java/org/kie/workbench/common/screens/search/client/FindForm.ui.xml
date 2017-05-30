@@ -93,24 +93,16 @@
                       </b:FormGroup>
 
                       <b:FormGroup>
-                        <b:FormLabel for="recievedValidFrom" addStyleNames="col-md-2">
-                          <ui:text from="{i18n.RecievedValidFromDateMetaData}"/>
-                        </b:FormLabel>
-                        <b:Column size="MD_3">
-                          <b:Tooltip title="{i18n.RecievedValidFromDateMetaDataTip}" placement="RIGHT" trigger="FOCUS">
-                            <uf:DatePicker b:id="recievedValidFrom" ui:field="recievedValidFromDate"/>
-                          </b:Tooltip>
+                        <b:FormLabel text="{i18n.ProductionMetaData}" addStyleNames="col-md-3"/>
+                        <b:Column size="MD_9">
+                          <b:CheckBox ui:field="inProduction" title='{i18n.ProductionMetaDataTip}'/>
                         </b:Column>
                       </b:FormGroup>
 
                       <b:FormGroup>
-                        <b:FormLabel for="recievedValidTo" addStyleNames="col-md-2">
-                          <ui:text from="{i18n.RecievedValidToDateMetaData}"/>
-                        </b:FormLabel>
-                        <b:Column size="MD_3">
-                          <b:Tooltip title="{i18n.RecievedValidToDateMetaDataTip}" placement="RIGHT" trigger="FOCUS">
-                            <uf:DatePicker b:id="recievedValidTo" ui:field="recievedValidToDate"/>
-                          </b:Tooltip>
+                        <b:FormLabel text="{i18n.DraftMetaData}" addStyleNames="col-md-3"/>
+                        <b:Column size="MD_9">
+                          <b:CheckBox ui:field="isDraft" title='{i18n.DraftMetaDataTip}'/>
                         </b:Column>
                       </b:FormGroup>
 
@@ -209,6 +201,17 @@
                         <b:Column size="MD_3">
                           <b:Tooltip title="{i18n.CheckinCommentTip}" placement="RIGHT" trigger="FOCUS">
                             <b:TextBox b:id="checkinComment" ui:field="checkinCommentTextBox"/>
+                          </b:Tooltip>
+                        </b:Column>
+                      </b:FormGroup>
+
+                      <b:FormGroup>
+                        <b:FormLabel for="ruleValidDatePicker" addStyleNames="col-md-2">
+                          <ui:text from="{i18n.RuleValidDate}"/>
+                        </b:FormLabel>
+                        <b:Column size="MD_3">
+                          <b:Tooltip title="{i18n.RuleValidDateTip}" placement="RIGHT" trigger="FOCUS">
+                            <uf:DatePicker b:id="ruleValidDatePicker" ui:field="ruleValidDate"/>
                           </b:Tooltip>
                         </b:Column>
                       </b:FormGroup>

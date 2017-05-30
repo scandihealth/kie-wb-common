@@ -27,16 +27,24 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
-import org.guvnor.common.services.shared.metadata.model.LprErrorType;
-import org.gwtbootstrap3.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.*;
-import org.gwtbootstrap3.client.ui.constants.AlertType;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
+import org.guvnor.common.services.shared.metadata.model.LprErrorType;
+import org.gwtbootstrap3.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.PanelGroup;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.extras.typeahead.client.base.StringDataset;
 import org.gwtbootstrap3.extras.typeahead.client.ui.Typeahead;
@@ -64,10 +72,6 @@ public class FindForm
 
     private static FindFormBinder uiBinder = GWT.create( FindFormBinder.class );
 
-    private static final String ERROR_TYPE_WARNING = "Advarsel";
-    private static final String ERROR_TYPE_ERROR = "Fejl";
-    private static final String ERROR_TYPE_FATAL = "Fatal";
-
     @Inject
     private ClientTypeRegistry clientTypeRegistry;
 
@@ -83,8 +87,19 @@ public class FindForm
     @UiField
     NumericLongTextBox errorNumberNumericTextBox;
 
+    @UiFactory
+    NumericLongTextBox constructErrorNumberNumericTextBox() {
+        return new NumericLongTextBox( true );
+    }
+
     @UiField
     TextBox errorTextTextBox;
+
+    @UiField
+    CheckBox inProduction;
+
+    @UiField
+    CheckBox isDraft;
 
     @UiField
     ListBox ruleGroupListBox;
@@ -93,10 +108,7 @@ public class FindForm
     ListBox errorTypeListBox;
 
     @UiField
-    DatePicker recievedValidFromDate;
-
-    @UiField
-    DatePicker recievedValidToDate;
+    DatePicker ruleValidDate;
 
     @UiField
     TextBox sourceTextBox;
@@ -169,6 +181,7 @@ public class FindForm
         createdBefore.setFormat( ApplicationPreferences.getDroolsDateFormat() );
         lastModifiedAfter.setFormat( ApplicationPreferences.getDroolsDateFormat() );
         lastModifiedBefore.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        ruleValidDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
 
         formGroup.setStyleName( null );
 
@@ -177,60 +190,58 @@ public class FindForm
                 add( resourceType.getShortName() );
             }
         }} ) );
-    }
 
-    @Override
-    protected void onLoad() {
-        String[] ruleGroups = new String[] { ""
-                ,"LPR.MOBST"
-                ,"LPR.ULYKK"
-                ,"FIXED.LPR.SKSKO"
-                ,"LPR.STEDF"
-                ,"LPR.OKOMB"
-                ,"FIXED.LPR.PASSV"
-                ,"LPR.INDUD"
-                ,"FIXED.DUSAS.SPEC"
-                ,"LPR.INDUD/SKSKO/MOBST"
-                ,"LPR.PSYKI"
-                ,"FIXED.,VENTE"
-                ,"FIXED.LPR.OPERA"
-                ,"FIXED.LPR.BOBST"
-                ,"LPR.INDUD/BESØG"
-                ,"LPR.INDUD/SKSKO"
-                ,"LPR.BESØG"
-                ,"LPR.SKSKO"
-                ,"LPR.INDUD/PASSV"
-                ,"LPR.PATIENT"
-                ,"LPR.PASSV"
-                ,"FIXED.LPR.MOBST"
-                ,"FIXED.LPR.DIAGN"
-                ,"FIXED.LPR.STEDF"
-                ,"FIXED.LPR.OKOMB"
-                ,"LPR.INDUD/VENTE"
-                ,"LPR.VENTE"
-                ,"LPR.OPERA"
-                ,"DUSAS"
-                ,"FIXED.LPR.INDUD"
-                ,"LPR.BOBST"
-                ,"DUSAS.SPEC"
-                ,"FIXED.LPR.PSYKI"
-                ,"LPR.Psykiatri"};
+        String[] ruleGroups = new String[]{
+                ""
+                , "LPR.MOBST"
+                , "LPR.ULYKK"
+                , "FIXED.LPR.SKSKO"
+                , "LPR.STEDF"
+                , "LPR.OKOMB"
+                , "FIXED.LPR.PASSV"
+                , "LPR.INDUD"
+                , "FIXED.DUSAS.SPEC"
+                , "LPR.INDUD/SKSKO/MOBST"
+                , "LPR.PSYKI"
+                , "FIXED.,VENTE"
+                , "FIXED.LPR.OPERA"
+                , "FIXED.LPR.BOBST"
+                , "LPR.INDUD/BESØG"
+                , "LPR.INDUD/SKSKO"
+                , "LPR.BESØG"
+                , "LPR.SKSKO"
+                , "LPR.INDUD/PASSV"
+                , "LPR.PATIENT"
+                , "LPR.PASSV"
+                , "FIXED.LPR.MOBST"
+                , "FIXED.LPR.DIAGN"
+                , "FIXED.LPR.STEDF"
+                , "FIXED.LPR.OKOMB"
+                , "LPR.INDUD/VENTE"
+                , "LPR.VENTE"
+                , "LPR.OPERA"
+                , "DUSAS"
+                , "FIXED.LPR.INDUD"
+                , "LPR.BOBST"
+                , "DUSAS.SPEC"
+                , "FIXED.LPR.PSYKI"
+                , "LPR.Psykiatri"};
 
-        for (String sRuleGroup : ruleGroups ) {
-            ruleGroupListBox.addItem(sRuleGroup);
+        for ( String sRuleGroup : ruleGroups ) {
+            ruleGroupListBox.addItem( sRuleGroup );
         }
-        ruleGroupListBox.setSelectedIndex(0);
+        ruleGroupListBox.setSelectedIndex( 0 );
 
-        String[] errorTypes = new String[] {"", ERROR_TYPE_WARNING, ERROR_TYPE_ERROR, ERROR_TYPE_FATAL};
-        for (String sErrorType : errorTypes ) {
-            errorTypeListBox.addItem(sErrorType);
+        for ( LprErrorType errorType : LprErrorType.values() ) {
+            errorTypeListBox.addItem( errorType.getDisplayText(), errorType.toString() );
         }
-        errorTypeListBox.setSelectedIndex(0);
+        errorTypeListBox.setSelectedIndex( 0 );
     }
 
     @UiHandler("clear")
     public void onClearClick( final ClickEvent e ) {
         form.reset();
+        errorNumberNumericTextBox.setValue( "" ); //necessary because uberfire extensions puts in a "0" when resetting this input
     }
 
     @UiHandler("search")
@@ -238,39 +249,36 @@ public class FindForm
         errorPanel.clear();
         formGroup.setValidationState( ValidationState.NONE );
         final Map<String, Object> metadata = new HashMap<String, Object>();
-        if( !errorNumberNumericTextBox.getText().trim().isEmpty() &&
-                errorNumberNumericTextBox.isValidValue(errorNumberNumericTextBox.getText().trim(), false)) {
-            if( Long.parseLong( errorNumberNumericTextBox.getText().trim() ) > 0 ) {
-                metadata.put("lprmeta.errorNumber", errorNumberNumericTextBox.getText().trim());
+
+        String errorNumberValue = errorNumberNumericTextBox.getValue().trim();
+        if ( !errorNumberValue.isEmpty() && errorNumberNumericTextBox.isValidValue( errorNumberValue, true ) ) {
+            if ( Long.parseLong( errorNumberValue ) > 0 ) {
+                metadata.put( "lprmeta.errorNumber", errorNumberValue );
             }
         }
-        if(!errorTextTextBox.getText().trim().isEmpty()) {
+        if ( !errorTextTextBox.getText().trim().isEmpty() ) {
             metadata.put( "lprmeta.errorText", errorTextTextBox.getText().trim() );
         }
 
-        if(!ruleGroupListBox.getSelectedItemText().trim().isEmpty()) {
+        if ( Boolean.TRUE.equals( inProduction.getValue() ) ) {
+            metadata.put( "lprmeta.inproduction", inProduction.getValue() );
+        }
+
+        if ( Boolean.TRUE.equals( isDraft.getValue() ) ) {
+            metadata.put( "lprmeta.isdraft", isDraft.getValue() );
+        }
+
+        if ( !ruleGroupListBox.getSelectedValue().trim().isEmpty() ) {
             metadata.put( "lprmeta.ruleGroup", ruleGroupListBox.getSelectedItemText().trim() );
         }
 
-        if(!errorTypeListBox.getSelectedItemText().trim().isEmpty()) {
-            String errorTypeSearch = "";
-            final String sErrorType = errorTypeListBox.getSelectedItemText().trim();
-            if(ERROR_TYPE_WARNING.equals(sErrorType))
-                errorTypeSearch = "WARNING";
-            else if(ERROR_TYPE_ERROR.equals(sErrorType))
-                errorTypeSearch = "ERROR";
-            else if(ERROR_TYPE_FATAL.equals(sErrorType))
-                errorTypeSearch = "FATAL";
-
-            metadata.put( "lprmeta.errorType", errorTypeSearch );
+        String errorTypeSelectedValue = errorTypeListBox.getSelectedValue();
+        if ( LprErrorType.valueOf( errorTypeSelectedValue ) != LprErrorType.NONE && !errorTypeSelectedValue.trim().isEmpty() ) {
+            metadata.put( "lprmeta.errorType", errorTypeSelectedValue );
         }
 
-        if(recievedValidFromDate.getValue() != null && recievedValidFromDate.getValue().getTime() > 0) {
-            metadata.put( "lprmeta.recievedValidFromDate", recievedValidFromDate.getValue().getTime() );
-        }
-
-        if(recievedValidToDate.getValue() != null && recievedValidToDate.getValue().getTime() > 0) {
-            metadata.put( "lprmeta.recievedValidToDate", recievedValidToDate.getValue().getTime() );
+        if ( ruleValidDate.getValue() != null ) {
+            metadata.put( "lprmeta.ruleValidDate", ruleValidDate.getValue() );
         }
 
         if ( !sourceTextBox.getText().trim().isEmpty() ) {
@@ -312,40 +320,31 @@ public class FindForm
 
         boolean hasSomeDateValue = false;
 
-        Date searchCreatedAfter = null;
         if ( createdAfter.getValue() != null ) {
             hasSomeDateValue = true;
-            searchCreatedAfter = createdAfter.getValue();
         }
 
-        Date searchCreatedBefore = null;
         if ( createdBefore.getValue() != null ) {
             hasSomeDateValue = true;
-            searchCreatedBefore = createdBefore.getValue();
         }
 
         if ( lastModifiedAfter.getValue() != null ) {
             hasSomeDateValue = true;
         }
 
-        if ( lastModifiedBefore.getValue() != null ) {
+        Date lastModifiedBeforeValue = lastModifiedBefore.getValue();
+        if ( lastModifiedBeforeValue != null ) {
             hasSomeDateValue = true;
         }
 
         if ( metadata.size() == 0 && !hasSomeDateValue ) {
-//            formGroup.setValidationState( ValidationState.ERROR );
-//            Alert alert = new Alert( Constants.INSTANCE.AtLeastOneFieldMustBeSet(), AlertType.DANGER );
-//            alert.setVisible( true );
-//            alert.setDismissable( true );
-//            errorPanel.add( alert );
-//            return;
-            searchCreatedAfter = new Date(Long.MIN_VALUE);
-            searchCreatedBefore = new Date(2500, 12, 12, 23, 59);
-        }
+            //We use a 'hidden' lastModifiedBefore criteria that returns all rules if the user has not selected any criteria
+            lastModifiedBeforeValue = new Date();
+            CalendarUtil.addDaysToDate( new Date(), 1 );        }
 
         final SearchResultTable queryTable = new SearchResultTable( new QueryMetadataPageRequest( metadata,
-                searchCreatedAfter, searchCreatedBefore,
-                                                                                                  lastModifiedAfter.getValue(), lastModifiedBefore.getValue(),
+                                                                                                  createdAfter.getValue(), createdBefore.getValue(),
+                                                                                                  lastModifiedAfter.getValue(), lastModifiedBeforeValue,
                                                                                                   0, null ) );
         simplePanel.clear();
 

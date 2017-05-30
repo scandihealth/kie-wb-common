@@ -56,13 +56,7 @@ public interface Constants
 
     String ErrorTypeMetaDataTip();
 
-    String RecievedValidFromDateMetaData();
-
-    String RecievedValidFromDateMetaDataTip();
-
-    String RecievedValidToDateMetaData();
-
-    String RecievedValidToDateMetaDataTip();
+    String RuleValidDate();
 
     String Source();
 
@@ -119,4 +113,14 @@ public interface Constants
     String SearchResultTitle();
 
     String AssetSearch();
+
+    String ProductionMetaDataTip();
+
+    String ProductionMetaData();
+
+    String DraftMetaData();
+
+    String DraftMetaDataTip();
+
+    String RuleValidDateTip();
 }

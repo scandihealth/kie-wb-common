@@ -14,16 +14,15 @@
 */
 package org.kie.workbench.common.screens.search.backend.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.enterprise.inject.Instance;
 
 import org.guvnor.common.services.backend.metadata.DublinCoreAttributesMock;
+import org.guvnor.common.services.backend.metadata.LprMetaAttributesMock;
 import org.guvnor.common.services.backend.metadata.VersionAttributesMock;
+import org.guvnor.common.services.backend.metadata.attribute.LprMetaView;
 import org.guvnor.common.services.backend.metadata.attribute.OtherMetaView;
+import org.guvnor.common.services.shared.metadata.model.LprErrorType;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.impl.OrganizationalUnitImpl;
@@ -218,14 +217,18 @@ public class SearchServiceImplTest {
         final DublinCoreView dublinCoreView = mock( DublinCoreView.class );
         final OtherMetaView otherMetaView = mock( OtherMetaView.class );
         final VersionAttributeView versionAttributeView = mock( VersionAttributeView.class );
+        final LprMetaView lprMetaView = mock(LprMetaView.class);
         when( dublinCoreView.readAttributes() ).thenReturn( new DublinCoreAttributesMock() );
         when( versionAttributeView.readAttributes() ).thenReturn( new VersionAttributesMock( Collections.EMPTY_LIST ) );
+        when( lprMetaView.readAttributes() ).thenReturn( new LprMetaAttributesMock() );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( DublinCoreView.class ) ) ).thenReturn( dublinCoreView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( OtherMetaView.class ) ) ).thenReturn( otherMetaView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( VersionAttributeView.class ) ) ).thenReturn( versionAttributeView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                                                eq( LprMetaView.class ) ) ).thenReturn( lprMetaView );
 
         //Perform search
         final PageResponse<SearchPageRow> results = searchService.fullTextSearch( pageRequest );
@@ -284,14 +287,18 @@ public class SearchServiceImplTest {
         final DublinCoreView dublinCoreView = mock( DublinCoreView.class );
         final OtherMetaView otherMetaView = mock( OtherMetaView.class );
         final VersionAttributeView versionAttributeView = mock( VersionAttributeView.class );
+        final LprMetaView lprMetaView = mock(LprMetaView.class);
         when( dublinCoreView.readAttributes() ).thenReturn( new DublinCoreAttributesMock() );
         when( versionAttributeView.readAttributes() ).thenReturn( new VersionAttributesMock( Collections.EMPTY_LIST ) );
+        when( lprMetaView.readAttributes() ).thenReturn( new LprMetaAttributesMock() );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( DublinCoreView.class ) ) ).thenReturn( dublinCoreView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( OtherMetaView.class ) ) ).thenReturn( otherMetaView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( VersionAttributeView.class ) ) ).thenReturn( versionAttributeView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( LprMetaView.class ) ) ).thenReturn( lprMetaView );
 
         //Perform search
         final PageResponse<SearchPageRow> results = searchService.fullTextSearch( pageRequest );
@@ -352,14 +359,18 @@ public class SearchServiceImplTest {
         final DublinCoreView dublinCoreView = mock( DublinCoreView.class );
         final OtherMetaView otherMetaView = mock( OtherMetaView.class );
         final VersionAttributeView versionAttributeView = mock( VersionAttributeView.class );
+        final LprMetaView lprMetaView = mock(LprMetaView.class);
         when( dublinCoreView.readAttributes() ).thenReturn( new DublinCoreAttributesMock() );
         when( versionAttributeView.readAttributes() ).thenReturn( new VersionAttributesMock( Collections.EMPTY_LIST ) );
+        when( lprMetaView.readAttributes() ).thenReturn( new LprMetaAttributesMock() );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( DublinCoreView.class ) ) ).thenReturn( dublinCoreView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( OtherMetaView.class ) ) ).thenReturn( otherMetaView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( VersionAttributeView.class ) ) ).thenReturn( versionAttributeView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( LprMetaView.class ) ) ).thenReturn( lprMetaView );
 
         //Perform search
         final PageResponse<SearchPageRow> results = searchService.queryMetadata( pageRequest );
@@ -422,14 +433,18 @@ public class SearchServiceImplTest {
         final DublinCoreView dublinCoreView = mock( DublinCoreView.class );
         final OtherMetaView otherMetaView = mock( OtherMetaView.class );
         final VersionAttributeView versionAttributeView = mock( VersionAttributeView.class );
+        final LprMetaView lprMetaView = mock(LprMetaView.class);
         when( dublinCoreView.readAttributes() ).thenReturn( new DublinCoreAttributesMock() );
         when( versionAttributeView.readAttributes() ).thenReturn( new VersionAttributesMock( Collections.EMPTY_LIST ) );
+        when( lprMetaView.readAttributes() ).thenReturn( new LprMetaAttributesMock() );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( DublinCoreView.class ) ) ).thenReturn( dublinCoreView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( OtherMetaView.class ) ) ).thenReturn( otherMetaView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( VersionAttributeView.class ) ) ).thenReturn( versionAttributeView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( LprMetaView.class ) ) ).thenReturn( lprMetaView );
 
         //Perform search
         final PageResponse<SearchPageRow> results = searchService.queryMetadata( pageRequest );
@@ -486,14 +501,18 @@ public class SearchServiceImplTest {
         final DublinCoreView dublinCoreView = mock( DublinCoreView.class );
         final OtherMetaView otherMetaView = mock( OtherMetaView.class );
         final VersionAttributeView versionAttributeView = mock( VersionAttributeView.class );
+        final LprMetaView lprMetaView = mock(LprMetaView.class);
         when( dublinCoreView.readAttributes() ).thenReturn( new DublinCoreAttributesMock() );
         when( versionAttributeView.readAttributes() ).thenReturn( new VersionAttributesMock( Collections.EMPTY_LIST ) );
+        when( lprMetaView.readAttributes() ).thenReturn( new LprMetaAttributesMock() );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( DublinCoreView.class ) ) ).thenReturn( dublinCoreView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( OtherMetaView.class ) ) ).thenReturn( otherMetaView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( VersionAttributeView.class ) ) ).thenReturn( versionAttributeView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( LprMetaView.class ) ) ).thenReturn( lprMetaView );
 
         //Perform search
         final PageResponse<SearchPageRow> results = searchService.fullTextSearch( pageRequest );
@@ -556,14 +575,18 @@ public class SearchServiceImplTest {
         final DublinCoreView dublinCoreView = mock( DublinCoreView.class );
         final OtherMetaView otherMetaView = mock( OtherMetaView.class );
         final VersionAttributeView versionAttributeView = mock( VersionAttributeView.class );
+        final LprMetaView lprMetaView = mock(LprMetaView.class);
         when( dublinCoreView.readAttributes() ).thenReturn( new DublinCoreAttributesMock() );
         when( versionAttributeView.readAttributes() ).thenReturn( new VersionAttributesMock( Collections.EMPTY_LIST ) );
+        when( lprMetaView.readAttributes() ).thenReturn( new LprMetaAttributesMock() );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( DublinCoreView.class ) ) ).thenReturn( dublinCoreView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( OtherMetaView.class ) ) ).thenReturn( otherMetaView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( VersionAttributeView.class ) ) ).thenReturn( versionAttributeView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( LprMetaView.class ) ) ).thenReturn( lprMetaView );
 
         //Perform search
         final PageResponse<SearchPageRow> results = searchService.queryMetadata( pageRequest );
@@ -627,14 +650,18 @@ public class SearchServiceImplTest {
         final DublinCoreView dublinCoreView = mock( DublinCoreView.class );
         final OtherMetaView otherMetaView = mock( OtherMetaView.class );
         final VersionAttributeView versionAttributeView = mock( VersionAttributeView.class );
+        final LprMetaView lprMetaView = mock(LprMetaView.class);
         when( dublinCoreView.readAttributes() ).thenReturn( new DublinCoreAttributesMock() );
         when( versionAttributeView.readAttributes() ).thenReturn( new VersionAttributesMock( Collections.EMPTY_LIST ) );
+        when( lprMetaView.readAttributes() ).thenReturn( new LprMetaAttributesMock() );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( DublinCoreView.class ) ) ).thenReturn( dublinCoreView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( OtherMetaView.class ) ) ).thenReturn( otherMetaView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( VersionAttributeView.class ) ) ).thenReturn( versionAttributeView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( LprMetaView.class ) ) ).thenReturn( lprMetaView );
 
         //Perform search - Page 1
         int startIndex = 0;
@@ -746,14 +773,18 @@ public class SearchServiceImplTest {
         final DublinCoreView dublinCoreView = mock( DublinCoreView.class );
         final OtherMetaView otherMetaView = mock( OtherMetaView.class );
         final VersionAttributeView versionAttributeView = mock( VersionAttributeView.class );
+        final LprMetaView lprMetaView = mock(LprMetaView.class);
         when( dublinCoreView.readAttributes() ).thenReturn( new DublinCoreAttributesMock() );
         when( versionAttributeView.readAttributes() ).thenReturn( new VersionAttributesMock( Collections.EMPTY_LIST ) );
+        when( lprMetaView.readAttributes() ).thenReturn( new LprMetaAttributesMock() );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( DublinCoreView.class ) ) ).thenReturn( dublinCoreView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( OtherMetaView.class ) ) ).thenReturn( otherMetaView );
         when( ioService.getFileAttributeView( any( Path.class ),
                                               eq( VersionAttributeView.class ) ) ).thenReturn( versionAttributeView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( LprMetaView.class ) ) ).thenReturn( lprMetaView );
 
         //Perform search - Page 1
         int startIndex = 0;
@@ -822,4 +853,82 @@ public class SearchServiceImplTest {
         }
     }
 
+    @Test
+    public void testMetadataSearchLpr() {
+        //Setup access rights - Grant access to all OUs
+        when( authorizationManager.authorize( ou1,
+                identity ) ).thenReturn( true );
+        when( authorizationManager.authorize( ou2,
+                identity ) ).thenReturn( true );
+
+        //Setup access rights - Grant access to all Repositories
+        when( authorizationManager.authorize( repo1,
+                identity ) ).thenReturn( true );
+        when( authorizationManager.authorize( repo2,
+                identity ) ).thenReturn( true );
+
+        //Setup access rights - Grant access to Project1
+        when( authorizationManager.authorize( project1,
+                identity ) ).thenReturn( true );
+
+        final Map<String, Object> testContent = new HashMap<String, Object>() {{
+            put("lprmeta.errorNumber", 100L);
+
+        }};
+
+        final QueryMetadataPageRequest pageRequest = new QueryMetadataPageRequest( testContent,
+                null,
+                null,
+                null,
+                null,
+                0,
+                5 );
+
+        //Setup search
+        final org.uberfire.backend.vfs.Path vfsPath = PathFactory.newPath( "file1", "default://project1/file1" );
+        final Path nioPath = Paths.convert( vfsPath );
+        final KObject kObject = mock( KObject.class );
+
+        when( kObject.getKey() ).thenReturn( "default://project1/file1" );
+        when( ioSearchService.searchByAttrsHits( any( Map.class ),
+                Matchers.<Path>anyVararg() ) ).thenReturn( 1 );
+        when( ioSearchService.searchByAttrs( any( Map.class ),
+                any( SearchServiceImpl.PagedCountingFilter.class ),
+                Matchers.<Path>anyVararg() ) ).thenAnswer( new Answer<List<Path>>() {
+            @Override
+            public List<Path> answer( final InvocationOnMock invocation ) throws Throwable {
+                final SearchServiceImpl.PagedCountingFilter filter = (SearchServiceImpl.PagedCountingFilter) invocation.getArguments()[ 1 ];
+                final List<Path> result = new ArrayList<Path>();
+                if ( filter.accept( kObject ) ) {
+                    result.add( nioPath );
+                }
+                return result;
+            }
+        } );
+
+        when( projectService.resolveProject( any( org.uberfire.backend.vfs.Path.class ) ) ).thenReturn( project1 );
+
+        final DublinCoreView dublinCoreView = mock( DublinCoreView.class );
+        final OtherMetaView otherMetaView = mock( OtherMetaView.class );
+        final VersionAttributeView versionAttributeView = mock( VersionAttributeView.class );
+        final LprMetaView lprMetaView = mock(LprMetaView.class);
+        when( dublinCoreView.readAttributes() ).thenReturn( new DublinCoreAttributesMock() );
+        when( versionAttributeView.readAttributes() ).thenReturn( new VersionAttributesMock( Collections.EMPTY_LIST ) );
+        when( lprMetaView.readAttributes() ).thenReturn( new LprMetaAttributesMock() );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( DublinCoreView.class ) ) ).thenReturn( dublinCoreView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( OtherMetaView.class ) ) ).thenReturn( otherMetaView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( VersionAttributeView.class ) ) ).thenReturn( versionAttributeView );
+        when( ioService.getFileAttributeView( any( Path.class ),
+                eq( LprMetaView.class ) ) ).thenReturn( lprMetaView );
+
+        //Perform search
+        final PageResponse<SearchPageRow> results = searchService.queryMetadata( pageRequest );
+        assertEquals( 1,
+                results.getTotalRowSize() );
+        assertEquals( vfsPath.getFileName(),
+                results.getPageRowList().get( 0 ).getPath().getFileName() );
+    }
 }

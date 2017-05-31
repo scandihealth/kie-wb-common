@@ -15,21 +15,7 @@
   <name>Kie Workbench - Common - UI</name>
   <description>Kie Workbench - Common - UI</description>
 
-  <distributionManagement>
-    <repository>
-      <id>scandihealth.com</id>
-      <name>miller.scandihealth.com-releases</name>
-      <url>http://repo.maven.scandihealth.com/ext-release-local</url>
-    </repository>
-    <snapshotRepository>
-      <id>scandihealth.com</id>
-      <name>miller.scandihealth.com-snapshots</name>
-      <url>http://repo.maven.scandihealth.com/ext-snapshot-local</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <dependencies>
-
     <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>
       <groupId>org.gwtbootstrap3</groupId>

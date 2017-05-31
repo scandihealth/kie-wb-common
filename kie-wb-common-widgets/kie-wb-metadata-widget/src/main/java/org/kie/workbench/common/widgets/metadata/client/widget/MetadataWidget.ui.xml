@@ -97,15 +97,15 @@
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.RecievedValidFromDateMetaData}" addStyleNames="col-md-3"/>
+                            <b:FormLabel text="{i18n.RuleValidFromMetaData}" addStyleNames="col-md-3"/>
                             <b:Column size="MD_9">
-                                <uf:DatePicker ui:field="recievedValidFromDate" title='{i18n.RecievedValidFromDateMetaDataTip}'/>
+                                <uf:DatePicker ui:field="ruleValidFrom" title='{i18n.RuleValidFromMetaDataTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.RecievedValidToDateMetaData}" addStyleNames="col-md-3"/>
+                            <b:FormLabel text="{i18n.RuleValidToMetaData}" addStyleNames="col-md-3"/>
                             <b:Column size="MD_9">
-                                <uf:DatePicker ui:field="recievedValidToDate" title='{i18n.RecievedValidToDateMetaDataTip}'/>
+                                <uf:DatePicker ui:field="ruleValidTo" title='{i18n.RuleValidToMetaDataTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>

@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
-import org.guvnor.common.services.shared.metadata.model.LprRuleType;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
@@ -150,6 +149,8 @@ public class SearchServiceImpl implements SearchService {
         try {
             final Map<String, Object> attrs = new HashMap<String, Object>( pageRequest.getMetadata() );
 
+            //todo ttn use rule valid date in query
+            Date ruleValidDate = ( Date ) attrs.remove( "lprmeta.ruleValidDate" );
             if ( pageRequest.getCreatedAfter() != null || pageRequest.getCreatedBefore() != null ) {
                 attrs.put( "creationTime", toDateRange( pageRequest.getCreatedBefore(),
                                                         pageRequest.getCreatedAfter() ) );

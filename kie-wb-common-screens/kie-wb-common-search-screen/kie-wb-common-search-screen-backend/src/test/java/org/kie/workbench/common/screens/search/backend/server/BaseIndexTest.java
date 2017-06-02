@@ -1,5 +1,14 @@
 package org.kie.workbench.common.screens.search.backend.server;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
@@ -18,27 +27,24 @@ import org.uberfire.java.nio.base.version.VersionAttributeView;
 import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.java.nio.file.Path;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.*;
-
-import static org.uberfire.ext.metadata.backend.lucene.util.KObjectUtil.toKObject;
+import static org.uberfire.ext.metadata.backend.lucene.util.KObjectUtil.*;
 
 /**
- * Created by prc on 29-05-2017.
+ * Inspired by org.uberfire.ext.metadata.io.BaseIndexTest
+ *
+ * Created on 29-05-2017.
  */
 public abstract class BaseIndexTest {
 
     private int seed = new Random( 10L ).nextInt();
 
-    protected boolean created = false;
-    protected static final Map<String, Path> basePaths = new HashMap<String, Path>();
+    private static boolean created = false;
+    private static final Map<String, Path> basePaths = new HashMap<String, Path>();
 
     protected LuceneConfig config;
-    protected IOService ioService = null;
+    private IOService ioService = null;
 
-    protected static final List<File> tempFiles = new ArrayList<File>();
+    private static final List<File> tempFiles = new ArrayList<File>();
 
     @AfterClass
     @BeforeClass
@@ -56,20 +62,21 @@ public abstract class BaseIndexTest {
                     .useInMemoryDirectory()
                     .build();
 
-            ioService = new IOServiceIndexedImpl( config.getIndexEngine(),
+            ioService = new IOServiceIndexedImpl(
+                    config.getIndexEngine(),
                     DublinCoreView.class,
                     VersionAttributeView.class,
-                    LprMetaView.class);
+                    LprMetaView.class );
         }
         return ioService;
     }
 
-    protected static File createTempDirectory() throws IOException {
+    private static File createTempDirectory() throws IOException {
         final File temp = File.createTempFile( "temp", Long.toString( System.nanoTime() ) );
-        if ( !( temp.delete() ) ) {
+        if ( !(temp.delete()) ) {
             throw new IOException( "Could not delete temp file: " + temp.getAbsolutePath() );
         }
-        if ( !( temp.mkdir() ) ) {
+        if ( !(temp.mkdir()) ) {
             throw new IOException( "Could not create temp directory: " + temp.getAbsolutePath() );
         }
         tempFiles.add( temp );
@@ -81,27 +88,18 @@ public abstract class BaseIndexTest {
         IndexersFactory.clear();
         if ( !created ) {
             final String path = createTempDirectory().getAbsolutePath();
-            System.setProperty( "org.uberfire.nio.git.dir",
-                    path );
+            System.setProperty( "org.uberfire.nio.git.dir", path );
             System.out.println( ".niogit: " + path );
 
             for ( String repositoryName : getRepositoryNames() ) {
-
                 final URI newRepo = URI.create( "git://" + repositoryName );
-
                 try {
-                    ioService().newFileSystem( newRepo,
-                            new HashMap<String, Object>() );
-
+                    ioService().newFileSystem( newRepo, new HashMap<String, Object>() );
                     final Path basePath = getDirectoryPath( repositoryName ).resolveSibling( "root" );
-                    basePaths.put( repositoryName,
-                            basePath );
-
-                }
-                catch ( final FileSystemAlreadyExistsException ex ) {
+                    basePaths.put( repositoryName, basePath );
+                } catch ( final FileSystemAlreadyExistsException ex ) {
                     // ignored
-                }
-                finally {
+                } finally {
                     created = true;
                 }
             }
@@ -114,10 +112,9 @@ public abstract class BaseIndexTest {
         return basePaths.get( repositoryName );
     }
 
-    protected void listHitPaths( final IndexSearcher searcher,
-                                 final ScoreDoc[] hits ) throws IOException {
+    protected void listHitPaths( final IndexSearcher searcher, final ScoreDoc[] hits ) throws IOException {
         for ( int i = 0; i < hits.length; i++ ) {
-            final KObject ko = toKObject( searcher.doc( hits[ i ].doc ) );
+            final KObject ko = toKObject( searcher.doc( hits[i].doc ) );
             System.out.println( ko.getKey() );
         }
     }

@@ -24,35 +24,26 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.shared.metadata.model.LprErrorType;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.gwtbootstrap3.client.ui.CheckBox;
-import org.gwtbootstrap3.client.ui.FormControlStatic;
-import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.extras.datepicker.client.ui.base.events.ClearDateEvent;
 import org.gwtbootstrap3.extras.datepicker.client.ui.base.events.ClearDateHandler;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
-import org.kie.workbench.common.widgets.metadata.client.resources.ImageResources;
 import org.kie.workbench.common.widgets.metadata.client.resources.i18n.MetadataConstants;
 import org.uberfire.backend.vfs.impl.LockInfo;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.ext.widgets.common.client.common.DatePicker;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 import org.uberfire.ext.widgets.common.client.common.NumericLongTextBox;
-import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
-import org.uberfire.mvp.Command;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
@@ -74,12 +65,13 @@ public class MetadataWidget
 
     private Metadata metadata = null;
     private boolean readOnly;
-    
-    private Runnable forceUnlockHandler;
+
+    //    private Runnable forceUnlockHandler;
     private String currentUser;
 
     @UiField
     TagWidget tags;
+    /*
     @UiField
     FormControlStatic note;
     @UiField
@@ -92,26 +84,49 @@ public class MetadataWidget
     TextBox external;
     @UiField
     TextBox source;
+    */
+/*
     @UiField
     CheckBox inProduction;
     @UiField
     CheckBox isDraft;
+*/
     @UiField
-    DatePicker ruleValidFrom;
+    CheckBox isValidForLPRReports;
     @UiField
-    DatePicker ruleValidTo;
+    CheckBox isValidForDUSASAbroadReports;
+    @UiField
+    CheckBox isValidForDUSASSpecialityReports;
+    @UiField
+    DatePicker reportReceivedFrom;
+    @UiField
+    DatePicker reportReceivedTo;
+    @UiField
+    DatePicker encounterStartFromDate;
+    @UiField
+    DatePicker encounterStartToDate;
+    @UiField
+    DatePicker encounterEndFromDate;
+    @UiField
+    DatePicker encounterEndToDate;
+    @UiField
+    DatePicker episodeOfCareStartFromDate;
+    @UiField
+    DatePicker episodeOfCareStartToDate;
     @UiField
     NumericLongTextBox errorNumber;
     @UiField
-    TextBox errorText;
+    TextArea errorText;
     @UiField
     ListBox ruleGroup;
     @UiField
     ListBox errorType;
+/*
     @UiField
     FormControlStatic lockedBy;
     @UiField
     PushButton unlock;
+*/
 
     private BusyIndicatorView busyIndicatorView;
 
@@ -122,8 +137,14 @@ public class MetadataWidget
 
     @PostConstruct
     public void init() {
-        ruleValidFrom.setFormat( ApplicationPreferences.getDroolsDateFormat() );
-        ruleValidTo.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        reportReceivedFrom.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        reportReceivedTo.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        encounterStartFromDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        encounterStartToDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        encounterEndFromDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        encounterEndToDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        episodeOfCareStartFromDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        episodeOfCareStartToDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
         ruleGroup.setMultipleSelect( false );
 
 
@@ -138,7 +159,7 @@ public class MetadataWidget
     }
 
     public void setForceUnlockHandler( final Runnable forceUnlockHandler ) {
-        this.forceUnlockHandler = forceUnlockHandler;
+//        this.forceUnlockHandler = forceUnlockHandler;
     }
 
     public void setCurrentUser( String currentUser ) {
@@ -150,6 +171,7 @@ public class MetadataWidget
 
         tags.setContent( metadata, this.readOnly );
 
+/*
         note.setText( metadata.getCheckinComment() );
 
         uri.setText( metadata.getRealPath().toURI() );
@@ -185,41 +207,122 @@ public class MetadataWidget
                 metadata.setExternalSource( source.getText() );
             }
         } );
+*/
 
         setLockStatus( metadata.getLockInfo() );
-
-        if ( metadata.getRuleValidFromDate() > 0 ) {
-            ruleValidFrom.setValue( new Date( metadata.getRuleValidFromDate() ) );
-        }
-        ruleValidFrom.addValueChangeHandler( new ValueChangeHandler<Date>() {
+        reportReceivedFrom.setValue( metadata.getReportReceivedFromDate() > 0 ? new Date( metadata.getReportReceivedFromDate() ) : null );
+        reportReceivedFrom.addValueChangeHandler( new ValueChangeHandler<Date>() {
             @Override
             public void onValueChange( ValueChangeEvent<Date> event ) {
-                metadata.setRuleValidFromDate( ruleValidFrom.getValue().getTime() );
+                metadata.setReportReceivedFromDate( reportReceivedFrom.getValue().getTime() );
             }
         } );
-        ruleValidFrom.addClearDateHandler( new ClearDateHandler() {
+        reportReceivedFrom.addClearDateHandler( new ClearDateHandler() {
             @Override
             public void onClearDate( ClearDateEvent evt ) {
-                metadata.setRuleValidFromDate( 0L );
+                metadata.setReportReceivedFromDate( 0L );
             }
         } );
 
-        if ( metadata.getRuleValidToDate() < Long.MAX_VALUE ) {
-            ruleValidTo.setValue( new Date( metadata.getRuleValidToDate() ) );
-        }
-        ruleValidTo.addClearDateHandler( new ClearDateHandler() {
+        reportReceivedTo.setValue( metadata.getReportReceivedToDate() < Long.MAX_VALUE ? new Date( metadata.getReportReceivedToDate() ) : null );
+        reportReceivedTo.addClearDateHandler( new ClearDateHandler() {
             @Override
             public void onClearDate( ClearDateEvent evt ) {
-                metadata.setRuleValidToDate( Long.MAX_VALUE );
+                metadata.setReportReceivedToDate( Long.MAX_VALUE );
             }
         } );
-        ruleValidTo.addValueChangeHandler( new ValueChangeHandler<Date>() {
+        reportReceivedTo.addValueChangeHandler( new ValueChangeHandler<Date>() {
             @Override
             public void onValueChange( ValueChangeEvent<Date> event ) {
-                metadata.setRuleValidToDate( ruleValidTo.getValue().getTime() );
+                metadata.setReportReceivedToDate( reportReceivedTo.getValue().getTime() );
             }
         } );
 
+        encounterStartFromDate.setValue( metadata.getEncounterStartFromDate() > 0 ? new Date( metadata.getEncounterStartFromDate() ) : null );
+        encounterStartFromDate.addValueChangeHandler( new ValueChangeHandler<Date>() {
+            @Override
+            public void onValueChange( ValueChangeEvent<Date> event ) {
+                metadata.setEncounterStartFromDate( encounterStartFromDate.getValue().getTime() );
+            }
+        } );
+        encounterStartFromDate.addClearDateHandler( new ClearDateHandler() {
+            @Override
+            public void onClearDate( ClearDateEvent evt ) {
+                metadata.setEncounterStartFromDate( 0L );
+            }
+        } );
+
+        encounterStartToDate.setValue( metadata.getEncounterStartToDate() < Long.MAX_VALUE ? new Date( metadata.getEncounterStartToDate() ) : null );
+        encounterStartToDate.addClearDateHandler( new ClearDateHandler() {
+            @Override
+            public void onClearDate( ClearDateEvent evt ) {
+                metadata.setEncounterStartToDate( Long.MAX_VALUE );
+            }
+        } );
+        encounterStartToDate.addValueChangeHandler( new ValueChangeHandler<Date>() {
+            @Override
+            public void onValueChange( ValueChangeEvent<Date> event ) {
+                metadata.setEncounterStartToDate( encounterStartToDate.getValue().getTime() );
+            }
+        } );
+
+        encounterEndFromDate.setValue( metadata.getEncounterEndFromDate() > 0 ? new Date( metadata.getEncounterEndFromDate() ) : null );
+        encounterEndFromDate.addValueChangeHandler( new ValueChangeHandler<Date>() {
+            @Override
+            public void onValueChange( ValueChangeEvent<Date> event ) {
+                metadata.setEncounterEndFromDate( encounterEndFromDate.getValue().getTime() );
+            }
+        } );
+        encounterEndFromDate.addClearDateHandler( new ClearDateHandler() {
+            @Override
+            public void onClearDate( ClearDateEvent evt ) {
+                metadata.setEncounterEndFromDate( 0L );
+            }
+        } );
+
+        encounterEndToDate.setValue( metadata.getEncounterEndToDate() < Long.MAX_VALUE ? new Date( metadata.getEncounterEndToDate() ) : null );
+        encounterEndToDate.addClearDateHandler( new ClearDateHandler() {
+            @Override
+            public void onClearDate( ClearDateEvent evt ) {
+                metadata.setEncounterEndToDate( Long.MAX_VALUE );
+            }
+        } );
+        encounterEndToDate.addValueChangeHandler( new ValueChangeHandler<Date>() {
+            @Override
+            public void onValueChange( ValueChangeEvent<Date> event ) {
+                metadata.setEncounterEndToDate( encounterEndToDate.getValue().getTime() );
+            }
+        } );
+
+        episodeOfCareStartFromDate.setValue( metadata.getEpisodeOfCareStartFromDate() > 0 ? new Date( metadata.getEpisodeOfCareStartFromDate() ) : null );
+        episodeOfCareStartFromDate.addValueChangeHandler( new ValueChangeHandler<Date>() {
+            @Override
+            public void onValueChange( ValueChangeEvent<Date> event ) {
+                metadata.setEpisodeOfCareStartFromDate( episodeOfCareStartFromDate.getValue().getTime() );
+            }
+        } );
+        episodeOfCareStartFromDate.addClearDateHandler( new ClearDateHandler() {
+            @Override
+            public void onClearDate( ClearDateEvent evt ) {
+                metadata.setEpisodeOfCareStartFromDate( 0L );
+            }
+        } );
+
+        episodeOfCareStartToDate.setValue( metadata.getEpisodeOfCareStartToDate() < Long.MAX_VALUE ? new Date( metadata.getEpisodeOfCareStartToDate() ) : null );
+        episodeOfCareStartToDate.addClearDateHandler( new ClearDateHandler() {
+            @Override
+            public void onClearDate( ClearDateEvent evt ) {
+                metadata.setEpisodeOfCareStartToDate( Long.MAX_VALUE );
+            }
+        } );
+        episodeOfCareStartToDate.addValueChangeHandler( new ValueChangeHandler<Date>() {
+            @Override
+            public void onValueChange( ValueChangeEvent<Date> event ) {
+                metadata.setEpisodeOfCareStartToDate( episodeOfCareStartToDate.getValue().getTime() );
+            }
+        } );
+
+        /*
         isDraft.setValue( metadata.isDraft() );
         isDraft.addClickHandler( new ClickHandler() {
             @Override
@@ -235,6 +338,31 @@ public class MetadataWidget
             public void onClick( ClickEvent event ) {
                 boolean prod = inProduction.getValue();
                 metadata.setInProduction( prod );
+            }
+        } );
+        */
+
+        isValidForLPRReports.setValue( metadata.isValidForLPRReports() );
+        isValidForLPRReports.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                metadata.setValidForLPRReports( isValidForLPRReports.getValue() );
+            }
+        } );
+
+        isValidForDUSASAbroadReports.setValue( metadata.isValidForDUSASAbroadReports() );
+        isValidForDUSASAbroadReports.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                metadata.setValidForDUSASAbroadReports( isValidForDUSASAbroadReports.getValue() );
+            }
+        } );
+
+        isValidForDUSASSpecialityReports.setValue( metadata.isValidForDUSASSpecialityReports() );
+        isValidForDUSASSpecialityReports.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                metadata.setValidForDUSASSpecialityReports( isValidForDUSASSpecialityReports.getValue() );
             }
         } );
 
@@ -273,40 +401,29 @@ public class MetadataWidget
     }
 
     private void initComponents() {
-        String[] ruleGroups = new String[]{""
-                , "LPR.MOBST"
-                , "LPR.ULYKK"
-                , "FIXED.LPR.SKSKO"
-                , "LPR.STEDF"
-                , "LPR.OKOMB"
-                , "FIXED.LPR.PASSV"
-                , "LPR.INDUD"
-                , "FIXED.DUSAS.SPEC"
-                , "LPR.INDUD/SKSKO/MOBST"
-                , "LPR.PSYKI"
-                , "FIXED.,VENTE"
-                , "FIXED.LPR.OPERA"
-                , "FIXED.LPR.BOBST"
-                , "LPR.INDUD/BESØG"
-                , "LPR.INDUD/SKSKO"
-                , "LPR.BESØG"
-                , "LPR.SKSKO"
-                , "LPR.INDUD/PASSV"
-                , "LPR.PATIENT"
-                , "LPR.PASSV"
-                , "FIXED.LPR.MOBST"
-                , "FIXED.LPR.DIAGN"
-                , "FIXED.LPR.STEDF"
-                , "FIXED.LPR.OKOMB"
-                , "LPR.INDUD/VENTE"
-                , "LPR.VENTE"
-                , "LPR.OPERA"
-                , "DUSAS"
-                , "FIXED.LPR.INDUD"
-                , "LPR.BOBST"
-                , "DUSAS.SPEC"
-                , "FIXED.LPR.PSYKI"
-                , "LPR.Psykiatri"};
+        String[] ruleGroups = new String[]{
+                "",
+                "MOBST",
+                "ULYKK",
+                "STEDF",
+                "OKOMB",
+                "INDUD",
+                "INDUD/SKSKO/MOBST",
+                "PSYKI",
+                "INDUD/BESØG",
+                "INDUD/SKSKO",
+                "BESØG",
+                "SKSKO",
+                "INDUD/PASSV",
+                "PATIENT",
+                "PASSV",
+                "INDUD/VENTE",
+                "VENTE",
+                "OPERA",
+                "DUSAS",
+                "BOBST",
+                "DUSAS.SPEC",
+                "Psykiatri"};
 
         for ( String sRuleGroup : ruleGroups ) {
             ruleGroup.addItem( sRuleGroup, sRuleGroup );
@@ -332,8 +449,8 @@ public class MetadataWidget
     }
 
     public void setLockStatus( final LockInfo lockInfo ) {
-        lockedBy.setText( getLockStatusText( lockInfo ) );
-        maybeShowForceUnlockButton( lockInfo );
+//        lockedBy.setText( getLockStatusText( lockInfo ) );
+//        maybeShowForceUnlockButton( lockInfo );
     }
 
     String getLockStatusText( final LockInfo lockInfo ) {
@@ -353,6 +470,7 @@ public class MetadataWidget
         return lockStatusText;
     }
 
+/*
     private void maybeShowForceUnlockButton( final LockInfo lockInfo ) {
         final Image unlockImage = new Image( ImageResources.INSTANCE.unlock() );
         unlock.setHTML( "<span>" + unlockImage.toString() + " " + unlock.getText() + "</span>" );
@@ -360,6 +478,7 @@ public class MetadataWidget
         unlock.setVisible( lockInfo.isLocked() );
         unlock.setEnabled( true );
     }
+*/
 
     @Deprecated
     public Metadata getContent() {
@@ -377,9 +496,10 @@ public class MetadataWidget
     }
 
     public void setNote( String text ) {
-        note.setText( text );
+//        note.setText( text );
     }
 
+/*
     @UiHandler("unlock")
     public void onForceUnlock( ClickEvent e ) {
         final YesNoCancelPopup yesNoCancelPopup =
@@ -402,5 +522,6 @@ public class MetadataWidget
         yesNoCancelPopup.setClosable( false );
         yesNoCancelPopup.show();
     }
+*/
 }
 

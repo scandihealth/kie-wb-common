@@ -16,7 +16,6 @@
 
 package org.kie.workbench.common.screens.search.client;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,18 +45,17 @@ import org.gwtbootstrap3.client.ui.PanelGroup;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
-import org.gwtbootstrap3.extras.typeahead.client.base.StringDataset;
-import org.gwtbootstrap3.extras.typeahead.client.ui.Typeahead;
 import org.kie.workbench.common.screens.search.client.resources.i18n.Constants;
 import org.kie.workbench.common.screens.search.client.widgets.SearchResultTable;
 import org.kie.workbench.common.screens.search.model.QueryMetadataPageRequest;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.workbench.type.ClientResourceType;
 import org.uberfire.client.workbench.type.ClientTypeRegistry;
 import org.uberfire.ext.widgets.common.client.common.DatePicker;
 import org.uberfire.ext.widgets.common.client.common.NumericLongTextBox;
+
+import static org.guvnor.common.services.shared.metadata.model.LprMetadataConsts.*;
 
 @Dependent
 @WorkbenchScreen(identifier = "FindForm")
@@ -85,7 +83,7 @@ public class FindForm
     Form form;
 
     @UiField
-    NumericLongTextBox errorNumberNumericTextBox;
+    TextBox errorNumberTextBox;
 
     @UiFactory
     NumericLongTextBox constructErrorNumberNumericTextBox() {
@@ -95,11 +93,22 @@ public class FindForm
     @UiField
     TextBox errorTextTextBox;
 
+/*
     @UiField
     CheckBox inProduction;
 
     @UiField
     CheckBox isDraft;
+*/
+
+    @UiField
+    CheckBox isValidForLPRReports;
+
+    @UiField
+    CheckBox isValidForDUSASAbroadReports;
+
+    @UiField
+    CheckBox isValidForDUSASSpecialityReports;
 
     @UiField
     ListBox ruleGroupListBox;
@@ -108,31 +117,40 @@ public class FindForm
     ListBox errorTypeListBox;
 
     @UiField
-    DatePicker ruleValidDate;
+    DatePicker reportReceivedDate;
 
     @UiField
-    TextBox sourceTextBox;
+    DatePicker encounterStartDate;
+
+    @UiField
+    DatePicker encounterEndDate;
+
+    @UiField
+    DatePicker episodeOfCareStartDate;
+
+//    @UiField
+//    TextBox sourceTextBox;
 
     @UiField
     TextBox createdByTextBox;
 
-    @UiField
-    TextBox descriptionByTextBox;
-
-    @UiField
-    Typeahead formatTypeahead;
-
-    @UiField
-    TextBox subjectTextBox;
-
-    @UiField
-    TextBox typeTextBox;
+//    @UiField
+//    TextBox descriptionByTextBox;
+//
+//    @UiField
+//    Typeahead formatTypeahead;
+//
+//    @UiField
+//    TextBox subjectTextBox;
+//
+//    @UiField
+//    TextBox typeTextBox;
 
     @UiField
     TextBox lastModifiedByTextBox;
 
-    @UiField
-    TextBox externalLinkTextBox;
+//    @UiField
+//    TextBox externalLinkTextBox;
 
     @UiField
     TextBox checkinCommentTextBox;
@@ -181,51 +199,42 @@ public class FindForm
         createdBefore.setFormat( ApplicationPreferences.getDroolsDateFormat() );
         lastModifiedAfter.setFormat( ApplicationPreferences.getDroolsDateFormat() );
         lastModifiedBefore.setFormat( ApplicationPreferences.getDroolsDateFormat() );
-        ruleValidDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        reportReceivedDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        encounterStartDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        encounterEndDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
+        episodeOfCareStartDate.setFormat( ApplicationPreferences.getDroolsDateFormat() );
 
         formGroup.setStyleName( null );
 
-        formatTypeahead.setDatasets( new StringDataset( new ArrayList<String>() {{
-            for ( final ClientResourceType resourceType : clientTypeRegistry.getRegisteredTypes() ) {
-                add( resourceType.getShortName() );
-            }
-        }} ) );
+//        formatTypeahead.setDatasets( new StringDataset( new ArrayList<String>() {{
+//            for ( final ClientResourceType resourceType : clientTypeRegistry.getRegisteredTypes() ) {
+//                add( resourceType.getShortName() );
+//            }
+//        }} ) );
 
         String[] ruleGroups = new String[]{
-                ""
-                , "LPR.MOBST"
-                , "LPR.ULYKK"
-                , "FIXED.LPR.SKSKO"
-                , "LPR.STEDF"
-                , "LPR.OKOMB"
-                , "FIXED.LPR.PASSV"
-                , "LPR.INDUD"
-                , "FIXED.DUSAS.SPEC"
-                , "LPR.INDUD/SKSKO/MOBST"
-                , "LPR.PSYKI"
-                , "FIXED.,VENTE"
-                , "FIXED.LPR.OPERA"
-                , "FIXED.LPR.BOBST"
-                , "LPR.INDUD/BESØG"
-                , "LPR.INDUD/SKSKO"
-                , "LPR.BESØG"
-                , "LPR.SKSKO"
-                , "LPR.INDUD/PASSV"
-                , "LPR.PATIENT"
-                , "LPR.PASSV"
-                , "FIXED.LPR.MOBST"
-                , "FIXED.LPR.DIAGN"
-                , "FIXED.LPR.STEDF"
-                , "FIXED.LPR.OKOMB"
-                , "LPR.INDUD/VENTE"
-                , "LPR.VENTE"
-                , "LPR.OPERA"
-                , "DUSAS"
-                , "FIXED.LPR.INDUD"
-                , "LPR.BOBST"
-                , "DUSAS.SPEC"
-                , "FIXED.LPR.PSYKI"
-                , "LPR.Psykiatri"};
+                "",
+                "MOBST",
+                "ULYKK",
+                "STEDF",
+                "OKOMB",
+                "INDUD",
+                "INDUD/SKSKO/MOBST",
+                "PSYKI",
+                "INDUD/BESØG",
+                "INDUD/SKSKO",
+                "BESØG",
+                "SKSKO",
+                "INDUD/PASSV",
+                "PATIENT",
+                "PASSV",
+                "INDUD/VENTE",
+                "VENTE",
+                "OPERA",
+                "DUSAS",
+                "BOBST",
+                "DUSAS.SPEC",
+                "Psykiatri"};
 
         for ( String sRuleGroup : ruleGroups ) {
             ruleGroupListBox.addItem( sRuleGroup );
@@ -241,7 +250,6 @@ public class FindForm
     @UiHandler("clear")
     public void onClearClick( final ClickEvent e ) {
         form.reset();
-        errorNumberNumericTextBox.setValue( "" ); //necessary because uberfire extensions puts in a "0" when resetting this input
     }
 
     @UiHandler("search")
@@ -250,69 +258,93 @@ public class FindForm
         formGroup.setValidationState( ValidationState.NONE );
         final Map<String, Object> metadata = new HashMap<String, Object>();
 
-        String errorNumberValue = errorNumberNumericTextBox.getValue().trim();
-        if ( !errorNumberValue.isEmpty() && errorNumberNumericTextBox.isValidValue( errorNumberValue, true ) ) {
-            if ( Long.parseLong( errorNumberValue ) > 0 ) {
-                metadata.put( "lprmeta.errorNumber", errorNumberValue );
-            }
+        String errorNumberValue = errorNumberTextBox.getValue().trim();
+        if ( !errorNumberValue.isEmpty() ) {
+            metadata.put( ERROR_NUMBER, errorNumberValue );
         }
-        if ( !errorTextTextBox.getText().trim().isEmpty() ) {
-            metadata.put( "lprmeta.errorText", errorTextTextBox.getText().trim() );
+        String errorText = errorTextTextBox.getText().trim();
+        if ( !errorText.isEmpty() ) {
+            String[] words = errorText.split( "\\s+" );
+            metadata.put( ERROR_TEXT, words );
         }
 
+/*
         if ( Boolean.TRUE.equals( inProduction.getValue() ) ) {
-            metadata.put( "lprmeta.inproduction", inProduction.getValue() );
+            metadata.put( IN_PRODUCTION, inProduction.getValue() );
         }
 
         if ( Boolean.TRUE.equals( isDraft.getValue() ) ) {
-            metadata.put( "lprmeta.isdraft", isDraft.getValue() );
+            metadata.put( IS_DRAFT, isDraft.getValue() );
+        }
+*/
+
+        if ( Boolean.TRUE.equals( isValidForLPRReports.getValue() ) ) {
+            metadata.put( IS_VALID_FOR_LPR_REPORTS, isValidForLPRReports.getValue() );
+        }
+        if ( Boolean.TRUE.equals( isValidForDUSASAbroadReports.getValue() ) ) {
+            metadata.put( IS_VALID_FOR_DUSAS_ABROAD_REPORTS, isValidForDUSASAbroadReports.getValue() );
+        }
+        if ( Boolean.TRUE.equals( isValidForDUSASSpecialityReports.getValue() ) ) {
+            metadata.put( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS, isValidForDUSASSpecialityReports.getValue() );
         }
 
         if ( !ruleGroupListBox.getSelectedValue().trim().isEmpty() ) {
-            metadata.put( "lprmeta.ruleGroup", ruleGroupListBox.getSelectedItemText().trim() );
+            metadata.put( RULE_GROUP, ruleGroupListBox.getSelectedItemText().trim() );
         }
 
-        String errorTypeSelectedValue = errorTypeListBox.getSelectedValue();
-        if ( LprErrorType.valueOf( errorTypeSelectedValue ) != LprErrorType.NONE && !errorTypeSelectedValue.trim().isEmpty() ) {
-            metadata.put( "lprmeta.errorType", errorTypeSelectedValue );
+        LprErrorType errorType = LprErrorType.valueOf( errorTypeListBox.getSelectedValue() );
+        if ( errorType != LprErrorType.NONE ) {
+            metadata.put( ERROR_TYPE, errorType );
         }
 
-        if ( ruleValidDate.getValue() != null ) {
-            metadata.put( "lprmeta.ruleValidDate", ruleValidDate.getValue() );
+        if ( reportReceivedDate.getValue() != null ) {
+            metadata.put( SEARCH_REPORT_RECEIVED_DATE, reportReceivedDate.getValue() );
         }
 
-        if ( !sourceTextBox.getText().trim().isEmpty() ) {
-            metadata.put( "dcore.source[0]", sourceTextBox.getText().trim() );
+        if ( encounterStartDate.getValue() != null ) {
+            metadata.put( SEARCH_ENCOUNTER_START_DATE, encounterStartDate.getValue() );
         }
 
-        if ( !createdByTextBox.getText().trim().isEmpty() ) {
-            metadata.put( "createdBy", createdByTextBox.getText().trim() );
+        if ( encounterEndDate.getValue() != null ) {
+            metadata.put( SEARCH_ENCOUNTER_END_DATE, encounterEndDate.getValue() );
         }
 
-        if ( !descriptionByTextBox.getText().trim().isEmpty() ) {
-            metadata.put( "dcore.description[0]", descriptionByTextBox.getText().trim() );
+        if ( episodeOfCareStartDate.getValue() != null ) {
+            metadata.put( SEARCH_EPISODE_OF_CARE_START_DATE, episodeOfCareStartDate.getValue() );
         }
 
-        if ( !formatTypeahead.getText().trim().isEmpty() ) {
-            final String pattern = clientTypeRegistry.resolveWildcardPattern( formatTypeahead.getText().trim() );
-            metadata.put( "filename", pattern );
-        }
-
-        if ( !subjectTextBox.getText().trim().isEmpty() ) {
-            metadata.put( "dcore.subject[0]", subjectTextBox.getText().trim() );
-        }
-
-        if ( !typeTextBox.getText().trim().isEmpty() ) {
-            metadata.put( "dcore.type[0]", typeTextBox.getText().trim() );
-        }
+//        if ( !sourceTextBox.getText().trim().isEmpty() ) {
+//            metadata.put( "dcore.source[0]", sourceTextBox.getText().trim() );
+//        }
+//
+//        if ( !createdByTextBox.getText().trim().isEmpty() ) {
+//            metadata.put( "createdBy", createdByTextBox.getText().trim() );
+//        }
+//
+//        if ( !descriptionByTextBox.getText().trim().isEmpty() ) {
+//            metadata.put( "dcore.description[0]", descriptionByTextBox.getText().trim() );
+//        }
+//
+//        if ( !formatTypeahead.getText().trim().isEmpty() ) {
+//            final String pattern = clientTypeRegistry.resolveWildcardPattern( formatTypeahead.getText().trim() );
+//            metadata.put( "filename", pattern );
+//        }
+//
+//        if ( !subjectTextBox.getText().trim().isEmpty() ) {
+//            metadata.put( "dcore.subject[0]", subjectTextBox.getText().trim() );
+//        }
+//
+//        if ( !typeTextBox.getText().trim().isEmpty() ) {
+//            metadata.put( "dcore.type[0]", typeTextBox.getText().trim() );
+//        }
 
         if ( !lastModifiedByTextBox.getText().trim().isEmpty() ) {
             metadata.put( "lastModifiedBy", lastModifiedByTextBox.getText().trim() );
         }
 
-        if ( !externalLinkTextBox.getText().trim().isEmpty() ) {
-            metadata.put( "dcore.relation[0]", externalLinkTextBox.getText().trim() );
-        }
+//        if ( !externalLinkTextBox.getText().trim().isEmpty() ) {
+//            metadata.put( "dcore.relation[0]", externalLinkTextBox.getText().trim() );
+//        }
 
         if ( !checkinCommentTextBox.getText().trim().isEmpty() ) {
             metadata.put( "checkinComment", checkinCommentTextBox.getText().trim() );
@@ -340,12 +372,13 @@ public class FindForm
         if ( metadata.size() == 0 && !hasSomeDateValue ) {
             //We use a 'hidden' lastModifiedBefore criteria that returns all rules if the user has not selected any criteria
             lastModifiedBeforeValue = new Date();
-            CalendarUtil.addDaysToDate( new Date(), 1 );        }
+            CalendarUtil.addDaysToDate( new Date(), 1 );
+        }
 
         final SearchResultTable queryTable = new SearchResultTable( new QueryMetadataPageRequest( metadata,
-                                                                                                  createdAfter.getValue(), createdBefore.getValue(),
-                                                                                                  lastModifiedAfter.getValue(), lastModifiedBeforeValue,
-                                                                                                  0, null ) );
+                createdAfter.getValue(), createdBefore.getValue(),
+                lastModifiedAfter.getValue(), lastModifiedBeforeValue,
+                0, null ) );
         simplePanel.clear();
 
         simplePanel.add( queryTable );

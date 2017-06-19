@@ -56,7 +56,7 @@ public interface Constants
 
     String ErrorTypeMetaDataTip();
 
-    String RuleValidDate();
+    String ReportReceivedDate();
 
     String Source();
 
@@ -122,5 +122,17 @@ public interface Constants
 
     String DraftMetaDataTip();
 
-    String RuleValidDateTip();
+    String IsValidForLPRReportsMetaData();
+
+    String IsValidForDUSASAbroadReportsMetaData();
+
+    String IsValidForDUSASSpecialityReportsMetaData();
+
+    String EncounterStartDate();
+
+    String EncounterEndDate();
+
+    String EpisodeOfCareStartDate();
+
+    String IsValidForMetaData();
 }

@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import org.guvnor.common.services.shared.metadata.model.LprErrorType;
+import org.guvnor.common.services.shared.metadata.model.LprRuleType;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.Form;
@@ -93,13 +94,11 @@ public class FindForm
     @UiField
     TextBox errorTextTextBox;
 
-/*
     @UiField
     CheckBox inProduction;
 
     @UiField
     CheckBox isDraft;
-*/
 
     @UiField
     CheckBox isValidForLPRReports;
@@ -258,6 +257,7 @@ public class FindForm
         formGroup.setValidationState( ValidationState.NONE );
         final Map<String, Object> metadata = new HashMap<String, Object>();
 
+        metadata.put( RULE_TYPE, LprRuleType.REPORT_VALIDATION ); //only find lpr rules
         String errorNumberValue = errorNumberTextBox.getValue().trim();
         if ( !errorNumberValue.isEmpty() ) {
             metadata.put( ERROR_NUMBER, errorNumberValue );
@@ -268,7 +268,6 @@ public class FindForm
             metadata.put( ERROR_TEXT, words );
         }
 
-/*
         if ( Boolean.TRUE.equals( inProduction.getValue() ) ) {
             metadata.put( IN_PRODUCTION, inProduction.getValue() );
         }
@@ -276,7 +275,6 @@ public class FindForm
         if ( Boolean.TRUE.equals( isDraft.getValue() ) ) {
             metadata.put( IS_DRAFT, isDraft.getValue() );
         }
-*/
 
         if ( Boolean.TRUE.equals( isValidForLPRReports.getValue() ) ) {
             metadata.put( IS_VALID_FOR_LPR_REPORTS, isValidForLPRReports.getValue() );

@@ -114,13 +114,11 @@ public interface Constants
 
     String AssetSearch();
 
-    String ProductionMetaDataTip();
+    String RuleStatusMetaData();
 
     String ProductionMetaData();
 
     String DraftMetaData();
-
-    String DraftMetaDataTip();
 
     String IsValidForLPRReportsMetaData();
 

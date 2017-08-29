@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.shared.metadata.model.LprErrorType;
+import org.guvnor.common.services.shared.metadata.model.LprRuleGroup;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.TextArea;
@@ -383,11 +384,11 @@ public class MetadataWidget
             }
         } );
 
-        selectItemInListBox( ruleGroup, metadata.getRuleGroup() );
+        selectItemInListBox( ruleGroup, metadata.getRuleGroup().toString() );
         ruleGroup.addChangeHandler( new ChangeHandler() {
             @Override
             public void onChange( ChangeEvent changeEvent ) {
-                metadata.setRuleGroup( ruleGroup.getSelectedValue() );
+                metadata.setRuleGroup( LprRuleGroup.valueOf( ruleGroup.getSelectedValue() ) );
             }
         } );
 
@@ -401,32 +402,8 @@ public class MetadataWidget
     }
 
     private void initComponents() {
-        String[] ruleGroups = new String[]{
-                "",
-                "MOBST",
-                "ULYKK",
-                "STEDF",
-                "OKOMB",
-                "INDUD",
-                "INDUD/SKSKO/MOBST",
-                "PSYKI",
-                "INDUD/BESØG",
-                "INDUD/SKSKO",
-                "BESØG",
-                "SKSKO",
-                "INDUD/PASSV",
-                "PATIENT",
-                "PASSV",
-                "INDUD/VENTE",
-                "VENTE",
-                "OPERA",
-                "DUSAS",
-                "BOBST",
-                "DUSAS.SPEC",
-                "Psykiatri"};
-
-        for ( String sRuleGroup : ruleGroups ) {
-            ruleGroup.addItem( sRuleGroup, sRuleGroup );
+        for ( LprRuleGroup ruleGroup : LprRuleGroup.values() ) {
+            this.ruleGroup.addItem( ruleGroup.getDisplayText(), ruleGroup.toString() );
         }
         ruleGroup.setSelectedIndex( 0 );
 

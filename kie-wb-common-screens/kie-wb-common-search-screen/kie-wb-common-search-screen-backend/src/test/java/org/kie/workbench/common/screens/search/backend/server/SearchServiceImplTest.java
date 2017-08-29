@@ -28,6 +28,8 @@ import org.guvnor.common.services.backend.metadata.LprMetaAttributesMock;
 import org.guvnor.common.services.backend.metadata.VersionAttributesMock;
 import org.guvnor.common.services.backend.metadata.attribute.LprMetaView;
 import org.guvnor.common.services.backend.metadata.attribute.OtherMetaView;
+import org.guvnor.common.services.shared.metadata.model.LprErrorType;
+import org.guvnor.common.services.shared.metadata.model.LprRuleGroup;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.impl.OrganizationalUnitImpl;
@@ -883,17 +885,17 @@ public class SearchServiceImplTest {
         final Map<String, Object> searchAttrs = new HashMap<String, Object>() {{
             String wildCardErrorNumber = "?" + lprMock.errorNumber().toString().substring( 1 );
             String[] errorTextWords = lprMock.errorText().split( "\\s+" );
-            put( SEARCH_REPORT_RECEIVED_DATE, new Date(lprMock.reportReceivedFromDate()));
-            put( SEARCH_ENCOUNTER_START_DATE, new Date(lprMock.encounterStartToDate()));
-            put( SEARCH_ENCOUNTER_END_DATE, new Date(lprMock.encounterEndFromDate()));
-            put( SEARCH_EPISODE_OF_CARE_START_DATE, new Date(lprMock.episodeOfCareStartFromDate()));
+            put( SEARCH_REPORT_RECEIVED_DATE, new Date( lprMock.reportReceivedFromDate() ) );
+            put( SEARCH_ENCOUNTER_START_DATE, new Date( lprMock.encounterStartToDate() ) );
+            put( SEARCH_ENCOUNTER_END_DATE, new Date( lprMock.encounterEndFromDate() ) );
+            put( SEARCH_EPISODE_OF_CARE_START_DATE, new Date( lprMock.episodeOfCareStartFromDate() ) );
             put( ERROR_NUMBER, wildCardErrorNumber );
-            put( ERROR_TEXT, errorTextWords);
-            put( ERROR_TYPE, lprMock.errorType());
-            put( RULE_GROUP, lprMock.ruleGroup());
-            put( IS_VALID_FOR_LPR_REPORTS, true);
-            put( IS_VALID_FOR_DUSAS_ABROAD_REPORTS, true);
-            put( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS, true);
+            put( ERROR_TEXT, errorTextWords );
+            put( ERROR_TYPE, lprMock.errorType() );
+            put( RULE_GROUP, lprMock.ruleGroup() );
+            put( IS_VALID_FOR_LPR_REPORTS, true );
+            put( IS_VALID_FOR_DUSAS_ABROAD_REPORTS, true );
+            put( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS, true );
         }};
 
         final QueryMetadataPageRequest pageRequest = new QueryMetadataPageRequest( searchAttrs,
@@ -952,13 +954,13 @@ public class SearchServiceImplTest {
                 results.getPageRowList().get( 0 ).getPath().getFileName() );
 
         ArgumentCaptor<Map> attrsArgumentCaptor = ArgumentCaptor.forClass( Map.class );
-        verify( ioSearchService).searchByAttrsHits( attrsArgumentCaptor.capture(),Matchers.<Path>anyVararg() );
+        verify( ioSearchService ).searchByAttrsHits( attrsArgumentCaptor.capture(), Matchers.<Path>anyVararg() );
         Map capturedArgument = attrsArgumentCaptor.getValue();
         //These should be passed through, as is
         assertEquals( searchAttrs.get( ERROR_NUMBER ), capturedArgument.get( ERROR_NUMBER ) );
         assertEquals( searchAttrs.get( ERROR_TEXT ), capturedArgument.get( ERROR_TEXT ) );
-        assertEquals( searchAttrs.get( ERROR_TYPE ), capturedArgument.get( ERROR_TYPE ) );
-        assertEquals( searchAttrs.get( RULE_GROUP ), capturedArgument.get( RULE_GROUP ) );
+        assertEquals( (( LprErrorType ) searchAttrs.get( ERROR_TYPE )).getId(), capturedArgument.get( ERROR_TYPE ) );
+        assertEquals( (( LprRuleGroup ) searchAttrs.get( RULE_GROUP )).getId(), capturedArgument.get( RULE_GROUP ) );
         assertEquals( searchAttrs.get( IS_VALID_FOR_LPR_REPORTS ), capturedArgument.get( IS_VALID_FOR_LPR_REPORTS ) );
         assertEquals( searchAttrs.get( IS_VALID_FOR_DUSAS_ABROAD_REPORTS ), capturedArgument.get( IS_VALID_FOR_DUSAS_ABROAD_REPORTS ) );
         assertEquals( searchAttrs.get( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS ), capturedArgument.get( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS ) );
@@ -966,34 +968,34 @@ public class SearchServiceImplTest {
         //each search date should be transformed into two date ranges
         Date searchDate = ( Date ) searchAttrs.get( SEARCH_REPORT_RECEIVED_DATE );
         DateRange dateRange = ( DateRange ) capturedArgument.get( REPORT_RECEIVED_FROM_DATE );
-        assertTrue(dateRange.before().equals( searchDate ));
-        assertTrue(dateRange.after().equals( new Date(0L) ));
+        assertTrue( dateRange.before().equals( searchDate ) );
+        assertTrue( dateRange.after().equals( new Date( 0L ) ) );
         dateRange = ( DateRange ) capturedArgument.get( REPORT_RECEIVED_TO_DATE );
-        assertTrue(dateRange.before().equals( new Date(Long.MAX_VALUE) ));
-        assertTrue(dateRange.after().equals( searchDate ));
+        assertTrue( dateRange.before().equals( new Date( Long.MAX_VALUE ) ) );
+        assertTrue( dateRange.after().equals( searchDate ) );
 
         searchDate = ( Date ) searchAttrs.get( SEARCH_ENCOUNTER_START_DATE );
         dateRange = ( DateRange ) capturedArgument.get( ENCOUNTER_START_FROM_DATE );
-        assertTrue(dateRange.before().equals( searchDate ));
-        assertTrue(dateRange.after().equals( new Date(0L) ));
+        assertTrue( dateRange.before().equals( searchDate ) );
+        assertTrue( dateRange.after().equals( new Date( 0L ) ) );
         dateRange = ( DateRange ) capturedArgument.get( ENCOUNTER_START_TO_DATE );
-        assertTrue(dateRange.before().equals( new Date(Long.MAX_VALUE) ));
-        assertTrue(dateRange.after().equals( searchDate ));
+        assertTrue( dateRange.before().equals( new Date( Long.MAX_VALUE ) ) );
+        assertTrue( dateRange.after().equals( searchDate ) );
 
         searchDate = ( Date ) searchAttrs.get( SEARCH_ENCOUNTER_END_DATE );
         dateRange = ( DateRange ) capturedArgument.get( ENCOUNTER_END_FROM_DATE );
-        assertTrue(dateRange.before().equals( searchDate ));
-        assertTrue(dateRange.after().equals( new Date(0L) ));
+        assertTrue( dateRange.before().equals( searchDate ) );
+        assertTrue( dateRange.after().equals( new Date( 0L ) ) );
         dateRange = ( DateRange ) capturedArgument.get( ENCOUNTER_END_TO_DATE );
-        assertTrue(dateRange.before().equals( new Date(Long.MAX_VALUE) ));
-        assertTrue(dateRange.after().equals( searchDate ));
+        assertTrue( dateRange.before().equals( new Date( Long.MAX_VALUE ) ) );
+        assertTrue( dateRange.after().equals( searchDate ) );
 
         searchDate = ( Date ) searchAttrs.get( SEARCH_EPISODE_OF_CARE_START_DATE );
         dateRange = ( DateRange ) capturedArgument.get( EPISODE_OF_CARE_START_FROM_DATE );
-        assertTrue(dateRange.before().equals( searchDate ));
-        assertTrue(dateRange.after().equals( new Date(0L) ));
+        assertTrue( dateRange.before().equals( searchDate ) );
+        assertTrue( dateRange.after().equals( new Date( 0L ) ) );
         dateRange = ( DateRange ) capturedArgument.get( EPISODE_OF_CARE_START_TO_DATE );
-        assertTrue(dateRange.before().equals( new Date(Long.MAX_VALUE) ));
-        assertTrue(dateRange.after().equals( searchDate ));
+        assertTrue( dateRange.before().equals( new Date( Long.MAX_VALUE ) ) );
+        assertTrue( dateRange.after().equals( searchDate ) );
     }
 }

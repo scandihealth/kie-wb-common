@@ -11,7 +11,7 @@ import org.guvnor.common.services.backend.metadata.attribute.LprMetaAttributes;
 import org.guvnor.common.services.backend.metadata.attribute.LprMetaAttributesUtil;
 import org.guvnor.common.services.shared.metadata.model.LprErrorType;
 import org.guvnor.common.services.shared.metadata.model.LprMetadataConsts;
-import org.guvnor.common.services.shared.metadata.model.LprRuleType;
+import org.guvnor.common.services.shared.metadata.model.LprRuleGroup;
 import org.junit.Before;
 import org.junit.Test;
 import org.uberfire.ext.metadata.model.KObject;
@@ -42,18 +42,17 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         final Path path2 = getBasePath( REPO_NAME ).resolve( "indexedFile02.txt" );
         final Path path3 = getBasePath( REPO_NAME ).resolve( "indexedFile03.txt" );
 
-        //A rule with just default Mock attributes
+        //A rule with just defaul1t Mock attributes
         LprMetaAttributesMock rule1 = new LprMetaAttributesMock();
         Map<String, Object> attrs1 = getAttributesMap( rule1 );
         ioService().write( path1, "Rule1", attrs1 );
 
         //A rule with completely different attributes
         LprMetaAttributesMock rule2 = new LprMetaAttributesMock();
-        rule2.ruleType = LprRuleType.REPORT_VALIDATION;
         rule2.errorNumber = 100L;
         rule2.errorText = "other error text";
         rule2.errorType = LprErrorType.WARNING;
-        rule2.ruleGroup = "otherGroup";
+        rule2.ruleGroup = LprRuleGroup.PSYKI;
         rule2.reportReceivedFromDate = 150L;
         rule2.reportReceivedToDate = 250L;
         rule2.encounterStartFromDate = 0L;
@@ -336,32 +335,29 @@ public class SearchLprMetadataTest extends BaseIndexTest {
             verifyAll( results, LprMetadataConsts.EPISODE_OF_CARE_START_TO_DATE, "100" );
         }
 
-        //todo search by error type or rule group is not working yet..
         //error type search
         searchAttributes = new HashMap<String, Object>() {{
-            put( LprMetadataConsts.ERROR_TYPE, LprErrorType.ERROR );
+            put( LprMetadataConsts.ERROR_TYPE, LprErrorType.ERROR.getId() );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
             assertEquals( 1, hits );
             final List<KObject> results = config.getSearchIndex().searchByAttrs( searchAttributes, new IOSearchService.NoOpFilter(), getClusterSegment() );
             assertEquals( 1, results.size() );
-            verifyAll( results, LprMetadataConsts.ERROR_TYPE, LprErrorType.ERROR.name() );
+            verifyAll( results, LprMetadataConsts.ERROR_TYPE, LprErrorType.ERROR.getId() );
             verifyAll( results, LprMetadataConsts.ERROR_NUMBER, "1" );
         }
 
         //rule group search
         searchAttributes = new HashMap<String, Object>() {{
-            put( LprMetadataConsts.RULE_GROUP, "otherGroup" );
+            put( LprMetadataConsts.RULE_GROUP, LprRuleGroup.PSYKI.getId() );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
             assertEquals( 2, hits );
             final List<KObject> results = config.getSearchIndex().searchByAttrs( searchAttributes, new IOSearchService.NoOpFilter(), getClusterSegment() );
             assertEquals( 2, results.size() );
-            verifyAll( results, LprMetadataConsts.RULE_GROUP, "otherGroup" );
-            verifyAll( results, LprMetadataConsts.ERROR_NUMBER, "100" );
-            verifyAll( results, LprMetadataConsts.ERROR_NUMBER, "101" );
+            verifyAll( results, LprMetadataConsts.RULE_GROUP, LprRuleGroup.PSYKI.getId() );
         }
 
     }

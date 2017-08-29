@@ -33,6 +33,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
+import org.guvnor.common.services.shared.metadata.model.LprErrorType;
+import org.guvnor.common.services.shared.metadata.model.LprRuleGroup;
+import org.guvnor.common.services.shared.metadata.model.LprRuleType;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
@@ -150,6 +153,17 @@ public class SearchServiceImpl implements SearchService {
     public PageResponse<SearchPageRow> queryMetadata( final QueryMetadataPageRequest pageRequest ) {
         try {
             final Map<String, Object> attrs = new HashMap<String, Object>( pageRequest.getMetadata() );
+
+            attrs.put( RULE_TYPE, LprRuleType.REPORT_VALIDATION.getId() ); //only find lpr rules
+
+            LprRuleGroup ruleGroup = ( LprRuleGroup ) attrs.get( RULE_GROUP );
+            if( ruleGroup != null ) { //search for enum based on its id
+                attrs.put( RULE_GROUP, ruleGroup.getId() );
+            }
+            LprErrorType errorType = ( LprErrorType ) attrs.get( ERROR_TYPE );
+            if( errorType != null ) { //search for enum based on its id
+                attrs.put( ERROR_TYPE, errorType.getId() );
+            }
 
             Date reportReceivedDate = ( Date ) attrs.remove( SEARCH_REPORT_RECEIVED_DATE );
             if ( reportReceivedDate != null ) {

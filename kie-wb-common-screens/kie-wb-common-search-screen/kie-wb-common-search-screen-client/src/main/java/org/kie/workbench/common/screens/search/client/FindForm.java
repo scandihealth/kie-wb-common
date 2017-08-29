@@ -35,7 +35,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import org.guvnor.common.services.shared.metadata.model.LprErrorType;
-import org.guvnor.common.services.shared.metadata.model.LprRuleType;
+import org.guvnor.common.services.shared.metadata.model.LprRuleGroup;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.Form;
@@ -58,6 +58,7 @@ import org.uberfire.ext.widgets.common.client.common.NumericLongTextBox;
 
 import static org.guvnor.common.services.shared.metadata.model.LprMetadataConsts.*;
 
+//todo write unit tests
 @Dependent
 @WorkbenchScreen(identifier = "FindForm")
 public class FindForm
@@ -211,32 +212,8 @@ public class FindForm
 //            }
 //        }} ) );
 
-        String[] ruleGroups = new String[]{
-                "",
-                "MOBST",
-                "ULYKK",
-                "STEDF",
-                "OKOMB",
-                "INDUD",
-                "INDUD/SKSKO/MOBST",
-                "PSYKI",
-                "INDUD/BESØG",
-                "INDUD/SKSKO",
-                "BESØG",
-                "SKSKO",
-                "INDUD/PASSV",
-                "PATIENT",
-                "PASSV",
-                "INDUD/VENTE",
-                "VENTE",
-                "OPERA",
-                "DUSAS",
-                "BOBST",
-                "DUSAS.SPEC",
-                "Psykiatri"};
-
-        for ( String sRuleGroup : ruleGroups ) {
-            ruleGroupListBox.addItem( sRuleGroup );
+        for ( LprRuleGroup ruleGroup : LprRuleGroup.values() ) {
+            ruleGroupListBox.addItem( ruleGroup.getDisplayText(), ruleGroup.toString() );
         }
         ruleGroupListBox.setSelectedIndex( 0 );
 
@@ -257,7 +234,6 @@ public class FindForm
         formGroup.setValidationState( ValidationState.NONE );
         final Map<String, Object> metadata = new HashMap<String, Object>();
 
-        metadata.put( RULE_TYPE, LprRuleType.REPORT_VALIDATION ); //only find lpr rules
         String errorNumberValue = errorNumberTextBox.getValue().trim();
         if ( !errorNumberValue.isEmpty() ) {
             metadata.put( ERROR_NUMBER, errorNumberValue );
@@ -286,8 +262,9 @@ public class FindForm
             metadata.put( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS, isValidForDUSASSpecialityReports.getValue() );
         }
 
-        if ( !ruleGroupListBox.getSelectedValue().trim().isEmpty() ) {
-            metadata.put( RULE_GROUP, ruleGroupListBox.getSelectedItemText().trim() );
+        LprRuleGroup ruleGroup = LprRuleGroup.valueOf( ruleGroupListBox.getSelectedValue() );
+        if ( ruleGroup != LprRuleGroup.NONE ) {
+            metadata.put( RULE_GROUP, ruleGroup );
         }
 
         LprErrorType errorType = LprErrorType.valueOf( errorTypeListBox.getSelectedValue() );

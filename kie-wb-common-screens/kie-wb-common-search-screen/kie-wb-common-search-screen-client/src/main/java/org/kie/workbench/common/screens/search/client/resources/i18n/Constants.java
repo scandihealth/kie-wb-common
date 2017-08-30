@@ -133,4 +133,6 @@ public interface Constants
     String EpisodeOfCareStartDate();
 
     String IsValidForMetaData();
+
+    String ArchivedMetaData();
 }

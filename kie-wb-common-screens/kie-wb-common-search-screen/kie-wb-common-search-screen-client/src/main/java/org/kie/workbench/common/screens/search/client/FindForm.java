@@ -44,6 +44,7 @@ import org.gwtbootstrap3.client.ui.ListBox;
 import org.gwtbootstrap3.client.ui.PanelCollapse;
 import org.gwtbootstrap3.client.ui.PanelGroup;
 import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.Radio;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.kie.workbench.common.screens.search.client.resources.i18n.Constants;
@@ -96,10 +97,13 @@ public class FindForm
     TextBox errorTextTextBox;
 
     @UiField
-    CheckBox inProduction;
+    Radio isProduction;
 
     @UiField
-    CheckBox isDraft;
+    Radio isDraft;
+
+    @UiField
+    Radio isArchived;
 
     @UiField
     CheckBox isValidForLPRReports;
@@ -244,12 +248,16 @@ public class FindForm
             metadata.put( ERROR_TEXT, words );
         }
 
-        if ( Boolean.TRUE.equals( inProduction.getValue() ) ) {
-            metadata.put( IN_PRODUCTION, inProduction.getValue() );
+        if ( Boolean.TRUE.equals( isProduction.getValue() ) ) {
+            metadata.put( SEARCH_IS_PRODUCTION, isProduction.getValue() );
         }
 
         if ( Boolean.TRUE.equals( isDraft.getValue() ) ) {
-            metadata.put( IS_DRAFT, isDraft.getValue() );
+            metadata.put( SEARCH_IS_DRAFT, isDraft.getValue() );
+        }
+
+        if ( Boolean.TRUE.equals( isArchived.getValue() ) ) {
+            metadata.put( SEARCH_IS_ARCHIVED, isArchived.getValue() );
         }
 
         if ( Boolean.TRUE.equals( isValidForLPRReports.getValue() ) ) {

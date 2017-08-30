@@ -157,32 +157,44 @@ public class SearchServiceImpl implements SearchService {
             attrs.put( RULE_TYPE, LprRuleType.REPORT_VALIDATION.getId() ); //only find lpr rules
 
             LprRuleGroup ruleGroup = ( LprRuleGroup ) attrs.get( RULE_GROUP );
-            if( ruleGroup != null ) { //search for enum based on its id
+            if ( ruleGroup != null ) { //search for enum based on its id
                 attrs.put( RULE_GROUP, ruleGroup.getId() );
             }
             LprErrorType errorType = ( LprErrorType ) attrs.get( ERROR_TYPE );
-            if( errorType != null ) { //search for enum based on its id
+            if ( errorType != null ) { //search for enum based on its id
                 attrs.put( ERROR_TYPE, errorType.getId() );
+            }
+
+            if ( attrs.remove( SEARCH_IS_PRODUCTION ) != null ) { //find all rules that is/was in production and not archived //todo make criteria as radio buttons. These criteria are mutual exclusive
+                attrs.put( PRODUCTION_DATE, toDateRange( new Date( Long.MAX_VALUE ), new Date( 1L ) ) ); //productionDate value of 0 means the rule has never been in production, so we exclude that value
+            }
+
+            if ( attrs.remove( SEARCH_IS_DRAFT ) != null ) { //find all rules that is/was not in production (and since it was not in prod it cannot have been archived)
+                attrs.put( PRODUCTION_DATE, toDateRange( new Date( 0L ), new Date( 0L ) ) ); //productionDate value of 0 means the rule has never been in production, so only search for that value
+            }
+
+            if ( attrs.remove( SEARCH_IS_ARCHIVED ) != null ) { //find all rules that have been archived
+                attrs.put( ARCHIVED_DATE, toDateRange( new Date( Long.MAX_VALUE ), new Date( 1L ) ) ); //archivedDate value of 0 means the rule is not archived, so we exclude that value
             }
 
             Date reportReceivedDate = ( Date ) attrs.remove( SEARCH_REPORT_RECEIVED_DATE );
             if ( reportReceivedDate != null ) {
-                attrs.put( REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date(0L) ) );
+                attrs.put( REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
                 attrs.put( REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
             }
             Date encounterStartDate = ( Date ) attrs.remove( SEARCH_ENCOUNTER_START_DATE );
             if ( encounterStartDate != null ) {
-                attrs.put( ENCOUNTER_START_FROM_DATE, toDateRange( encounterStartDate, new Date(0L) ) );
+                attrs.put( ENCOUNTER_START_FROM_DATE, toDateRange( encounterStartDate, new Date( 0L ) ) );
                 attrs.put( ENCOUNTER_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterStartDate ) );
             }
             Date encounterEndDate = ( Date ) attrs.remove( SEARCH_ENCOUNTER_END_DATE );
             if ( encounterEndDate != null ) {
-                attrs.put( ENCOUNTER_END_FROM_DATE, toDateRange( encounterEndDate, new Date(0L) ) );
+                attrs.put( ENCOUNTER_END_FROM_DATE, toDateRange( encounterEndDate, new Date( 0L ) ) );
                 attrs.put( ENCOUNTER_END_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterEndDate ) );
             }
             Date episodeOfCareStartDate = ( Date ) attrs.remove( SEARCH_EPISODE_OF_CARE_START_DATE );
             if ( episodeOfCareStartDate != null ) {
-                attrs.put( EPISODE_OF_CARE_START_FROM_DATE, toDateRange( episodeOfCareStartDate, new Date(0L) ) );
+                attrs.put( EPISODE_OF_CARE_START_FROM_DATE, toDateRange( episodeOfCareStartDate, new Date( 0L ) ) );
                 attrs.put( EPISODE_OF_CARE_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), episodeOfCareStartDate ) );
             }
             if ( pageRequest.getCreatedAfter() != null || pageRequest.getCreatedBefore() != null ) {
@@ -309,7 +321,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     public static DateRange toDateRange( final Date before,
-                                   final Date after ) {
+                                         final Date after ) {
         return new DateRange() {
             @Override
             public Date before() {

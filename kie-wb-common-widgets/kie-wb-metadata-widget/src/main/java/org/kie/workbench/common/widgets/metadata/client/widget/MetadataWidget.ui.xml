@@ -151,20 +151,6 @@
                                 <b:CheckBox ui:field="isValidForDUSASSpecialityReports"/>
                             </b:Column>
                         </b:FormGroup>
-                        <!--
-                        <b:FormGroup>
-                            <b:FormLabel text="{i18n.ProductionMetaData}" addStyleNames="col-md-6"/>
-                            <b:Column size="MD_6">
-                                <b:CheckBox ui:field="inProduction" title='{i18n.ProductionMetaDataTip}'/>
-                            </b:Column>
-                        </b:FormGroup>
-                        <b:FormGroup>
-                            <b:FormLabel text="{i18n.DraftMetaData}" addStyleNames="col-md-6"/>
-                            <b:Column size="MD_6">
-                                <b:CheckBox ui:field="isDraft" title='{i18n.DraftMetaDataTip}'/>
-                            </b:Column>
-                        </b:FormGroup>
-                        -->
                         <b:FormGroup>
                             <b:FormLabel text="{i18n.TagsMetaData}" addStyleNames="col-md-6"/>
                             <b:Column size="MD_6">

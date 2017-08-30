@@ -86,12 +86,6 @@ public class MetadataWidget
     @UiField
     TextBox source;
     */
-/*
-    @UiField
-    CheckBox inProduction;
-    @UiField
-    CheckBox isDraft;
-*/
     @UiField
     CheckBox isValidForLPRReports;
     @UiField
@@ -322,26 +316,6 @@ public class MetadataWidget
                 metadata.setEpisodeOfCareStartToDate( episodeOfCareStartToDate.getValue().getTime() );
             }
         } );
-
-        /*
-        isDraft.setValue( metadata.isDraft() );
-        isDraft.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                boolean draft = isDraft.getValue();
-                metadata.setDraft( draft );
-            }
-        } );
-
-        inProduction.setValue( metadata.isInProduction() );
-        inProduction.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                boolean prod = inProduction.getValue();
-                metadata.setInProduction( prod );
-            }
-        } );
-        */
 
         isValidForLPRReports.setValue( metadata.isValidForLPRReports() );
         isValidForLPRReports.addClickHandler( new ClickHandler() {

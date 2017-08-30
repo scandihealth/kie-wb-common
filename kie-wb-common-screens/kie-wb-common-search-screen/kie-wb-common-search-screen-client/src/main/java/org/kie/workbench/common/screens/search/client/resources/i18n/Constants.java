@@ -56,7 +56,7 @@ public interface Constants
 
     String ErrorTypeMetaDataTip();
 
-    String RuleValidDate();
+    String ReportReceivedDate();
 
     String Source();
 
@@ -114,13 +114,25 @@ public interface Constants
 
     String AssetSearch();
 
-    String ProductionMetaDataTip();
+    String RuleStatusMetaData();
 
     String ProductionMetaData();
 
     String DraftMetaData();
 
-    String DraftMetaDataTip();
+    String IsValidForLPRReportsMetaData();
 
-    String RuleValidDateTip();
+    String IsValidForDUSASAbroadReportsMetaData();
+
+    String IsValidForDUSASSpecialityReportsMetaData();
+
+    String EncounterStartDate();
+
+    String EncounterEndDate();
+
+    String EpisodeOfCareStartDate();
+
+    String IsValidForMetaData();
+
+    String ArchivedMetaData();
 }

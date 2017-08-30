@@ -16,7 +16,6 @@
   <description>Kie Workbench - Common - UI</description>
 
   <dependencies>
-
     <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>
       <groupId>org.gwtbootstrap3</groupId>

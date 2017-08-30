@@ -22,23 +22,18 @@
     <module>kie-wb-common-services</module>
   </modules>
 
-  <repositories>
-    <!-- Bootstrap repository to locate the parent pom when the parent pom has not been build locally. -->
+  <distributionManagement>
     <repository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Repository Group</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-      </snapshots>
+      <id>scandihealth</id>
+      <name>libs-release</name>
+      <url>http://172.19.201.133:8081/artifactory/libs-release</url>
     </repository>
-  </repositories>
+    <snapshotRepository>
+      <id>scandihealth</id>
+      <name>libs-snapshot</name>
+      <url>http://172.19.201.133:8081/artifactory/libs-snapshot</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <build>
 

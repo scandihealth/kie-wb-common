@@ -33,6 +33,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
+import org.guvnor.common.services.shared.metadata.model.LprErrorType;
+import org.guvnor.common.services.shared.metadata.model.LprRuleGroup;
+import org.guvnor.common.services.shared.metadata.model.LprRuleType;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
@@ -56,6 +59,8 @@ import org.uberfire.java.nio.file.Path;
 import org.uberfire.paging.PageResponse;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.type.ResourceTypeDefinition;
+
+import static org.guvnor.common.services.shared.metadata.model.LprMetadataConsts.*;
 
 @Service
 @ApplicationScoped
@@ -92,19 +97,19 @@ public class SearchServiceImpl implements SearchService {
                               final AuthorizationManager authorizationManager,
                               @Any final Instance<ResourceTypeDefinition> typeRegister ) {
         this.ioSearchService = PortablePreconditions.checkNotNull( "ioSearchService",
-                                                                   ioSearchService );
+                ioSearchService );
         this.ioService = PortablePreconditions.checkNotNull( "ioService",
-                                                             ioService );
+                ioService );
         this.organizationalUnitService = PortablePreconditions.checkNotNull( "organizationalUnitService",
-                                                                             organizationalUnitService );
+                organizationalUnitService );
         this.projectService = PortablePreconditions.checkNotNull( "projectService",
-                                                                  projectService );
+                projectService );
         this.identity = PortablePreconditions.checkNotNull( "identity",
-                                                            identity );
+                identity );
         this.authorizationManager = PortablePreconditions.checkNotNull( "authorizationManager",
-                                                                        authorizationManager );
+                authorizationManager );
         this.typeRegister = PortablePreconditions.checkNotNull( "typeRegister",
-                                                                typeRegister );
+                typeRegister );
     }
 
     @PostConstruct
@@ -125,17 +130,17 @@ public class SearchServiceImpl implements SearchService {
         try {
             //hits is an approximation at this stage, since we've not filtered by Authorised Project
             final int totalNumHitsEstimate = ioSearchService.fullTextSearchHits( pageRequest.getTerm(),
-                                                                                 getAuthorizedRepositoryRoots() );
+                    getAuthorizedRepositoryRoots() );
             if ( totalNumHitsEstimate > 0 ) {
                 final PagedCountingFilter filter = new PagedCountingFilter( pageRequest.getStartRowIndex(),
-                                                                            pageRequest.getPageSize() );
+                        pageRequest.getPageSize() );
                 final List<Path> pathResult = ioSearchService.fullTextSearch( pageRequest.getTerm(),
-                                                                              filter,
-                                                                              getAuthorizedRepositoryRoots() );
+                        filter,
+                        getAuthorizedRepositoryRoots() );
                 return buildResponse( pathResult,
-                                      pageRequest.getPageSize(),
-                                      pageRequest.getStartRowIndex(),
-                                      filter.getHitsTotalCount() );
+                        pageRequest.getPageSize(),
+                        pageRequest.getStartRowIndex(),
+                        filter.getHitsTotalCount() );
             }
             return emptyResponse;
 
@@ -149,28 +154,71 @@ public class SearchServiceImpl implements SearchService {
         try {
             final Map<String, Object> attrs = new HashMap<String, Object>( pageRequest.getMetadata() );
 
+            attrs.put( RULE_TYPE, LprRuleType.REPORT_VALIDATION.getId() ); //only find lpr rules
+
+            LprRuleGroup ruleGroup = ( LprRuleGroup ) attrs.get( RULE_GROUP );
+            if ( ruleGroup != null ) { //search for enum based on its id
+                attrs.put( RULE_GROUP, ruleGroup.getId() );
+            }
+            LprErrorType errorType = ( LprErrorType ) attrs.get( ERROR_TYPE );
+            if ( errorType != null ) { //search for enum based on its id
+                attrs.put( ERROR_TYPE, errorType.getId() );
+            }
+
+            if ( attrs.remove( SEARCH_IS_PRODUCTION ) != null ) { //find all rules that is/was in production and not archived //todo make criteria as radio buttons. These criteria are mutual exclusive
+                attrs.put( PRODUCTION_DATE, toDateRange( new Date( Long.MAX_VALUE ), new Date( 1L ) ) ); //productionDate value of 0 means the rule has never been in production, so we exclude that value
+            }
+
+            if ( attrs.remove( SEARCH_IS_DRAFT ) != null ) { //find all rules that is/was not in production (and since it was not in prod it cannot have been archived)
+                attrs.put( PRODUCTION_DATE, toDateRange( new Date( 0L ), new Date( 0L ) ) ); //productionDate value of 0 means the rule has never been in production, so only search for that value
+            }
+
+            if ( attrs.remove( SEARCH_IS_ARCHIVED ) != null ) { //find all rules that have been archived
+                attrs.put( ARCHIVED_DATE, toDateRange( new Date( Long.MAX_VALUE ), new Date( 1L ) ) ); //archivedDate value of 0 means the rule is not archived, so we exclude that value
+            }
+
+            Date reportReceivedDate = ( Date ) attrs.remove( SEARCH_REPORT_RECEIVED_DATE );
+            if ( reportReceivedDate != null ) {
+                attrs.put( REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+                attrs.put( REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
+            }
+            Date encounterStartDate = ( Date ) attrs.remove( SEARCH_ENCOUNTER_START_DATE );
+            if ( encounterStartDate != null ) {
+                attrs.put( ENCOUNTER_START_FROM_DATE, toDateRange( encounterStartDate, new Date( 0L ) ) );
+                attrs.put( ENCOUNTER_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterStartDate ) );
+            }
+            Date encounterEndDate = ( Date ) attrs.remove( SEARCH_ENCOUNTER_END_DATE );
+            if ( encounterEndDate != null ) {
+                attrs.put( ENCOUNTER_END_FROM_DATE, toDateRange( encounterEndDate, new Date( 0L ) ) );
+                attrs.put( ENCOUNTER_END_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterEndDate ) );
+            }
+            Date episodeOfCareStartDate = ( Date ) attrs.remove( SEARCH_EPISODE_OF_CARE_START_DATE );
+            if ( episodeOfCareStartDate != null ) {
+                attrs.put( EPISODE_OF_CARE_START_FROM_DATE, toDateRange( episodeOfCareStartDate, new Date( 0L ) ) );
+                attrs.put( EPISODE_OF_CARE_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), episodeOfCareStartDate ) );
+            }
             if ( pageRequest.getCreatedAfter() != null || pageRequest.getCreatedBefore() != null ) {
                 attrs.put( "creationTime", toDateRange( pageRequest.getCreatedBefore(),
-                                                        pageRequest.getCreatedAfter() ) );
+                        pageRequest.getCreatedAfter() ) );
             }
             if ( pageRequest.getLastModifiedAfter() != null || pageRequest.getLastModifiedBefore() != null ) {
                 attrs.put( "lastModifiedTime", toDateRange( pageRequest.getLastModifiedBefore(),
-                                                            pageRequest.getLastModifiedAfter() ) );
+                        pageRequest.getLastModifiedAfter() ) );
             }
 
             //hits is an approximation at this stage, since we've not filtered by Authorised Project
             final int totalNumHitsEstimate = ioSearchService.searchByAttrsHits( attrs,
-                                                                                getAuthorizedRepositoryRoots() );
+                    getAuthorizedRepositoryRoots() );
             if ( totalNumHitsEstimate > 0 ) {
                 final PagedCountingFilter filter = new PagedCountingFilter( pageRequest.getStartRowIndex(),
-                                                                            pageRequest.getPageSize() );
+                        pageRequest.getPageSize() );
                 final List<Path> pathResult = ioSearchService.searchByAttrs( attrs,
-                                                                             filter,
-                                                                             getAuthorizedRepositoryRoots() );
+                        filter,
+                        getAuthorizedRepositoryRoots() );
                 return buildResponse( pathResult,
-                                      pageRequest.getPageSize(),
-                                      pageRequest.getStartRowIndex(),
-                                      filter.getHitsTotalCount() );
+                        pageRequest.getPageSize(),
+                        pageRequest.getStartRowIndex(),
+                        filter.getHitsTotalCount() );
             }
             return emptyResponse;
 
@@ -186,9 +234,9 @@ public class SearchServiceImpl implements SearchService {
         final List<SearchPageRow> result = new ArrayList<SearchPageRow>( pathResult.size() );
         for ( final Path path : pathResult ) {
             final DublinCoreView dcoreView = ioService.getFileAttributeView( path,
-                                                                             DublinCoreView.class );
+                    DublinCoreView.class );
             final VersionAttributeView versionAttributeView = ioService.getFileAttributeView( path,
-                                                                                              VersionAttributeView.class );
+                    VersionAttributeView.class );
 
             final String creator = extractCreator( versionAttributeView );
             final Date createdDate = extractCreatedDate( versionAttributeView );
@@ -197,11 +245,11 @@ public class SearchServiceImpl implements SearchService {
             final String description = extractDescription( dcoreView );
 
             final SearchPageRow row = new SearchPageRow( Paths.convert( path ),
-                                                         creator,
-                                                         createdDate,
-                                                         lastContributor,
-                                                         lastModifiedDate,
-                                                         description );
+                    creator,
+                    createdDate,
+                    lastContributor,
+                    lastModifiedDate,
+                    description );
             result.add( row );
         }
 
@@ -252,7 +300,7 @@ public class SearchServiceImpl implements SearchService {
         final Collection<OrganizationalUnit> authorizedOrganizationalUnits = new ArrayList<OrganizationalUnit>();
         for ( OrganizationalUnit ou : organizationalUnits ) {
             if ( authorizationManager.authorize( ou,
-                                                 identity ) ) {
+                    identity ) ) {
                 authorizedOrganizationalUnits.add( ou );
             }
         }
@@ -263,17 +311,17 @@ public class SearchServiceImpl implements SearchService {
             final Collection<Repository> repositories = ou.getRepositories();
             for ( final Repository repository : repositories ) {
                 if ( authorizationManager.authorize( repository,
-                                                     identity ) ) {
+                        identity ) ) {
                     authorizedRoots.add( Paths.convert( repository.getRoot() ) );
                 }
             }
         }
 
-        return authorizedRoots.toArray( new Path[ authorizedRoots.size() ] );
+        return authorizedRoots.toArray( new Path[authorizedRoots.size()] );
     }
 
-    private DateRange toDateRange( final Date before,
-                                   final Date after ) {
+    public static DateRange toDateRange( final Date before,
+                                         final Date after ) {
         return new DateRange() {
             @Override
             public Date before() {
@@ -318,7 +366,7 @@ public class SearchServiceImpl implements SearchService {
             boolean authorized = true;
             if ( project != null ) {
                 authorized = authorizationManager.authorize( project,
-                                                             identity );
+                        identity );
             }
 
             if ( authorized ) {

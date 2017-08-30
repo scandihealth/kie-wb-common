@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.project.context.ProjectContext;
+import org.guvnor.common.services.shared.metadata.model.LprRuleType;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.guvnor.structure.repositories.RepositoryRemovedEvent;
@@ -34,10 +35,10 @@ import org.kie.workbench.common.widgets.client.source.ViewDRLSourceWidget;
 import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPresenter;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.client.workbench.type.ClientResourceType;
+import org.uberfire.client.workbench.widgets.multipage.Page;
 import org.uberfire.ext.editor.commons.client.BaseEditor;
 import org.uberfire.ext.editor.commons.client.file.SaveOperationService;
 import org.uberfire.ext.editor.commons.client.menu.MenuItems;
-import org.uberfire.client.workbench.widgets.multipage.Page;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.mvp.PlaceRequest;
@@ -202,6 +203,9 @@ public abstract class KieEditor
 
         this.overviewWidget.setContent( overview, versionRecordManager.getPathToLatest() );
         this.metadata = overview.getMetadata();
+        if ( this.metadata != null ) {
+            this.metadata.setRuleType( LprRuleType.REPORT_VALIDATION ); //Mark resources managed by editors as LPR rules
+        }
 
         kieView.clear();
 

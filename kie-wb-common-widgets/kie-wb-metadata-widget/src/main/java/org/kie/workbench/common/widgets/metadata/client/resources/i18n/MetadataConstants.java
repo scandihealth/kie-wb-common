@@ -15,15 +15,15 @@
 
 package org.kie.workbench.common.widgets.metadata.client.resources.i18n;
 
+import java.util.Date;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
-
-import java.util.Date;
 
 public interface MetadataConstants extends
         Messages {
 
-    public static final MetadataConstants INSTANCE = GWT.create(MetadataConstants.class);
+    public static final MetadataConstants INSTANCE = GWT.create( MetadataConstants.class );
 
     String Title();
 
@@ -92,7 +92,7 @@ public interface MetadataConstants extends
     String Cancel();
 
     String smallCommentBy0On1Small( final String author,
-            final Date date );
+                                    final Date date );
 
     String VersionHistory1();
 
@@ -101,9 +101,9 @@ public interface MetadataConstants extends
     String View();
 
     String property0ModifiedOn1By23( final String version,
-            final String lastModifier,
-            final String lastModifiedDate,
-            final String lastModifiedComment );
+                                     final String lastModifier,
+                                     final String lastModifiedDate,
+                                     final String lastModifiedComment );
 
     String URI();
 
@@ -113,8 +113,24 @@ public interface MetadataConstants extends
 
     String LockMetaData();
 
+    String ErrorNumberMetaData();
+
+    String ErrorNumberTip();
+
+    String ErrorTextMetaData();
+
+    String ErrorTextTip();
+
+    String RuleGroupMetaData();
+
+    String RuleGroupTip();
+
+    String ErrorTypeMetaData();
+
+    String ErrorTypeTip();
+
     String LockedByHint();
-    
+
     String LockedByHintOwned();
 
     String UnlockedHint();
@@ -122,11 +138,44 @@ public interface MetadataConstants extends
     String ForceUnlockCaption();
 
     String ForceUnlockConfirmationTitle();
-    
-    String ForceUnlockConfirmationText(final String lockedBy);
+
+    String ForceUnlockConfirmationText( final String lockedBy );
 
     String ByAOnB( final String lastContributor, final String format );
 
     String NoDescription();
 
+    String ProductionMetaData();
+
+    String ProductionMetaDataTip();
+
+    String DraftMetaData();
+
+    String DraftMetaDataTip();
+
+    String ReportReceivedFromMetaData();
+
+    String ReportReceivedFromMetaDataTip();
+
+    String ReportReceivedToMetaData();
+
+    String EncounterStartFromDateMetaData();
+
+    String EncounterStartToDateMetaData();
+
+    String EncounterEndFromDateMetaData();
+
+    String EncounterEndToDateMetaData();
+
+    String EpisodeOfCareStartFromDateMetaData();
+
+    String EpisodeOfCareStartToDateMetaData();
+
+    String IsValidForLPRReportsMetaData();
+
+    String IsValidForDUSASAbroadReportsMetaData();
+
+    String IsValidForDUSASSpecialityReportsMetaData();
+
+    String IsValidForMetaData();
 }

@@ -40,6 +40,24 @@ public interface Constants
 
     String SearchForm();
 
+    String ErrorNumberMetaData();
+
+    String ErrorNumberTip();
+
+    String ErrorTextMetaData();
+
+    String ErrorTextTip();
+
+    String RuleGroupMetaData();
+
+    String RuleGroupMetaDataTip();
+
+    String ErrorTypeMetaData();
+
+    String ErrorTypeMetaDataTip();
+
+    String ReportReceivedDate();
+
     String Source();
 
     String SourceTip();
@@ -95,4 +113,26 @@ public interface Constants
     String SearchResultTitle();
 
     String AssetSearch();
+
+    String RuleStatusMetaData();
+
+    String ProductionMetaData();
+
+    String DraftMetaData();
+
+    String IsValidForLPRReportsMetaData();
+
+    String IsValidForDUSASAbroadReportsMetaData();
+
+    String IsValidForDUSASSpecialityReportsMetaData();
+
+    String EncounterStartDate();
+
+    String EncounterEndDate();
+
+    String EpisodeOfCareStartDate();
+
+    String IsValidForMetaData();
+
+    String ArchivedMetaData();
 }

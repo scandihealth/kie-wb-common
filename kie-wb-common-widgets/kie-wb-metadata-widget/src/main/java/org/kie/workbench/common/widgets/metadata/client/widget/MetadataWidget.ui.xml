@@ -19,81 +19,201 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:widget='urn:import:org.kie.workbench.common.widgets.metadata.client.widget'
-             xmlns:gwt='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+             xmlns:uf="urn:import:org.uberfire.ext.widgets.common.client.common">
 
     <ui:with field="i18n" type="org.kie.workbench.common.widgets.metadata.client.resources.i18n.MetadataConstants"/>
 
-    <ui:style>        
+    <ui:style>
+        /*
         .forceUnlock {
             display: inline-block;
             margin-right: 5px;
             margin-bottom: 25px;
             vertical-align: top;
         }
+        */
+
         .form {
-        	margin-top: 10px;
-        }            
+            margin-top: 10px;
+        }
     </ui:style>
-	
+
     <b:Container fluid="true">
-        <b:Row>
-            <b:Column size="MD_12">
-                <b:Form type="HORIZONTAL" addStyleNames="{style.form}">                	
-                    <b:FieldSet>
+        <b:Form type="HORIZONTAL" addStyleNames="{style.form}">
+            <b:FieldSet>
+                <b:Row>
+                    <b:Column size="MD_4">
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.TagsMetaData}" addStyleNames="col-md-3"/>
-                            <b:Column size="MD_9">
-                                <widget:TagWidget ui:field="tags"/>
+                            <b:FormLabel text="{i18n.ErrorNumberMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <uf:NumericLongTextBox ui:field="errorNumber" title='{i18n.ErrorNumberTip}'/>
                             </b:Column>
                         </b:FormGroup>
+                    </b:Column>
+                    <b:Column size="MD_4">
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.NoteMetaData}" addStyleNames="col-md-3"/>
-                            <b:Column size="MD_9">
+                            <b:FormLabel for="RuleGroup" addStyleNames="col-md-6">
+                                <ui:text from="{i18n.RuleGroupMetaData}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_6">
+                                <b:Tooltip title="{i18n.RuleGroupTip}" placement="RIGHT" trigger="FOCUS">
+                                    <b:ListBox b:id="RuleGroup" ui:field="ruleGroup"/>
+                                </b:Tooltip>
+                            </b:Column>
+                        </b:FormGroup>
+                    </b:Column>
+                    <b:Column size="MD_4">
+                        <b:FormGroup>
+                            <b:FormLabel for="errorType" addStyleNames="col-md-6">
+                                <ui:text from="{i18n.ErrorTypeMetaData}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_6">
+                                <b:Tooltip title="{i18n.ErrorTypeTip}" placement="RIGHT" trigger="FOCUS">
+                                    <b:ListBox b:id="errorType" ui:field="errorType"/>
+                                </b:Tooltip>
+                            </b:Column>
+                        </b:FormGroup>
+                    </b:Column>
+                </b:Row>
+                <b:Row>
+                    <b:Column size="MD_12">
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.ErrorTextMetaData}" addStyleNames="col-md-2"/>
+                            <b:Column size="MD_10">
+                                <b:TextArea ui:field="errorText" title='{i18n.ErrorTextTip}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                    </b:Column>
+                </b:Row>
+                <b:Row>
+                    <b:Column size="MD_4">
+                        <!--
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.NoteMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
                                 <b:FormControlStatic ui:field="note"/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.URI}" addStyleNames="col-md-3"/>
-                            <b:Column size="MD_9">
+                            <b:FormLabel text="{i18n.URI}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
                                 <b:FormControlStatic ui:field="uri"/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.SubjectMetaData}" addStyleNames="col-md-3"/>
-                            <b:Column size="MD_9">
+                            <b:FormLabel text="{i18n.SubjectMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
                                 <b:TextBox ui:field="subject" title='{i18n.AShortDescriptionOfTheSubjectMatter}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.TypeMetaData}" addStyleNames="col-md-3"/>
-                            <b:Column size="MD_9">
+                            <b:FormLabel text="{i18n.TypeMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
                                 <b:TextBox ui:field="type" title='{i18n.TypeTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.ExternalLinkMetaData}" addStyleNames="col-md-3"/>
-                            <b:Column size="MD_9">
+                            <b:FormLabel text="{i18n.ExternalLinkMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
                                 <b:TextBox ui:field="external" title='{i18n.ExternalLinkTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.SourceMetaData}" addStyleNames="col-md-3"/>
-                            <b:Column size="MD_9">
+                            <b:FormLabel text="{i18n.SourceMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
                                 <b:TextBox ui:field="source" title='{i18n.SourceMetaDataTip}'/>
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.LockMetaData}" addStyleNames="col-md-3"/>
-                            <b:Column size="MD_9">
-                            	<b:FormControlStatic addStyleNames="{style.forceUnlock}" ui:field="lockedBy" />
+                            <b:FormLabel text="{i18n.LockMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <b:FormControlStatic addStyleNames="{style.forceUnlock}" ui:field="lockedBy"/>
                                 <gwt:PushButton addStyleNames="btn btn-default {style.forceUnlock}" ui:field="unlock" text='{i18n.ForceUnlockCaption}'/>
                             </b:Column>
                         </b:FormGroup>
-                    </b:FieldSet>                    
-                </b:Form>
-            </b:Column>
-        </b:Row>
-    </b:Container>    
-    
+                        -->
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.IsValidForLPRReportsMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <b:CheckBox ui:field="isValidForLPRReports"/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.IsValidForDUSASAbroadReportsMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <b:CheckBox ui:field="isValidForDUSASAbroadReports"/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.IsValidForDUSASSpecialityReportsMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <b:CheckBox ui:field="isValidForDUSASSpecialityReports"/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.TagsMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <widget:TagWidget ui:field="tags"/>
+                            </b:Column>
+                        </b:FormGroup>
+                    </b:Column>
+                    <b:Column size="MD_4">
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.ReportReceivedFromMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <uf:DatePicker ui:field="reportReceivedFrom" title='{i18n.ReportReceivedFromMetaDataTip}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.EncounterStartFromDateMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <uf:DatePicker ui:field="encounterStartFromDate" title='{i18n.EncounterStartFromDateMetaData}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.EncounterEndFromDateMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <uf:DatePicker ui:field="encounterEndFromDate" title='{i18n.EncounterEndFromDateMetaData}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.EpisodeOfCareStartFromDateMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <uf:DatePicker ui:field="episodeOfCareStartFromDate" title='{i18n.EpisodeOfCareStartFromDateMetaData}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                    </b:Column>
+                    <b:Column size="MD_4">
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.ReportReceivedToMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <uf:DatePicker ui:field="reportReceivedTo" title='{i18n.ReportReceivedToMetaData}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.EncounterStartToDateMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <uf:DatePicker ui:field="encounterStartToDate" title='{i18n.EncounterStartToDateMetaData}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.EncounterEndToDateMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <uf:DatePicker ui:field="encounterEndToDate" title='{i18n.EncounterEndToDateMetaData}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel text="{i18n.EpisodeOfCareStartFromDateMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <uf:DatePicker ui:field="episodeOfCareStartToDate" title='{i18n.EpisodeOfCareStartToDateMetaData}'/>
+                            </b:Column>
+                        </b:FormGroup>
+                    </b:Column>
+                </b:Row>
+            </b:FieldSet>
+        </b:Form>
+
+    </b:Container>
+
 </ui:UiBinder>

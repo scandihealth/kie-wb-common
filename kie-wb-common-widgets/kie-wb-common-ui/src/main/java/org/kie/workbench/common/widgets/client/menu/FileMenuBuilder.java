@@ -54,17 +54,11 @@ public interface FileMenuBuilder {
     FileMenuBuilder addCommand( final String caption,
                                 final Command command );
 
-    FileMenuBuilder addDeleteDraft( final Command command );
+    FileMenuBuilder addMoveToProduction( final Command command );
 
-    FileMenuBuilder addDeleteDraft( final Path path );
+    FileMenuBuilder addArchive( final Command command );
 
-    FileMenuBuilder addDeleteDraft( final MenuItem menu, final Path path );
-
-    FileMenuBuilder addMoveToProduction( final MenuItem menu, final Path path );
-
-    FileMenuBuilder addArchive( final MenuItem menu, final Path path );
-
-    FileMenuBuilder addSimulate( final MenuItem menu, final Path path );
+    FileMenuBuilder addSimulate( final Command command );
 
     Menus build();
 }

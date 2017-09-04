@@ -24,7 +24,9 @@ import org.jboss.errai.common.client.api.Caller;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.client.menu.BasicFileMenuBuilder;
 import org.uberfire.ext.editor.commons.client.validation.Validator;
-import org.uberfire.ext.editor.commons.service.*;
+import org.uberfire.ext.editor.commons.service.CopyService;
+import org.uberfire.ext.editor.commons.service.DeleteService;
+import org.uberfire.ext.editor.commons.service.RenameService;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
@@ -46,18 +48,6 @@ public class
 
     @Inject
     private Caller<CopyService> copyService;
-
-    @Inject
-    private Caller<DeleteDraftService> deleteDraftService;
-
-    @Inject
-    private Caller<MoveToProductionService> moveToProductionService;
-
-    @Inject
-    private Caller<ArchiveService> archiveService;
-
-    @Inject
-    private Caller<SimulateService> simulateService;
 
     @Override
     public Menus build() {
@@ -114,37 +104,20 @@ public class
     }
 
     @Override
-    public FileMenuBuilder addDeleteDraft(Command command) {
-        menuBuilder.addDeleteDraft(command);
+    public FileMenuBuilder addMoveToProduction( final Command command ) {
+        menuBuilder.addMoveToProduction( command );
         return this;
     }
 
     @Override
-    public FileMenuBuilder addDeleteDraft(Path path) {
-        return null;
-    }
-
-    @Override
-    public FileMenuBuilder addDeleteDraft(MenuItem menuItem, final Path path) {
-        menuBuilder.addDeleteDraft( menuItem, path, deleteDraftService );
+    public FileMenuBuilder addArchive( Command command ) {
+        menuBuilder.addArchive( command );
         return this;
     }
 
     @Override
-    public FileMenuBuilder addMoveToProduction( final MenuItem menuItem, final Path path ) {
-        menuBuilder.addMoveToProduction( menuItem, path, moveToProductionService );
-        return this;
-    }
-
-    @Override
-    public FileMenuBuilder addArchive( final MenuItem menuItem, final Path path ) {
-        menuBuilder.addArchive( menuItem, path, archiveService);
-        return this;
-    }
-
-    @Override
-    public FileMenuBuilder addSimulate( final MenuItem menuItem, final Path path ) {
-        menuBuilder.addSimulate( menuItem, path, simulateService);
+    public FileMenuBuilder addSimulate( Command command ) {
+        menuBuilder.addSimulate( command );
         return this;
     }
 

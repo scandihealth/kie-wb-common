@@ -39,7 +39,6 @@ import org.uberfire.client.workbench.widgets.multipage.Page;
 import org.uberfire.ext.editor.commons.client.BaseEditor;
 import org.uberfire.ext.editor.commons.client.file.SaveOperationService;
 import org.uberfire.ext.editor.commons.client.menu.MenuItems;
-import org.uberfire.ext.editor.commons.client.resources.i18n.CommonConstants;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.mvp.PlaceRequest;
@@ -221,23 +220,6 @@ public abstract class KieEditor
                                      }
                                  } );
 
-        updateEnabledStateOnMenuItems();
-
-    }
-
-    protected void updateEnabledStateOnMenuItems() {
-        if(this.metadata != null) {
-            for (MenuItem mi : menus.getItemsMap().values()) {
-                if(CommonConstants.INSTANCE.LPRMoveToProduction().equals(mi.getCaption())) {
-                    boolean enabled = (this.metadata.getProductionDate() == 0L && this.metadata.getArchivedDate() == 0L && versionRecordManager.isCurrentLatest());
-                    mi.setEnabled(enabled);
-                }
-                if(CommonConstants.INSTANCE.LPRArchive().equals(mi.getCaption())) {
-                    boolean enabled = (this.metadata.getProductionDate() > 0 && this.metadata.getArchivedDate() == 0 && versionRecordManager.isCurrentLatest());
-                    mi.setEnabled(enabled);
-                }
-            }
-        }
     }
 
     protected void OnClose() {

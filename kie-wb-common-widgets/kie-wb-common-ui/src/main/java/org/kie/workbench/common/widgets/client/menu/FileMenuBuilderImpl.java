@@ -104,24 +104,6 @@ public class
     }
 
     @Override
-    public FileMenuBuilder addMoveToProduction( final Command command ) {
-        menuBuilder.addMoveToProduction( command );
-        return this;
-    }
-
-    @Override
-    public FileMenuBuilder addArchive( Command command ) {
-        menuBuilder.addArchive( command );
-        return this;
-    }
-
-    @Override
-    public FileMenuBuilder addSimulate( Command command ) {
-        menuBuilder.addSimulate( command );
-        return this;
-    }
-
-    @Override
     public FileMenuBuilder addNewTopLevelMenu( final MenuItem menu ) {
         menuBuilder.addNewTopLevelMenu( menu );
         return this;

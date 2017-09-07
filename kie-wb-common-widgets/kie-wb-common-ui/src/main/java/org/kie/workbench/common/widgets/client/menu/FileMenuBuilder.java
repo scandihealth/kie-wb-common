@@ -54,11 +54,5 @@ public interface FileMenuBuilder {
     FileMenuBuilder addCommand( final String caption,
                                 final Command command );
 
-    FileMenuBuilder addMoveToProduction( final Command command );
-
-    FileMenuBuilder addArchive( final Command command );
-
-    FileMenuBuilder addSimulate( final Command command );
-
     Menus build();
 }

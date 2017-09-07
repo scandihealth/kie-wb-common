@@ -50,7 +50,7 @@ public abstract class LPREditor extends KieEditor {
                 .addCopy( versionRecordManager.getCurrentPath(), fileNameValidator )
                 .addMoveToProduction( new MoveToProductionCommand() )
                 .addArchive( new ArchiveCommand() )
-                .addSimulate( new SimulateCommand() )
+//                .addSimulate( new SimulateCommand() )
                 .addValidate( onValidate() )
                 .addVersionMenu( versionRecordManager.buildMenu() )
                 .build();
@@ -95,6 +95,12 @@ public abstract class LPREditor extends KieEditor {
                         //todo ttn restore is disabled until this is implemented
                         mi.setEnabled( false );
                     }
+                }
+
+                //only allow copy if rule is not archived
+                if ( CommonConstants.INSTANCE.Copy().equals( mi.getCaption() ) ) {
+                    boolean enabled = this.metadata.getArchivedDate() == 0L;
+                    mi.setEnabled( enabled );
                 }
 
                 //only allow delete, rename or 'move to production' if rule is not in production and not archived
@@ -150,6 +156,7 @@ public abstract class LPREditor extends KieEditor {
                     }
 
                     //set metadata and save rule
+                    //TODO TTN: Revert all other changes before saving!
                     metadata.setProductionDate( new Date().getTime() );
                     final SaveOperationService.SaveOperationNotifier notifier = IOC.getBeanManager().lookupBean( SaveOperationService.SaveOperationNotifier.class ).getInstance();
                     baseView.showSaving();
@@ -196,6 +203,7 @@ public abstract class LPREditor extends KieEditor {
                     }
 
                     //set metadata and save rule
+                    //TODO TTN: Revert all other changes before saving!
                     metadata.setArchivedDate( new Date().getTime() );
                     final SaveOperationService.SaveOperationNotifier notifier = IOC.getBeanManager().lookupBean( SaveOperationService.SaveOperationNotifier.class ).getInstance();
                     baseView.showSaving();

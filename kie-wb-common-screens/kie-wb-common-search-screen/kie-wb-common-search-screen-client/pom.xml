@@ -23,7 +23,7 @@
     </dependency>
     <dependency>
       <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-services-consts</artifactId>
+      <artifactId>guvnor-lpr-consts</artifactId>
     </dependency>
     <dependency>
       <groupId>org.gwtbootstrap3</groupId>

@@ -276,7 +276,7 @@ public class FindForm
         }
 
         LprErrorType errorType = LprErrorType.valueOf( errorTypeListBox.getSelectedValue() );
-        if ( errorType != LprErrorType.NONE ) {
+        if ( errorType != LprErrorType.OK ) {
             metadata.put( ERROR_TYPE, errorType );
         }
 

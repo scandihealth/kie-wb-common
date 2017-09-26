@@ -207,6 +207,7 @@ public abstract class KieEditor
             this.metadata.setRuleType( LprRuleType.REPORT_VALIDATION ); //Mark resources managed by editors as LPR rules
         }
 
+
         kieView.clear();
 
         kieView.addMainEditorPage( baseView );

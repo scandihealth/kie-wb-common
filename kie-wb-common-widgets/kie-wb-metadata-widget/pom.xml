@@ -15,6 +15,11 @@
   <description>Kie Workbench - Common - Metadata Widget</description>
 
   <dependencies>
+    <!-- required by LPR functionality -->
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-ioc</artifactId>
+    </dependency>
 
     <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>

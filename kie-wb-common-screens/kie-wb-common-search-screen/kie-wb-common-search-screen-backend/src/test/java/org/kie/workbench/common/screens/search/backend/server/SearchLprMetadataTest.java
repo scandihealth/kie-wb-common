@@ -51,7 +51,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         LprMetaAttributesMock rule2 = new LprMetaAttributesMock();
         rule2.errorNumber = 100L;
         rule2.errorText = "other error text";
-        rule2.errorType = LprErrorType.WARNING;
+        rule2.errorType = LprErrorType.WARN;
         rule2.ruleGroup = LprRuleGroup.PSYKI;
         rule2.reportReceivedFromDate = 150L;
         rule2.reportReceivedToDate = 250L;

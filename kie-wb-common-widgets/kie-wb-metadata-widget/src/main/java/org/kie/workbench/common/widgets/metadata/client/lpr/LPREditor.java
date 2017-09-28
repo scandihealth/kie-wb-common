@@ -4,12 +4,18 @@ import java.util.Date;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.ioc.client.container.IOC;
+import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.kie.workbench.common.widgets.metadata.client.KieEditor;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.mvp.UpdatedLockStatusEvent;
+import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.ext.editor.commons.client.file.ArchivePopup;
 import org.uberfire.ext.editor.commons.client.file.MoveToProductionPopup;
 import org.uberfire.ext.editor.commons.client.file.SaveOperationService;
@@ -57,11 +63,40 @@ public abstract class LPREditor extends KieEditor {
 
     }
 
+    @WorkbenchPartTitleDecoration
+    public IsWidget getTitle() {
+        return super.getTitle();
+    }
+
+    @WorkbenchPartTitle
+    public String getTitleText() {
+        String titleText = versionRecordManager.getCurrentPath().getFileName(); //filename
+        titleText = titleText.substring( 0, titleText.lastIndexOf( '.' ) ); //strip extension
+        if ( metadata != null ) {
+            //add rule status
+            DateTimeFormat dateFormatter = DateTimeFormat.getFormat( ApplicationPreferences.getDroolsDateFormat() );
+            if ( metadata.getProductionDate() > 0 ) {
+                titleText += " - Produktionssat d. " + dateFormatter.format( new Date( metadata.getProductionDate() ) );
+            } else {
+                titleText += " - Kladde";
+            }
+            if ( metadata.getArchivedDate() > 0 ) {
+                titleText += " - Arkiveret d. " + dateFormatter.format( new Date( metadata.getArchivedDate() ) );
+            }
+        }
+        return titleText;
+    }
+
     @Override
     protected void resetEditorPages( Overview overview ) {
         super.resetEditorPages( overview );
-        if ( metadata != null && metadata.getArchivedDate() > 0 ) {
-            isReadOnly = true;
+        if ( metadata != null ) {
+            if( metadata.getArchivedDate() > 0 ) {
+                isReadOnly = true;
+            }
+            //refresh title now that we have access to metadata
+            baseView.refreshTitle( getTitleText() );
+            changeTitleNotification.fire( new ChangeTitleWidgetEvent( place, getTitleText(), getTitle() ) );
         }
         updateEnabledStateOnMenuItems();
     }

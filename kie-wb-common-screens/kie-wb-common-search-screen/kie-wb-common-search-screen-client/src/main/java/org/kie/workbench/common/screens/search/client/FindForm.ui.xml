@@ -20,7 +20,8 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:qr="urn:import:org.kie.workbench.common.screens.search.client.widgets"
              xmlns:ufext="urn:import:org.uberfire.ext.widgets.common.client.common"
-             xmlns:uf="urn:import:org.uberfire.ext.widgets.common.client.common">
+             xmlns:uf="urn:import:org.uberfire.ext.widgets.common.client.common"
+             xmlns:html="urn:import:org.gwtbootstrap3.client.ui.html">
 
     <ui:with field="i18n" type="org.kie.workbench.common.screens.search.client.resources.i18n.Constants"/>
 
@@ -231,6 +232,8 @@
                                               </b:Column>
                                             </b:FormGroup>
                                             -->
+
+                                            <html:Hr/>
 
                                             <b:FormGroup>
                                                 <b:FormLabel for="createdBy" addStyleNames="col-md-2">

@@ -115,6 +115,9 @@ public class FindForm
     CheckBox isValidForDUSASSpecialityReports;
 
     @UiField
+    CheckBox isValidForPrivateSectorReports;
+
+    @UiField
     ListBox ruleGroupListBox;
 
     @UiField
@@ -268,6 +271,10 @@ public class FindForm
         }
         if ( Boolean.TRUE.equals( isValidForDUSASSpecialityReports.getValue() ) ) {
             metadata.put( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS, isValidForDUSASSpecialityReports.getValue() );
+        }
+
+        if ( Boolean.TRUE.equals( isValidForPrivateSectorReports.getValue() ) ) {
+            metadata.put( IS_VALID_FOR_PRIVATE_SECTOR_REPORTS, isValidForPrivateSectorReports.getValue() );
         }
 
         LprRuleGroup ruleGroup = LprRuleGroup.valueOf( ruleGroupListBox.getSelectedValue() );

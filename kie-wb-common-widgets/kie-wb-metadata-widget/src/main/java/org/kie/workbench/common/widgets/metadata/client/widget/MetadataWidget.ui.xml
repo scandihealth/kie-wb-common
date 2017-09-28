@@ -152,11 +152,19 @@
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
+                            <b:FormLabel text="{i18n.IsValidForPrivateSectorReportsMetaData}" addStyleNames="col-md-6"/>
+                            <b:Column size="MD_6">
+                                <b:CheckBox ui:field="isValidForPrivateSectorReports"/>
+                            </b:Column>
+                        </b:FormGroup>
+<!--
+                        <b:FormGroup>
                             <b:FormLabel text="{i18n.TagsMetaData}" addStyleNames="col-md-6"/>
                             <b:Column size="MD_6">
                                 <widget:TagWidget ui:field="tags"/>
                             </b:Column>
                         </b:FormGroup>
+-->
                     </b:Column>
                     <b:Column size="MD_4">
                         <b:FormGroup>
@@ -204,7 +212,7 @@
                             </b:Column>
                         </b:FormGroup>
                         <b:FormGroup>
-                            <b:FormLabel text="{i18n.EpisodeOfCareStartFromDateMetaData}" addStyleNames="col-md-6"/>
+                            <b:FormLabel text="{i18n.EpisodeOfCareStartToDateMetaData}" addStyleNames="col-md-6"/>
                             <b:Column size="MD_6">
                                 <uf:DatePicker ui:field="episodeOfCareStartToDate" title='{i18n.EpisodeOfCareStartToDateMetaData}'/>
                             </b:Column>

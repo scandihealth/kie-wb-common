@@ -64,6 +64,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         rule2.isValidForLPRReports = false;
         rule2.isValidForDUSASAbroadReports = true;
         rule2.isValidForDUSASSpecialityReports = false;
+        rule2.isValidForPrivateSectorReports = false;
         Map<String, Object> attrs2 = getAttributesMap( rule2 );
         ioService().write( path2, "Rule2", attrs2 );
 
@@ -103,6 +104,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         searchAttributes = new HashMap<String, Object>() {{
             put( LprMetadataConsts.ERROR_NUMBER, "1" );
             put( LprMetadataConsts.IS_VALID_FOR_LPR_REPORTS, true );
+            put( LprMetadataConsts.IS_VALID_FOR_PRIVATE_SECTOR_REPORTS, true );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
@@ -111,6 +113,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
             assertEquals( 1, results.size() );
             verifyAll( results, LprMetadataConsts.ERROR_NUMBER, "1" );
             verifyAll( results, LprMetadataConsts.IS_VALID_FOR_LPR_REPORTS, "0" ); //true is represented as "0" in KObject
+            verifyAll( results, LprMetadataConsts.IS_VALID_FOR_PRIVATE_SECTOR_REPORTS, "0" ); //true is represented as "0" in KObject
             verifyAll( results, LprMetadataConsts.IS_VALID_FOR_DUSAS_ABROAD_REPORTS, "1" ); //false is represented as "1" in KObject
         }
 

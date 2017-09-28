@@ -70,9 +70,9 @@ public class MetadataWidget
     //    private Runnable forceUnlockHandler;
     private String currentUser;
 
+    /*
     @UiField
     TagWidget tags;
-    /*
     @UiField
     FormControlStatic note;
     @UiField
@@ -92,6 +92,8 @@ public class MetadataWidget
     CheckBox isValidForDUSASAbroadReports;
     @UiField
     CheckBox isValidForDUSASSpecialityReports;
+    @UiField
+    CheckBox isValidForPrivateSectorReports;
     @UiField
     DatePicker reportReceivedFrom;
     @UiField
@@ -164,9 +166,9 @@ public class MetadataWidget
     private void loadData() {
         initComponents();
 
+/*
         tags.setContent( metadata, this.readOnly );
 
-/*
         note.setText( metadata.getCheckinComment() );
 
         uri.setText( metadata.getRealPath().toURI() );
@@ -338,6 +340,14 @@ public class MetadataWidget
             @Override
             public void onClick( ClickEvent event ) {
                 metadata.setValidForDUSASSpecialityReports( isValidForDUSASSpecialityReports.getValue() );
+            }
+        } );
+
+        isValidForPrivateSectorReports.setValue( metadata.isValidForPrivateSectorReports() );
+        isValidForPrivateSectorReports.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent event ) {
+                metadata.setValidForPrivateSectorReports( isValidForPrivateSectorReports.getValue() );
             }
         } );
 

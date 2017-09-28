@@ -178,4 +178,6 @@ public interface MetadataConstants extends
     String IsValidForDUSASSpecialityReportsMetaData();
 
     String IsValidForMetaData();
+
+    String IsValidForPrivateSectorReportsMetaData();
 }

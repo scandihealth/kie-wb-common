@@ -30,6 +30,7 @@ import org.uberfire.workbench.model.menu.MenuItem;
  */
 public abstract class LPREditor extends KieEditor {
 
+    protected Command moveToProdCmdWaitingForValidation = null;
     private boolean lockedByOtherUser;
 
     @Inject
@@ -91,7 +92,7 @@ public abstract class LPREditor extends KieEditor {
     protected void resetEditorPages( Overview overview ) {
         super.resetEditorPages( overview );
         if ( metadata != null ) {
-            if( metadata.getArchivedDate() > 0 ) {
+            if ( metadata.getArchivedDate() > 0 ) {
                 isReadOnly = true;
             }
             //refresh title now that we have access to metadata
@@ -125,9 +126,8 @@ public abstract class LPREditor extends KieEditor {
                         mi.setEnabled( enabled );
                     }
                     if ( CommonConstants.INSTANCE.Restore().equals( button.getText() ) ) {
-                        //only allow restore if rule is not in production or archived (otherwise productionDate and/or archivedDate metadata is lost when restoring)
-                        //todo ttn restore needs to check if CURRENT VERSION of the rule is in production or archived
-                        //todo ttn restore is disabled until this is implemented
+                        //only allow restore if rule is not archived and restore should save the new version in draft status
+                        //todo ttn restore is disabled until this is implemented - see issue LPR-1357
                         mi.setEnabled( false );
                     }
                 }
@@ -160,7 +160,24 @@ public abstract class LPREditor extends KieEditor {
     private class MoveToProductionCommand implements Command {
         @Override
         public void execute() {
-            MoveToProductionPopup popup = new MoveToProductionPopup( new Command() {
+            //check rule has no validation errors before moving to production
+            moveToProdCmdWaitingForValidation = getShowPopupCommand();
+            onValidate().execute();
+        }
+
+        private Command getShowPopupCommand() {
+            return new Command() {
+                @Override
+                public void execute() {
+                    moveToProdCmdWaitingForValidation = null; //we have executed, remove ourselves from the waiting position
+                    MoveToProductionPopup popup = new MoveToProductionPopup( getOKCommand() );
+                    popup.show();
+                }
+            };
+        }
+
+        private Command getOKCommand() {
+            return new Command() {
                 @Override
                 public void execute() {
                     //check state is as expected
@@ -199,8 +216,7 @@ public abstract class LPREditor extends KieEditor {
                     concurrentUpdateSessionInfo = null;
                     notifier.notify( versionRecordManager.getCurrentPath() );
                 }
-            } );
-            popup.show();
+            };
         }
     }
 

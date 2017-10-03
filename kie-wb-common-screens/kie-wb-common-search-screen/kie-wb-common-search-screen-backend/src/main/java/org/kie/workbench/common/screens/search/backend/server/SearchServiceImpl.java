@@ -32,7 +32,12 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.lucene.search.FieldCache;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
+import org.guvnor.common.services.backend.metadata.attribute.LprMetaAttributes;
+import org.guvnor.common.services.backend.metadata.attribute.LprMetaView;
 import org.guvnor.common.services.shared.metadata.model.LprErrorType;
 import org.guvnor.common.services.shared.metadata.model.LprRuleGroup;
 import org.guvnor.common.services.shared.metadata.model.LprRuleType;
@@ -212,8 +217,10 @@ public class SearchServiceImpl implements SearchService {
             if ( totalNumHitsEstimate > 0 ) {
                 final PagedCountingFilter filter = new PagedCountingFilter( pageRequest.getStartRowIndex(),
                         pageRequest.getPageSize() );
+                //todo ttn unit test the new sort order functionality
                 final List<Path> pathResult = ioSearchService.searchByAttrs( attrs,
                         filter,
+                        new Sort( new SortField( ERROR_NUMBER, FieldCache.DEFAULT_LONG_PARSER ) ), //sort by error number (error number is stored as string and should be parsed to Long when sorting to achieve numerical comparison instead of lexicographical comparison (String comparison))
                         getAuthorizedRepositoryRoots() );
                 return buildResponse( pathResult,
                         pageRequest.getPageSize(),
@@ -243,13 +250,24 @@ public class SearchServiceImpl implements SearchService {
             final String lastContributor = extractLastContributor( versionAttributeView );
             final Date lastModifiedDate = extractLastModifiedDate( versionAttributeView );
             final String description = extractDescription( dcoreView );
+            LprMetaAttributes lprMetaAttributes = ioService.getFileAttributeView( path, LprMetaView.class ).readAttributes();
 
             final SearchPageRow row = new SearchPageRow( Paths.convert( path ),
                     creator,
                     createdDate,
                     lastContributor,
                     lastModifiedDate,
-                    description );
+                    description,
+                    lprMetaAttributes.errorNumber(),
+                    lprMetaAttributes.errorText(),
+                    lprMetaAttributes.errorType(),
+                    lprMetaAttributes.ruleGroup(),
+                    lprMetaAttributes.productionDate() > 0 ? new Date( lprMetaAttributes.productionDate() ) : null,
+                    lprMetaAttributes.archivedDate() > 0 ? new Date( lprMetaAttributes.archivedDate() ) : null,
+                    lprMetaAttributes.isValidForLPRReports(),
+                    lprMetaAttributes.isValidForDUSASAbroadReports(),
+                    lprMetaAttributes.isValidForDUSASSpecialityReports(),
+                    lprMetaAttributes.isValidForPrivateSectorReports() );
             result.add( row );
         }
 

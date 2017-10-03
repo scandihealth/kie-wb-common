@@ -15,6 +15,10 @@
   <description>Kie Workbench - Common - Search Screen API</description>
 
   <dependencies>
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-lpr-consts</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.uberfire</groupId>

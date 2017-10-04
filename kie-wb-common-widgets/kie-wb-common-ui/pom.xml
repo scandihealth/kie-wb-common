@@ -238,7 +238,19 @@
 
   </dependencies>
 
+  <properties>
+    <maven.build.timestamp.format>dd-MM-yyyy HH:mm</maven.build.timestamp.format>
+    <!-- Version shown for example in About dialog. Will be usually overridden by productisation. -->
+    <version.org.kie.workbench.app>6.5.0-DXC</version.org.kie.workbench.app>
+    <version.org.kie.workbench.app.timestamp>${maven.build.timestamp}</version.org.kie.workbench.app.timestamp>
+  </properties>
   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
     <resources>
       <!-- Include module descriptors from src/main/resources in order not to break the Intellij GWT plug-in -->
       <resource>

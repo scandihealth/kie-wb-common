@@ -28,23 +28,30 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.shared.metadata.model.LprErrorType;
 import org.guvnor.common.services.shared.metadata.model.LprRuleGroup;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.gwtbootstrap3.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.extras.datepicker.client.ui.base.events.ClearDateEvent;
 import org.gwtbootstrap3.extras.datepicker.client.ui.base.events.ClearDateHandler;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
+import org.kie.workbench.common.widgets.metadata.client.resources.ImageResources;
 import org.kie.workbench.common.widgets.metadata.client.resources.i18n.MetadataConstants;
 import org.uberfire.backend.vfs.impl.LockInfo;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.ext.widgets.common.client.common.DatePicker;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 import org.uberfire.ext.widgets.common.client.common.NumericLongTextBox;
+import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
+import org.uberfire.mvp.Command;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
@@ -67,14 +74,14 @@ public class MetadataWidget
     private Metadata metadata = null;
     private boolean readOnly;
 
-    //    private Runnable forceUnlockHandler;
+    private Runnable forceUnlockHandler;
     private String currentUser;
 
-    /*
     @UiField
     TagWidget tags;
     @UiField
     FormControlStatic note;
+    /*
     @UiField
     FormControlStatic uri;
     @UiField
@@ -118,12 +125,10 @@ public class MetadataWidget
     ListBox ruleGroup;
     @UiField
     ListBox errorType;
-/*
     @UiField
     FormControlStatic lockedBy;
     @UiField
     PushButton unlock;
-*/
 
     private BusyIndicatorView busyIndicatorView;
 
@@ -156,7 +161,7 @@ public class MetadataWidget
     }
 
     public void setForceUnlockHandler( final Runnable forceUnlockHandler ) {
-//        this.forceUnlockHandler = forceUnlockHandler;
+        this.forceUnlockHandler = forceUnlockHandler;
     }
 
     public void setCurrentUser( String currentUser ) {
@@ -165,11 +170,9 @@ public class MetadataWidget
 
     private void loadData() {
         initComponents();
-
-/*
         tags.setContent( metadata, this.readOnly );
-
         note.setText( metadata.getCheckinComment() );
+/*
 
         uri.setText( metadata.getRealPath().toURI() );
 
@@ -410,8 +413,8 @@ public class MetadataWidget
     }
 
     public void setLockStatus( final LockInfo lockInfo ) {
-//        lockedBy.setText( getLockStatusText( lockInfo ) );
-//        maybeShowForceUnlockButton( lockInfo );
+        lockedBy.setText( getLockStatusText( lockInfo ) );
+        maybeShowForceUnlockButton( lockInfo );
     }
 
     String getLockStatusText( final LockInfo lockInfo ) {
@@ -431,7 +434,6 @@ public class MetadataWidget
         return lockStatusText;
     }
 
-/*
     private void maybeShowForceUnlockButton( final LockInfo lockInfo ) {
         final Image unlockImage = new Image( ImageResources.INSTANCE.unlock() );
         unlock.setHTML( "<span>" + unlockImage.toString() + " " + unlock.getText() + "</span>" );
@@ -439,7 +441,6 @@ public class MetadataWidget
         unlock.setVisible( lockInfo.isLocked() );
         unlock.setEnabled( true );
     }
-*/
 
     @Deprecated
     public Metadata getContent() {
@@ -457,10 +458,9 @@ public class MetadataWidget
     }
 
     public void setNote( String text ) {
-//        note.setText( text );
+        note.setText( text );
     }
 
-/*
     @UiHandler("unlock")
     public void onForceUnlock( ClickEvent e ) {
         final YesNoCancelPopup yesNoCancelPopup =
@@ -483,6 +483,5 @@ public class MetadataWidget
         yesNoCancelPopup.setClosable( false );
         yesNoCancelPopup.show();
     }
-*/
 }
 

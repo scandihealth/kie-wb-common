@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.project.context.ProjectContext;
-import org.guvnor.common.services.shared.metadata.model.LprRuleType;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.guvnor.structure.repositories.RepositoryRemovedEvent;
@@ -203,10 +202,6 @@ public abstract class KieEditor
 
         this.overviewWidget.setContent( overview, versionRecordManager.getPathToLatest() );
         this.metadata = overview.getMetadata();
-        if ( this.metadata != null ) {
-            this.metadata.setRuleType( LprRuleType.REPORT_VALIDATION ); //Mark resources managed by editors as LPR rules
-        }
-
 
         kieView.clear();
 

@@ -6,12 +6,15 @@ import javax.inject.Inject;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.guvnor.common.services.shared.metadata.model.LprRuleType;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.gwtbootstrap3.client.ui.Button;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.kie.workbench.common.widgets.metadata.client.KieEditor;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
+import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.mvp.UpdatedLockStatusEvent;
@@ -92,16 +95,32 @@ public abstract class LPREditor extends KieEditor {
     protected void resetEditorPages( Overview overview ) {
         super.resetEditorPages( overview );
         if ( metadata != null ) {
-            if ( metadata.getArchivedDate() > 0 ) {
-                isReadOnly = true;
-            }
-            //refresh title now that we have access to metadata
-            baseView.refreshTitle( getTitleText() );
-            changeTitleNotification.fire( new ChangeTitleWidgetEvent( place, getTitleText(), getTitle() ) );
+            metadata.setRuleType( LprRuleType.REPORT_VALIDATION ); //Mark resources managed by this editor as LPR rules
         }
-        updateEnabledStateOnMenuItems();
+        updateUI();
     }
 
+    @Override
+    protected RemoteCallback<Path> getSaveSuccessCallback( final int newHash ) {
+        final RemoteCallback<Path> superSaveSuccess = super.getSaveSuccessCallback( newHash );
+        return new RemoteCallback<Path>() {
+            @Override
+            public void callback( final Path path ) {
+                superSaveSuccess.callback( path );
+                updateUI();
+            }
+        };
+    }
+
+    private void updateUI() {
+        updateEnabledStateOnMenuItems();
+        baseView.refreshTitle( getTitleText() );
+        changeTitleNotification.fire( new ChangeTitleWidgetEvent( place, getTitleText(), getTitle() ) );
+        if ( metadata != null && metadata.getArchivedDate() > 0 ) {
+            isReadOnly = true;
+            reload(); //we have to reload to change the view to readonly mode
+        }
+    }
 
     private void onEditorLockInfo( @Observes UpdatedLockStatusEvent lockInfo ) {
         lockedByOtherUser = !(!lockInfo.isLocked() || lockInfo.isLockedByCurrentUser());

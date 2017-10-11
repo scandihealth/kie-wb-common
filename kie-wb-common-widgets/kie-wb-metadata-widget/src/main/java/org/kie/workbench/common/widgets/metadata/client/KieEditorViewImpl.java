@@ -18,13 +18,18 @@ package org.kie.workbench.common.widgets.metadata.client;
 
 import org.uberfire.ext.editor.commons.client.BaseEditorViewImpl;
 
-public abstract class KieEditorViewImpl
+public abstract class KieEditorViewImpl<T>
         extends BaseEditorViewImpl
-        implements KieEditorView {
+        implements KieEditorView<T> {
 
     @Override
     public void refreshTitle( String fileName,
                               String description ) {
         title.setText( fileName, description );
+    }
+
+    @Override
+    public T getContent() {
+        throw new UnsupportedOperationException( "not implemented" );
     }
 }

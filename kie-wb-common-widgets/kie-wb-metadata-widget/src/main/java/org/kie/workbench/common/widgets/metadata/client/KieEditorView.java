@@ -18,10 +18,11 @@ package org.kie.workbench.common.widgets.metadata.client;
 
 import org.uberfire.ext.editor.commons.client.BaseEditorView;
 
-public interface KieEditorView
+public interface KieEditorView<T>
         extends BaseEditorView {
 
     void refreshTitle( final String fileName,
                        final String description );
 
+    T getContent();
 }

@@ -295,4 +295,8 @@ public interface CommonConstants
     String Reimport();
 
     String ReimportSuccessful();
+
+    String LPRArchive();
+
+    String LPRMoveToProduction();
 }

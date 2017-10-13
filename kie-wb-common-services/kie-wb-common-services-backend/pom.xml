@@ -27,7 +27,10 @@
   </build>
 
   <dependencies>
-
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-lpr-log</artifactId>
+    </dependency>
     <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>

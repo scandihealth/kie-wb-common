@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-services</artifactId>
+        <version>6.5.0.csc-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>kie-wb-common-lpr-log</artifactId>
+    <name>Kie Workbench - Common - LPR Logging</name>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.scandihealth.lpr.common</groupId>
+                <artifactId>commonUtil</artifactId>
+                <version>2.5-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.scandihealth.lpr.common</groupId>
+                <artifactId>commonDomain</artifactId>
+                <version>2.5-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>2.8.9</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>7.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-security-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.scandihealth.lpr.common</groupId>
+            <artifactId>commonUtil</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.scandihealth.lpr.common</groupId>
+            <artifactId>commonDomain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

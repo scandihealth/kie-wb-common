@@ -299,4 +299,6 @@ public interface CommonConstants
     String LPRArchive();
 
     String LPRMoveToProduction();
+
+    String LPRItemMoveToProductionSuccessfully();
 }

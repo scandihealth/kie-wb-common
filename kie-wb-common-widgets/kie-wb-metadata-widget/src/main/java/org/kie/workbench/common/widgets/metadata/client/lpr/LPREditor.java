@@ -18,9 +18,12 @@ import org.guvnor.messageconsole.events.PublishMessagesEvent;
 import org.guvnor.messageconsole.events.SystemMessage;
 import org.guvnor.messageconsole.events.UnpublishMessagesEvent;
 import org.gwtbootstrap3.client.ui.Button;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOC;
+import org.kie.workbench.common.services.shared.lpr.LPRManageProductionService;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.kie.workbench.common.widgets.client.popups.validation.ValidationPopup;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
@@ -49,6 +52,9 @@ public abstract class LPREditor extends KieEditor {
     private Command moveToProdCmdWaitingForValidation = null;
     private final static String VALIDATION_ERROR_MESSAGE_TYPE = "VALIDATION_ERROR_";
     private boolean lockedByOtherUser;
+
+    @Inject
+    private Caller<LPRManageProductionService> lprProdService;
 
     @Inject
     private SessionInfo sessionInfo;
@@ -131,6 +137,25 @@ public abstract class LPREditor extends KieEditor {
             public void callback( final Path path ) {
                 superSaveSuccess.callback( path );
                 updateUI();
+                if ( metadata != null && metadata.getProductionDate() > 0 ) {
+                    //rule was just put into production - copy the rule to prod branch so it is ready bo build & deploy
+                    lprProdService.call(
+                            new RemoteCallback<Path>() {
+                                @Override
+                                public void callback( Path path ) {
+                                    notification.fire( new NotificationEvent( CommonConstants.INSTANCE.LPRItemMoveToProductionSuccessfully(), NotificationEvent.NotificationType.SUCCESS ) );
+                                }
+                            },
+                            new ErrorCallback<Message>() {
+                                @Override
+                                public boolean error( Message message, Throwable throwable ) { //exception already logged by DroolsLoggingToDBInterceptor
+                                    //todo ttn unit test this rollback behaviour
+                                    metadata.setProductionDate( 0L );
+                                    save( "Produktionsættelse rullet tilbage pga. systemfejl" );
+                                    return new DefaultErrorCallback().error( message, throwable );
+                                }
+                            } ).copyToProductionBranch( path );
+                }
             }
         };
     }
@@ -199,7 +224,7 @@ public abstract class LPREditor extends KieEditor {
     }
 
     @SuppressWarnings("unchecked")
-    protected Command getValidationCallback( final Caller<? extends ValidationService> validationService, final KieEditorView view) {
+    protected Command getValidationCallback( final Caller<? extends ValidationService> validationService, final KieEditorView view ) {
         return new Command() {
             @Override
             public void execute() {

@@ -18,9 +18,7 @@ import org.guvnor.messageconsole.events.PublishMessagesEvent;
 import org.guvnor.messageconsole.events.SystemMessage;
 import org.guvnor.messageconsole.events.UnpublishMessagesEvent;
 import org.gwtbootstrap3.client.ui.Button;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.kie.workbench.common.services.shared.lpr.LPRManageProductionService;
@@ -139,6 +137,7 @@ public abstract class LPREditor extends KieEditor {
                 updateUI();
                 if ( metadata != null && metadata.getProductionDate() > 0 ) {
                     //rule was just put into production - copy the rule to prod branch so it is ready bo build & deploy
+/*
                     lprProdService.call(
                             new RemoteCallback<Path>() {
                                 @Override
@@ -155,6 +154,7 @@ public abstract class LPREditor extends KieEditor {
                                     return new DefaultErrorCallback().error( message, throwable );
                                 }
                             } ).copyToProductionBranch( path );
+*/
                 }
             }
         };

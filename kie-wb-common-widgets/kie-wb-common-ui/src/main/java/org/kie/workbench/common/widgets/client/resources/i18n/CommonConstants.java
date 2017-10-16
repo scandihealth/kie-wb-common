@@ -301,4 +301,6 @@ public interface CommonConstants
     String LPRMoveToProduction();
 
     String LPRItemMoveToProductionSuccessfully();
+
+    String LPRSimulate();
 }

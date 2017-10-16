@@ -18,7 +18,9 @@ import org.guvnor.messageconsole.events.PublishMessagesEvent;
 import org.guvnor.messageconsole.events.SystemMessage;
 import org.guvnor.messageconsole.events.UnpublishMessagesEvent;
 import org.gwtbootstrap3.client.ui.Button;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.kie.workbench.common.services.shared.lpr.LPRManageProductionService;
@@ -72,6 +74,10 @@ public abstract class LPREditor extends KieEditor {
     public LPREditor( KieEditorView baseView ) {
         super( baseView );
     }
+
+    protected abstract Integer getCurrentHash();
+
+    protected abstract void setDroolsMetadata();
 
     @Override
     protected void makeMenuBar() {
@@ -136,8 +142,7 @@ public abstract class LPREditor extends KieEditor {
                 superSaveSuccess.callback( path );
                 updateUI();
                 if ( metadata != null && metadata.getProductionDate() > 0 ) {
-                    //rule was just put into production - copy the rule to prod branch so it is ready bo build & deploy
-/*
+                    //rule was just put into production - copy the rule to prod branch so it is ready to build & deploy
                     lprProdService.call(
                             new RemoteCallback<Path>() {
                                 @Override
@@ -154,11 +159,45 @@ public abstract class LPREditor extends KieEditor {
                                     return new DefaultErrorCallback().error( message, throwable );
                                 }
                             } ).copyToProductionBranch( path );
-*/
                 }
             }
         };
     }
+
+    @SuppressWarnings("unchecked")
+    protected Command getValidationCallback( final Caller<? extends ValidationService> validationService, final KieEditorView view ) {
+        return new Command() {
+            @Override
+            public void execute() {
+                validationService.call( new RemoteCallback<List<ValidationMessage>>() {
+                    @Override
+                    public void callback( final List<ValidationMessage> results ) {
+                        String fileName = versionRecordManager.getCurrentPath().getFileName();
+                        unpublishErrorMessages( VALIDATION_ERROR_MESSAGE_TYPE + fileName ); //remove any old error logs about validation errors
+                        if ( results == null || results.isEmpty() ) {
+                            notification.fire( new NotificationEvent( CommonConstants.INSTANCE.ItemValidatedSuccessfully(),
+                                    NotificationEvent.NotificationType.SUCCESS ) );
+
+                            if ( moveToProdCmdWaitingForValidation != null ) {
+                                moveToProdCmdWaitingForValidation.execute();
+                            }
+                        } else {
+                            moveToProdCmdWaitingForValidation = null;
+                            for ( ValidationMessage result : results ) {
+                                publishErrorMessage( result.getText(), VALIDATION_ERROR_MESSAGE_TYPE + fileName, result.getColumn(), result.getLine() );
+                            }
+                            ValidationPopup.showMessages( results );
+                        }
+                    }
+                }, new DefaultErrorCallback() ).validate( versionRecordManager.getCurrentPath(), view.getContent() );
+            }
+        };
+    }
+
+
+    /****************************************************************************************
+     *                                  PRIVATE METHODS
+     ****************************************************************************************/
 
     private void updateUI() {
         updateEnabledStateOnMenuItems();
@@ -223,36 +262,6 @@ public abstract class LPREditor extends KieEditor {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected Command getValidationCallback( final Caller<? extends ValidationService> validationService, final KieEditorView view ) {
-        return new Command() {
-            @Override
-            public void execute() {
-                validationService.call( new RemoteCallback<List<ValidationMessage>>() {
-                    @Override
-                    public void callback( final List<ValidationMessage> results ) {
-                        String fileName = versionRecordManager.getCurrentPath().getFileName();
-                        unpublishErrorMessages( VALIDATION_ERROR_MESSAGE_TYPE + fileName ); //remove any old error logs about validation errors
-                        if ( results == null || results.isEmpty() ) {
-                            notification.fire( new NotificationEvent( CommonConstants.INSTANCE.ItemValidatedSuccessfully(),
-                                    NotificationEvent.NotificationType.SUCCESS ) );
-
-                            if ( moveToProdCmdWaitingForValidation != null ) {
-                                moveToProdCmdWaitingForValidation.execute();
-                            }
-                        } else {
-                            moveToProdCmdWaitingForValidation = null;
-                            for ( ValidationMessage result : results ) {
-                                publishErrorMessage( result.getText(), VALIDATION_ERROR_MESSAGE_TYPE + fileName, result.getColumn(), result.getLine() );
-                            }
-                            ValidationPopup.showMessages( results );
-                        }
-                    }
-                }, new DefaultErrorCallback() ).validate( versionRecordManager.getCurrentPath(), view.getContent() );
-            }
-        };
-    }
-
     private void publishErrorMessage( String errorText, String messageType, int column, int line ) {
         SystemMessage systemMessage = new SystemMessage();
         systemMessage.setText( errorText );
@@ -279,7 +288,10 @@ public abstract class LPREditor extends KieEditor {
         unpublishMessages.fire( event );
     }
 
-    protected abstract Integer getCurrentHash();
+
+    /****************************************************************************************
+     *                                  PRIVATE CLASSES
+     ****************************************************************************************/
 
     private class MoveToProductionCommand implements Command {
         private final String MOVE_TO_PROD_DIRTY_ERROR_MESSAGE_TYPE = "MOVE_TO_PROD_DIRTY_ERROR_";

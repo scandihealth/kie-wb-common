@@ -252,7 +252,6 @@ public abstract class LPREditor extends KieEditor {
     private void updateEnabledStateOnMenuItems() {
         if ( this.metadata != null ) {
             for ( MenuItem mi : menus.getItemsMap().values() ) {
-
                 if ( mi instanceof SaveButton ) {
                     Button button = ( Button ) (( SaveButton ) mi).build();
                     if ( CommonConstants.INSTANCE.Save().equals( button.getText() ) ) {
@@ -266,13 +265,6 @@ public abstract class LPREditor extends KieEditor {
                         mi.setEnabled( false );
                     }
                 }
-
-                //only allow copy if rule is not archived
-                if ( CommonConstants.INSTANCE.Copy().equals( mi.getCaption() ) ) {
-                    boolean enabled = this.metadata.getArchivedDate() == 0L;
-                    mi.setEnabled( enabled );
-                }
-
                 //only allow delete, rename or 'move to production' if rule is not in production and not archived
                 if ( CommonConstants.INSTANCE.Delete().equals( mi.getCaption() ) ||
                         CommonConstants.INSTANCE.Rename().equals( mi.getCaption() ) ||
@@ -280,13 +272,11 @@ public abstract class LPREditor extends KieEditor {
                     boolean enabled = !isReadOnly && this.metadata.getProductionDate() == 0 && this.metadata.getArchivedDate() == 0 && versionRecordManager.isCurrentLatest();
                     mi.setEnabled( enabled );
                 }
-
                 //only allow archive if rule is in production and not already archived
                 if ( CommonConstants.INSTANCE.LPRArchive().equals( mi.getCaption() ) ) {
                     boolean enabled = !isReadOnly && this.metadata.getProductionDate() > 0 && this.metadata.getArchivedDate() == 0 && versionRecordManager.isCurrentLatest();
                     mi.setEnabled( enabled );
                 }
-
             }
         }
     }

@@ -10,7 +10,7 @@ import org.uberfire.backend.vfs.Path;
 @Remote
 public interface LPRManageProductionService {
 
-    Path copyToProductionBranch( Path rulePath );
+    Path copyToProductionBranch( Path sourcePath );
 
-    Path deleteFromProductionBranch( Path rulePath );
+    Path deleteFromProductionBranch( Path sourcePath );
 }

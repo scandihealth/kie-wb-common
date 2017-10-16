@@ -303,4 +303,6 @@ public interface CommonConstants
     String LPRItemMoveToProductionSuccessfully();
 
     String LPRSimulate();
+
+    String LPRItemArchivedSuccessfully();
 }

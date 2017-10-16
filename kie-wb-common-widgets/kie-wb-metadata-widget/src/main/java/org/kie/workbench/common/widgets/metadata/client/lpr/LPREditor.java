@@ -131,7 +131,7 @@ public abstract class LPREditor extends KieEditor {
         if ( metadata != null ) {
             metadata.setRuleType( LprRuleType.REPORT_VALIDATION ); //Mark resources managed by this editor as LPR rules
         }
-        updateUI();
+        updateUI( false ); //no need to reload - we are in the process of loading
     }
 
     @Override
@@ -141,26 +141,53 @@ public abstract class LPREditor extends KieEditor {
             @Override
             public void callback( final Path path ) {
                 superSaveSuccess.callback( path );
-                updateUI();
-                if ( metadata != null && metadata.getProductionDate() > 0 ) {
+                if ( metadata != null && metadata.getProductionDate() > 0 && metadata.getArchivedDate() == 0 ) {
                     //rule was just put into production - copy the rule to prod branch so it is ready to build & deploy
-                    lprProdService.call(
-                            new RemoteCallback<Path>() {
-                                @Override
-                                public void callback( Path path ) {
-                                    notification.fire( new NotificationEvent( CommonConstants.INSTANCE.LPRItemMoveToProductionSuccessfully(), NotificationEvent.NotificationType.SUCCESS ) );
-                                }
-                            },
-                            new ErrorCallback<Message>() {
-                                @Override
-                                public boolean error( Message message, Throwable throwable ) { //exception already logged by DroolsLoggingToDBInterceptor
-                                    //todo ttn unit test this rollback behaviour
-                                    metadata.setProductionDate( 0L );
-                                    save( "Produktionsættelse rullet tilbage pga. systemfejl" );
-                                    return new DefaultErrorCallback().error( message, throwable );
-                                }
-                            } ).copyToProductionBranch( path );
+                    copyToProd( path );
+
+                } else if ( metadata != null && metadata.getArchivedDate() > 0 ) {
+                    //rule was archived - delete the rule in prod branch
+                    deleteFromProd( path );
                 }
+                updateUI( true ); //we have to reload after saving to change the view to readonly mode
+            }
+
+            private void copyToProd( Path path ) {
+                lprProdService.call(
+                        new RemoteCallback<Path>() {
+                            @Override
+                            public void callback( Path path ) {
+                                notification.fire( new NotificationEvent( CommonConstants.INSTANCE.LPRItemMoveToProductionSuccessfully(), NotificationEvent.NotificationType.SUCCESS ) );
+                            }
+                        },
+                        new ErrorCallback<Message>() {
+                            @Override
+                            public boolean error( Message message, Throwable throwable ) { //exception already logged by DroolsLoggingToDBInterceptor
+                                //todo ttn unit test this rollback behaviour
+                                metadata.setProductionDate( 0L );
+                                save( "Produktionsættelse rullet tilbage pga. systemfejl" );
+                                return new DefaultErrorCallback().error( message, throwable );
+                            }
+                        } ).copyToProductionBranch( path );
+            }
+
+            private void deleteFromProd( Path path ) {
+                lprProdService.call(
+                        new RemoteCallback<Path>() {
+                            @Override
+                            public void callback( Path path ) {
+                                notification.fire( new NotificationEvent( CommonConstants.INSTANCE.LPRItemArchivedSuccessfully(), NotificationEvent.NotificationType.SUCCESS ) );
+                            }
+                        },
+                        new ErrorCallback<Message>() {
+                            @Override
+                            public boolean error( Message message, Throwable throwable ) { //exception already logged by DroolsLoggingToDBInterceptor
+                                //todo ttn unit test this rollback behaviour
+                                metadata.setArchivedDate( 0L );
+                                save( "Arkivering rullet tilbage pga. systemfejl" );
+                                return new DefaultErrorCallback().error( message, throwable );
+                            }
+                        } ).deleteFromProductionBranch( path );
             }
         };
     }
@@ -200,13 +227,14 @@ public abstract class LPREditor extends KieEditor {
      *                                  PRIVATE METHODS
      ****************************************************************************************/
 
-    private void updateUI() {
+    private void updateUI( boolean reloadIfArchived ) {
         updateEnabledStateOnMenuItems();
         baseView.refreshTitle( getTitleText() );
         changeTitleNotification.fire( new ChangeTitleWidgetEvent( place, getTitleText(), getTitle() ) );
-        if ( metadata != null && metadata.getArchivedDate() > 0 ) {
+        if ( metadata != null && metadata.getArchivedDate() > 0 && !isReadOnly ) {
             isReadOnly = true;
-            reload(); //we have to reload to change the view to readonly mode
+            if ( reloadIfArchived )
+                reload();
         }
     }
 

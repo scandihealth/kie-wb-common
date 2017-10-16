@@ -35,6 +35,20 @@ public class LPRManageProductionServiceImpl implements LPRManageProductionServic
     @Override
     public Path copyToProductionBranch( Path sourcePath ) {
         org.uberfire.java.nio.file.Path ruleSourceFilePath = Paths.convert( sourcePath );
+        org.uberfire.java.nio.file.Path prodFilePath = getProdPath( ruleSourceFilePath );
+        ioService.copy( ruleSourceFilePath, prodFilePath, StandardCopyOption.REPLACE_EXISTING );
+        return Paths.convert( prodFilePath );
+    }
+
+    @Override
+    public Path deleteFromProductionBranch( Path sourcePath ) {
+        org.uberfire.java.nio.file.Path ruleSourceFilePath = Paths.convert( sourcePath );
+        org.uberfire.java.nio.file.Path prodFilePath = getProdPath( ruleSourceFilePath );
+        ioService.delete( prodFilePath );
+        return Paths.convert( prodFilePath );
+    }
+
+    private org.uberfire.java.nio.file.Path getProdPath( org.uberfire.java.nio.file.Path ruleSourceFilePath ) {
         String version = versionUtil.getVersion( ruleSourceFilePath );
         PortablePreconditions.checkCondition( "sourcePath should point to master", LPRGitBranchesConsts.MASTER.equalsIgnoreCase( version ) );
         org.uberfire.java.nio.file.Path prodFilePath;
@@ -43,12 +57,7 @@ public class LPRManageProductionServiceImpl implements LPRManageProductionServic
         } catch ( URISyntaxException e ) {
             throw new RuntimeException( "URISyntaxException while parsing sourcePath URI", e );
         }
-        ioService.copy( ruleSourceFilePath, prodFilePath, StandardCopyOption.REPLACE_EXISTING );
-        return Paths.convert( prodFilePath );
+        return prodFilePath;
     }
 
-    @Override
-    public Path deleteFromProductionBranch( Path rulePath ) {
-        return null;
-    }
 }

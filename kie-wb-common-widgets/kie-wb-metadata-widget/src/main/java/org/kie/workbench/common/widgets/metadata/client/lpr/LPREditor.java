@@ -85,6 +85,7 @@ public abstract class LPREditor extends KieEditor {
                 .addSave( versionRecordManager.newSaveMenuItem( new Command() {
                     @Override
                     public void execute() {
+                        metadata.setProductionDate( 0L ); //save as draft version
                         onSave();
                     }
                 } ) )

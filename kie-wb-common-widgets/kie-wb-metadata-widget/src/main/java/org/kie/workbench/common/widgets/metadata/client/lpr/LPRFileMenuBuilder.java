@@ -16,21 +16,18 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.client.file.CommandWithFileNameAndCommitMessage;
 import org.uberfire.ext.editor.commons.client.file.CopyPopup;
 import org.uberfire.ext.editor.commons.client.file.CopyPopupView;
-import org.uberfire.ext.editor.commons.client.file.DeletePopup;
 import org.uberfire.ext.editor.commons.client.file.FileNameAndCommitMessage;
 import org.uberfire.ext.editor.commons.client.file.RenamePopup;
 import org.uberfire.ext.editor.commons.client.file.RenamePopupView;
 import org.uberfire.ext.editor.commons.client.menu.MenuItems;
 import org.uberfire.ext.editor.commons.client.validation.Validator;
 import org.uberfire.ext.editor.commons.service.CopyService;
-import org.uberfire.ext.editor.commons.service.DeleteService;
 import org.uberfire.ext.editor.commons.service.RenameService;
 import org.uberfire.ext.editor.commons.service.support.SupportsCopy;
 import org.uberfire.ext.editor.commons.service.support.SupportsRename;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -44,6 +41,7 @@ import org.uberfire.workbench.model.menu.Menus;
 public class LPRFileMenuBuilder {
 
     private MenuItem saveMenuItem = null;
+    private Command saveCommand = null;
     private Command deleteCommand = null;
     private Command renameCommand = null;
     private Command copyCommand = null;
@@ -54,8 +52,6 @@ public class LPRFileMenuBuilder {
     private Command simulateCommand = null;
     private List<MenuItem> menuItemsSyncedWithLockState = new ArrayList<MenuItem>();
 
-    @Inject
-    private Caller<DeleteService> deleteService;
     @Inject
     private Caller<RenameService> renameService;
     @Inject
@@ -72,6 +68,11 @@ public class LPRFileMenuBuilder {
 
     public LPRFileMenuBuilder addSave( final MenuItem menuItem ) {
         saveMenuItem = menuItem;
+        return this;
+    }
+
+    public LPRFileMenuBuilder addSave( Command saveCommand ) {
+        this.saveCommand = saveCommand;
         return this;
     }
 
@@ -106,27 +107,8 @@ public class LPRFileMenuBuilder {
         return this;
     }
 
-    public LPRFileMenuBuilder addDelete( final Path path ) {
-        deleteCommand = new Command() {
-            @Override
-            public void execute() {
-                final DeletePopup popup = new DeletePopup( new ParameterizedCommand<String>() {
-                    @Override
-                    public void execute( final String comment ) {
-                        busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Deleting() );
-                        deleteService.call( new RemoteCallback<Void>() {
-                                                @Override
-                                                public void callback( final Void response ) {
-                                                    busyIndicatorView.hideBusyIndicator();
-                                                    notification.fire( new NotificationEvent( CommonConstants.INSTANCE.ItemDeletedSuccessfully() ) );
-                                                }
-                                            },
-                                new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) ).delete( path, comment );
-                    }
-                } );
-                popup.show();
-            }
-        };
+    public LPRFileMenuBuilder addDelete( final Command command ) {
+        deleteCommand = command;
         return this;
     }
 
@@ -158,6 +140,14 @@ public class LPRFileMenuBuilder {
     public Menus build() {
         final Map<Object, MenuItem> menuItems = new LinkedHashMap<Object, MenuItem>();
         if ( saveMenuItem != null ) {
+            menuItems.put( MenuItems.SAVE, saveMenuItem );
+            menuItemsSyncedWithLockState.add( saveMenuItem );
+        }
+        if ( saveCommand != null ) {
+            MenuItem saveMenuItem = MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.Save() )
+                    .respondsWith( saveCommand )
+                    .endMenu()
+                    .build().getItems().get( 0 );
             menuItems.put( MenuItems.SAVE, saveMenuItem );
             menuItemsSyncedWithLockState.add( saveMenuItem );
         }

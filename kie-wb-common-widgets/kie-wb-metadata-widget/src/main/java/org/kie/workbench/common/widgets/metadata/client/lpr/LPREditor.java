@@ -17,7 +17,6 @@ import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.guvnor.messageconsole.events.PublishMessagesEvent;
 import org.guvnor.messageconsole.events.SystemMessage;
 import org.guvnor.messageconsole.events.UnpublishMessagesEvent;
-import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -35,10 +34,13 @@ import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.mvp.UpdatedLockStatusEvent;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.ext.editor.commons.client.file.ArchivePopup;
+import org.uberfire.ext.editor.commons.client.file.LPRDeletePopup;
 import org.uberfire.ext.editor.commons.client.file.MoveToProductionPopup;
 import org.uberfire.ext.editor.commons.client.file.SaveOperationService;
-import org.uberfire.ext.editor.commons.client.history.SaveButton;
+import org.uberfire.ext.editor.commons.service.DeleteService;
+import org.uberfire.ext.editor.commons.version.VersionService;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
+import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
 import org.uberfire.mvp.Command;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -55,6 +57,12 @@ public abstract class LPREditor extends KieEditor {
 
     @Inject
     private Caller<LPRManageProductionService> lprProdService;
+
+    @Inject
+    private Caller<DeleteService> deleteService;
+
+    @Inject
+    private Caller<VersionService> versionService;
 
     @Inject
     private SessionInfo sessionInfo;
@@ -82,15 +90,20 @@ public abstract class LPREditor extends KieEditor {
     @Override
     protected void makeMenuBar() {
         menus = lprMenuBuilder
-                .addSave( versionRecordManager.newSaveMenuItem( new Command() {
+                //restore is permanently disabled as restoring a prod version does not actually put it into production and restoring an archived rule is also messy
+                //todo ttn consider re-adding restore, but disable it for prod versions and in general for archived rules
+                .addSave( new Command() {
                     @Override
                     public void execute() {
                         metadata.setProductionDate( 0L ); //save as draft version
+                        //todo ttn this "shades" the prod version and this rule will no longer show up when searching for prod rules
+                        //todo ttn add a metadata boolean that says whether the rule has a prod version - and use this when searching for prod rules (instead of prod date)
                         onSave();
                     }
-                } ) )
-                .addDelete( versionRecordManager.getPathToLatest() )
-                .addRename( versionRecordManager.getPathToLatest(), fileNameValidator )
+                } )
+                .addDelete( new DeleteCommand() )
+                //rename is permanently disabled as it truncates version history and this screws up the the draft/prod/archive LPR rule lifecycle
+                //.addRename( versionRecordManager.getPathToLatest(), fileNameValidator )
                 .addCopy( versionRecordManager.getCurrentPath(), fileNameValidator )
                 .addMoveToProduction( new MoveToProductionCommand() )
                 .addArchive( new ArchiveCommand() )
@@ -163,7 +176,6 @@ public abstract class LPREditor extends KieEditor {
                         new ErrorCallback<Message>() {
                             @Override
                             public boolean error( Message message, Throwable throwable ) { //exception already logged by DroolsLoggingToDBInterceptor
-                                //todo ttn unit test this rollback behaviour
                                 metadata.setProductionDate( 0L );
                                 save( "Produktionsættelse rullet tilbage pga. systemfejl" );
                                 return new DefaultErrorCallback().error( message, throwable );
@@ -182,7 +194,6 @@ public abstract class LPREditor extends KieEditor {
                         new ErrorCallback<Message>() {
                             @Override
                             public boolean error( Message message, Throwable throwable ) { //exception already logged by DroolsLoggingToDBInterceptor
-                                //todo ttn unit test this rollback behaviour
                                 metadata.setArchivedDate( 0L );
                                 save( "Arkivering rullet tilbage pga. systemfejl" );
                                 return new DefaultErrorCallback().error( message, throwable );
@@ -252,29 +263,27 @@ public abstract class LPREditor extends KieEditor {
     private void updateEnabledStateOnMenuItems() {
         if ( this.metadata != null ) {
             for ( MenuItem mi : menus.getItemsMap().values() ) {
-                if ( mi instanceof SaveButton ) {
-                    Button button = ( Button ) (( SaveButton ) mi).build();
-                    if ( CommonConstants.INSTANCE.Save().equals( button.getText() ) ) {
-                        //only allow save if rule is not archived
-                        boolean enabled = !isReadOnly && this.metadata.getArchivedDate() == 0L && versionRecordManager.isCurrentLatest();
-                        mi.setEnabled( enabled );
-                    }
-                    if ( CommonConstants.INSTANCE.Restore().equals( button.getText() ) ) {
-                        //only allow restore if rule is not archived and restore should save the new version in draft status
-                        //todo ttn restore is disabled until this is implemented - see issue LPR-1357
-                        mi.setEnabled( false );
-                    }
+                //only allow save if rule is not archived
+                if ( CommonConstants.INSTANCE.Save().equals( mi.getCaption() ) ) {
+                    boolean enabled = !isReadOnly &&
+                            this.metadata.getArchivedDate() == 0 &&
+                            versionRecordManager.isCurrentLatest();
+                    mi.setEnabled( enabled );
                 }
-                //only allow delete, rename or 'move to production' if rule is not in production and not archived
-                if ( CommonConstants.INSTANCE.Delete().equals( mi.getCaption() ) ||
-                        CommonConstants.INSTANCE.Rename().equals( mi.getCaption() ) ||
-                        CommonConstants.INSTANCE.LPRMoveToProduction().equals( mi.getCaption() ) ) {
-                    boolean enabled = !isReadOnly && this.metadata.getProductionDate() == 0 && this.metadata.getArchivedDate() == 0 && versionRecordManager.isCurrentLatest();
+                //only allow delete and 'move to production' if rule is not in production and not archived
+                if ( CommonConstants.INSTANCE.Delete().equals( mi.getCaption() ) || CommonConstants.INSTANCE.LPRMoveToProduction().equals( mi.getCaption() ) ) {
+                    boolean enabled = !isReadOnly &&
+                            this.metadata.getProductionDate() == 0 &&
+                            this.metadata.getArchivedDate() == 0 &&
+                            versionRecordManager.isCurrentLatest();
                     mi.setEnabled( enabled );
                 }
                 //only allow archive if rule is in production and not already archived
                 if ( CommonConstants.INSTANCE.LPRArchive().equals( mi.getCaption() ) ) {
-                    boolean enabled = !isReadOnly && this.metadata.getProductionDate() > 0 && this.metadata.getArchivedDate() == 0 && versionRecordManager.isCurrentLatest();
+                    boolean enabled = !isReadOnly &&
+                            this.metadata.getProductionDate() > 0 &&
+                            this.metadata.getArchivedDate() == 0 &&
+                            versionRecordManager.isCurrentLatest();
                     mi.setEnabled( enabled );
                 }
             }
@@ -451,7 +460,68 @@ public abstract class LPREditor extends KieEditor {
             } );
             popup.show();
         }
+    }
 
+    private class DeleteCommand implements Command {
+        @Override
+        public void execute() {
+            //check if a prod version exists
+            baseView.showBusyIndicator( CommonConstants.INSTANCE.Wait() );
+            lprProdService.call(
+                    getProdVersionCallback(),
+                    new HasBusyIndicatorDefaultErrorCallback( baseView )
+            ).getProdVersion( versionRecordManager.getPathToLatest() );
+        }
+
+        private RemoteCallback<Path> getProdVersionCallback() {
+            return new RemoteCallback<Path>() {
+                @Override
+                public void callback( Path prodPath ) {
+                    baseView.hideBusyIndicator();
+                    boolean isRestore = prodPath != null;
+                    Command action = isRestore ? getRestoreCommand( prodPath ) : getDeleteCommand();
+                    LPRDeletePopup deletePopup = new LPRDeletePopup( action, isRestore );
+                    deletePopup.show();
+                }
+            };
+        }
+
+        private Command getRestoreCommand( final Path prodPath ) {
+            return new Command() {
+                @Override
+                public void execute() {
+                    baseView.showBusyIndicator( CommonConstants.INSTANCE.Restoring() );
+                    versionService.call( new RemoteCallback<Path>() {
+                                             @Override
+                                             public void callback( Path restored ) {
+                                                 baseView.hideBusyIndicator();
+                                                 versionRecordManager.reloadVersions( restored );
+                                                 reload(); //reload to show the new restored version
+                                             }
+                                         },
+                            new HasBusyIndicatorDefaultErrorCallback( baseView )
+                    ).restore( prodPath, "Kladde slettet" );
+                }
+            };
+        }
+
+        private Command getDeleteCommand() {
+            return new Command() {
+                @Override
+                public void execute() {
+                    baseView.showBusyIndicator( CommonConstants.INSTANCE.Deleting() );
+                    deleteService.call( new RemoteCallback<Void>() {
+                                            @Override
+                                            public void callback( final Void response ) {
+                                                baseView.hideBusyIndicator();
+                                                notification.fire( new NotificationEvent( CommonConstants.INSTANCE.ItemDeletedSuccessfully() ) );
+                                            }
+                                        },
+                            new HasBusyIndicatorDefaultErrorCallback( baseView )
+                    ).delete( versionRecordManager.getPathToLatest(), "Regel slettet" );
+                }
+            };
+        }
     }
 
     private class SimulateCommand implements Command {

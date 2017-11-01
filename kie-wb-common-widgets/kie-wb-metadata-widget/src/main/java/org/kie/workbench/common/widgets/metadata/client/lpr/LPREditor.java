@@ -91,13 +91,11 @@ public abstract class LPREditor extends KieEditor {
     protected void makeMenuBar() {
         menus = lprMenuBuilder
                 //restore is permanently disabled as restoring a prod version does not actually put it into production and restoring an archived rule is also messy
-                //todo ttn consider re-adding restore, but disable it for prod versions and in general for archived rules
+                //todo ttn Restore should be implemented, see LPR-1357
                 .addSave( new Command() {
                     @Override
                     public void execute() {
                         metadata.setProductionDate( 0L ); //save as draft version
-                        //todo ttn this "shades" the prod version and this rule will no longer show up when searching for prod rules
-                        //todo ttn add a metadata boolean that says whether the rule has a prod version - and use this when searching for prod rules (instead of prod date)
                         onSave();
                     }
                 } )
@@ -389,6 +387,7 @@ public abstract class LPREditor extends KieEditor {
 
                     //set metadata and save rule
                     metadata.setProductionDate( new Date().getTime() );
+                    metadata.setHasProdVersion( true );
                     baseView.showSaving();
                     save( "Produktionsættelse" );
                     concurrentUpdateSessionInfo = null;
@@ -466,11 +465,17 @@ public abstract class LPREditor extends KieEditor {
         @Override
         public void execute() {
             //check if a prod version exists
-            baseView.showBusyIndicator( CommonConstants.INSTANCE.Wait() );
-            lprProdService.call(
-                    getProdVersionCallback(),
-                    new HasBusyIndicatorDefaultErrorCallback( baseView )
-            ).getProdVersion( versionRecordManager.getPathToLatest() );
+            if ( metadata != null && metadata.hasProdVersion() ) {
+                //get prod version
+                baseView.showBusyIndicator( CommonConstants.INSTANCE.Wait() );
+                lprProdService.call(
+                        getProdVersionCallback(),
+                        new HasBusyIndicatorDefaultErrorCallback( baseView )
+                ).getProdVersion( versionRecordManager.getPathToLatest() );
+            } else {
+                LPRDeletePopup deletePopup = new LPRDeletePopup( getDeleteCommand(), false );
+                deletePopup.show();
+            }
         }
 
         private RemoteCallback<Path> getProdVersionCallback() {
@@ -478,9 +483,9 @@ public abstract class LPREditor extends KieEditor {
                 @Override
                 public void callback( Path prodPath ) {
                     baseView.hideBusyIndicator();
-                    boolean isRestore = prodPath != null;
-                    Command action = isRestore ? getRestoreCommand( prodPath ) : getDeleteCommand();
-                    LPRDeletePopup deletePopup = new LPRDeletePopup( action, isRestore );
+                    boolean rollbackToProdVersion = prodPath != null;
+                    Command action = rollbackToProdVersion ? getRestoreCommand( prodPath ) : getDeleteCommand();
+                    LPRDeletePopup deletePopup = new LPRDeletePopup( action, rollbackToProdVersion );
                     deletePopup.show();
                 }
             };
@@ -500,7 +505,7 @@ public abstract class LPREditor extends KieEditor {
                                              }
                                          },
                             new HasBusyIndicatorDefaultErrorCallback( baseView )
-                    ).restore( prodPath, "Kladde slettet" );
+                    ).restore( prodPath, "Produktionsversion gendannet" );
                 }
             };
         }

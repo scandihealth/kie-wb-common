@@ -170,12 +170,13 @@ public class SearchServiceImpl implements SearchService {
                 attrs.put( ERROR_TYPE, errorType.getId() );
             }
 
-            if ( attrs.remove( SEARCH_IS_PRODUCTION ) != null ) { //find all rules that is/was in production and not archived //todo make criteria as radio buttons. These criteria are mutual exclusive
-                attrs.put( PRODUCTION_DATE, toDateRange( new Date( Long.MAX_VALUE ), new Date( 1L ) ) ); //productionDate value of 0 means the rule has never been in production, so we exclude that value
+            if ( attrs.remove( SEARCH_IS_PRODUCTION ) != null ) { //find all rules that is/was in production, but not archived
+                attrs.put( HAS_PROD_VERSION, Boolean.TRUE );
+                attrs.put( ARCHIVED_DATE, toDateRange( new Date( 0L ), new Date( 0L ) ) ); //archivedDate value of 0 means the rule is not archived, so we exclude that value
             }
 
             if ( attrs.remove( SEARCH_IS_DRAFT ) != null ) { //find all rules that is/was not in production (and since it was not in prod it cannot have been archived)
-                attrs.put( PRODUCTION_DATE, toDateRange( new Date( 0L ), new Date( 0L ) ) ); //productionDate value of 0 means the rule has never been in production, so only search for that value
+                attrs.put( PRODUCTION_DATE, toDateRange( new Date( 0L ), new Date( 0L ) ) ); //productionDate value of 0 means that current version of the rule is *not* in production, so only search for that value
             }
 
             if ( attrs.remove( SEARCH_IS_ARCHIVED ) != null ) { //find all rules that have been archived

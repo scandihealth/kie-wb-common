@@ -66,7 +66,7 @@ public class LPRManageProductionServiceImpl implements LPRManageProductionServic
         Collections.reverse( versionRecords );
         for ( VersionRecord record : versionRecords ) {
             //versionRecords is sorted by commit date, descending, so the first prod version we find is the newest prod version
-            //todo ttn does not work if rule was renamed after being put into prod
+            //This does not work if rule was renamed after being put into prod (therefore Rename has been permanently disabled)
             Path pathToVersion = PathFactory.newPathBasedOn( pathToLatest.getFileName(), record.uri(), pathToLatest );
             Map<String, Object> attributes = ioService.readAttributes( Paths.convert( pathToVersion ) );
             Long prodDate = ( Long ) attributes.get( LprMetadataConsts.PRODUCTION_DATE );

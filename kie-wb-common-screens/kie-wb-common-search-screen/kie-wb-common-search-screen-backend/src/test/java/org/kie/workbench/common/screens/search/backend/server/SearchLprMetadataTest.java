@@ -24,6 +24,7 @@ import org.uberfire.java.nio.base.SegmentedPath;
 import org.uberfire.java.nio.file.Path;
 
 import static org.junit.Assert.*;
+import static org.kie.workbench.common.screens.search.backend.server.SearchServiceImpl.*;
 
 /**
  * Created on 29-05-2017.
@@ -61,6 +62,9 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         rule2.encounterEndToDate = 750L;
         rule2.episodeOfCareStartFromDate = 200L;
         rule2.episodeOfCareStartToDate = Long.MAX_VALUE;
+        rule2.productionDate = 700L;
+        rule2.archivedDate = 800L;
+        rule2.hasProdVersion = true;
         rule2.isValidForLPRReports = false;
         rule2.isValidForDUSASAbroadReports = true;
         rule2.isValidForDUSASSpecialityReports = false;
@@ -74,6 +78,9 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         rule3.errorText = "other, but similar, error text";
         rule3.reportReceivedFromDate = 1000L;
         rule3.reportReceivedToDate = 2000L;
+        rule3.hasProdVersion = false;
+        rule3.productionDate = 0L;
+        rule3.archivedDate = 0L;
         Map<String, Object> attrs3 = getAttributesMap( rule3 );
         ioService().write( path3, "Rule3", attrs3 );
 
@@ -207,8 +214,8 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (start of 1st interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 100 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, SearchServiceImpl.toDateRange( reportReceivedDate, new Date( 0L ) ) );
-            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, SearchServiceImpl.toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
@@ -223,8 +230,8 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (middle of 1st interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 120 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, SearchServiceImpl.toDateRange( reportReceivedDate, new Date( 0L ) ) );
-            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, SearchServiceImpl.toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
@@ -239,8 +246,8 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (middle of 1st interval start of 2nd interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 150 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, SearchServiceImpl.toDateRange( reportReceivedDate, new Date( 0L ) ) );
-            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, SearchServiceImpl.toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
@@ -259,8 +266,8 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (end of 2nd interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 250 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, SearchServiceImpl.toDateRange( reportReceivedDate, new Date( 0L ) ) );
-            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, SearchServiceImpl.toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
@@ -275,8 +282,8 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (outside interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 300 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, SearchServiceImpl.toDateRange( reportReceivedDate, new Date( 0L ) ) );
-            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, SearchServiceImpl.toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
@@ -287,8 +294,8 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Encounter start search (middle of unlimited interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date encounterStartDate = new Date( 50 );
-            put( LprMetadataConsts.ENCOUNTER_START_FROM_DATE, SearchServiceImpl.toDateRange( encounterStartDate, new Date( 0L ) ) );
-            put( LprMetadataConsts.ENCOUNTER_START_TO_DATE, SearchServiceImpl.toDateRange( new Date( Long.MAX_VALUE ), encounterStartDate ) );
+            put( LprMetadataConsts.ENCOUNTER_START_FROM_DATE, toDateRange( encounterStartDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.ENCOUNTER_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterStartDate ) );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
@@ -304,8 +311,8 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Encounter end search (middle of 2 intervals)
         searchAttributes = new HashMap<String, Object>() {{
             Date encounterStartDate = new Date( 550 );
-            put( LprMetadataConsts.ENCOUNTER_END_FROM_DATE, SearchServiceImpl.toDateRange( encounterStartDate, new Date( 0L ) ) );
-            put( LprMetadataConsts.ENCOUNTER_END_TO_DATE, SearchServiceImpl.toDateRange( new Date( Long.MAX_VALUE ), encounterStartDate ) );
+            put( LprMetadataConsts.ENCOUNTER_END_FROM_DATE, toDateRange( encounterStartDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.ENCOUNTER_END_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterStartDate ) );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
@@ -325,8 +332,8 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //episode of care search (single day interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 100 );
-            put( LprMetadataConsts.EPISODE_OF_CARE_START_FROM_DATE, SearchServiceImpl.toDateRange( reportReceivedDate, new Date( 0L ) ) );
-            put( LprMetadataConsts.EPISODE_OF_CARE_START_TO_DATE, SearchServiceImpl.toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
+            put( LprMetadataConsts.EPISODE_OF_CARE_START_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.EPISODE_OF_CARE_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
@@ -362,6 +369,53 @@ public class SearchLprMetadataTest extends BaseIndexTest {
             assertEquals( 2, results.size() );
             verifyAll( results, LprMetadataConsts.RULE_GROUP, LprRuleGroup.PSYKI.getId() );
         }
+
+        //draft version search
+        searchAttributes = new HashMap<String, Object>() {{
+            put( LprMetadataConsts.HAS_PROD_VERSION, false );
+        }};
+        {
+            final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
+            assertEquals( 1, hits );
+            final List<KObject> results = config.getSearchIndex().searchByAttrs( searchAttributes, new IOSearchService.NoOpFilter(), getClusterSegment() );
+            assertEquals( 1, results.size() );
+            verifyAll( results, LprMetadataConsts.ERROR_NUMBER, "101" );
+            verifyAll( results, LprMetadataConsts.HAS_PROD_VERSION, "1" ); //"1" means false in KIE-world (don't ask why..)
+            verifyAll( results, LprMetadataConsts.PRODUCTION_DATE, "0" );
+            verifyAll( results, LprMetadataConsts.ARCHIVED_DATE, "0" );
+        }
+
+        //prod version search
+        searchAttributes = new HashMap<String, Object>() {{
+            put( LprMetadataConsts.HAS_PROD_VERSION, true );
+            put( LprMetadataConsts.ARCHIVED_DATE, toDateRange( new Date( 0L ), new Date( 0L ) ) ); //archivedDate value of 0 means the rule is not archived
+        }};
+        {
+            final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
+            assertEquals( 1, hits );
+            final List<KObject> results = config.getSearchIndex().searchByAttrs( searchAttributes, new IOSearchService.NoOpFilter(), getClusterSegment() );
+            assertEquals( 1, results.size() );
+            verifyAll( results, LprMetadataConsts.ERROR_NUMBER, "1" );
+            verifyAll( results, LprMetadataConsts.HAS_PROD_VERSION, "0" ); //"0" means true in KIE-world (don't ask why..)
+            verifyAll( results, LprMetadataConsts.PRODUCTION_DATE, "700" );
+            verifyAll( results, LprMetadataConsts.ARCHIVED_DATE, "0" );
+        }
+
+        //archived version search
+        searchAttributes = new HashMap<String, Object>() {{
+            put( LprMetadataConsts.ARCHIVED_DATE, toDateRange( new Date( Long.MAX_VALUE ), new Date( 1L ) ) ); //archivedDate value of 0 means the rule is not archived, so we exclude that value
+        }};
+        {
+            final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
+            assertEquals( 1, hits );
+            final List<KObject> results = config.getSearchIndex().searchByAttrs( searchAttributes, new IOSearchService.NoOpFilter(), getClusterSegment() );
+            assertEquals( 1, results.size() );
+            verifyAll( results, LprMetadataConsts.ERROR_NUMBER, "100" );
+            verifyAll( results, LprMetadataConsts.HAS_PROD_VERSION, "0" ); //"0" means true in KIE-world (don't ask why..)
+            verifyAll( results, LprMetadataConsts.PRODUCTION_DATE, "700" );
+            verifyAll( results, LprMetadataConsts.ARCHIVED_DATE, "800" );
+        }
+
 
     }
 

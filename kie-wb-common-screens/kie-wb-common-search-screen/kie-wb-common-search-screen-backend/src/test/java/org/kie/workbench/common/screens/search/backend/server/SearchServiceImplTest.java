@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.inject.Instance;
 
+import org.apache.lucene.search.Sort;
 import org.guvnor.common.services.backend.metadata.DublinCoreAttributesMock;
 import org.guvnor.common.services.backend.metadata.LprMetaAttributesMock;
 import org.guvnor.common.services.backend.metadata.VersionAttributesMock;
@@ -352,6 +353,7 @@ public class SearchServiceImplTest {
                 Matchers.<Path>anyVararg() ) ).thenReturn( 1 );
         when( ioSearchService.searchByAttrs( any( Map.class ),
                 any( SearchServiceImpl.PagedCountingFilter.class ),
+                any( Sort.class ),
                 Matchers.<Path>anyVararg() ) ).thenAnswer( new Answer<List<Path>>() {
             @Override
             public List<Path> answer( final InvocationOnMock invocation ) throws Throwable {
@@ -568,6 +570,7 @@ public class SearchServiceImplTest {
                 Matchers.<Path>anyVararg() ) ).thenReturn( 1 );
         when( ioSearchService.searchByAttrs( any( Map.class ),
                 any( SearchServiceImpl.PagedCountingFilter.class ),
+                any( Sort.class ),
                 Matchers.<Path>anyVararg() ) ).thenAnswer( new Answer<List<Path>>() {
             @Override
             public List<Path> answer( final InvocationOnMock invocation ) throws Throwable {
@@ -764,6 +767,7 @@ public class SearchServiceImplTest {
                 Matchers.<Path>anyVararg() ) ).thenReturn( SIZE );
         when( ioSearchService.searchByAttrs( any( Map.class ),
                 any( SearchServiceImpl.PagedCountingFilter.class ),
+                any( Sort.class ),
                 Matchers.<Path>anyVararg() ) ).thenAnswer( new Answer<List<Path>>() {
             @Override
             public List<Path> answer( final InvocationOnMock invocation ) throws Throwable {
@@ -885,6 +889,7 @@ public class SearchServiceImplTest {
         final Map<String, Object> searchAttrs = new HashMap<String, Object>() {{
             String wildCardErrorNumber = "?" + lprMock.errorNumber().toString().substring( 1 );
             String[] errorTextWords = lprMock.errorText().split( "\\s+" );
+            put( SEARCH_IS_PRODUCTION, lprMock.hasProdVersion() );
             put( SEARCH_REPORT_RECEIVED_DATE, new Date( lprMock.reportReceivedFromDate() ) );
             put( SEARCH_ENCOUNTER_START_DATE, new Date( lprMock.encounterStartToDate() ) );
             put( SEARCH_ENCOUNTER_END_DATE, new Date( lprMock.encounterEndFromDate() ) );
@@ -917,6 +922,7 @@ public class SearchServiceImplTest {
                 Matchers.<Path>anyVararg() ) ).thenReturn( 1 );
         when( ioSearchService.searchByAttrs( any( Map.class ),
                 any( SearchServiceImpl.PagedCountingFilter.class ),
+                any( Sort.class ),
                 Matchers.<Path>anyVararg() ) ).thenAnswer( new Answer<List<Path>>() {
             @Override
             public List<Path> answer( final InvocationOnMock invocation ) throws Throwable {

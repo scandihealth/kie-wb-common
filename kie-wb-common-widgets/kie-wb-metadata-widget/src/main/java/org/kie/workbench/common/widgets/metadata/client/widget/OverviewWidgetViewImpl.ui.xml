@@ -32,7 +32,7 @@
     
   <b:Container fluid="true">
     <b:Row>
-      <b:Column size="MD_8">
+      <b:Column size="MD_12">
         <b:Container fluid="true">
           <b:Row>
             <b:Column size="MD_12">
@@ -80,7 +80,7 @@
           </b:Row>
         </b:Container>
       </b:Column>
-      <b:Column size="MD_4">
+      <b:Column size="MD_6">
         <discussion:DiscussionWidgetPresenter ui:field="discussionArea"/>
       </b:Column>
     </b:Row>

@@ -306,11 +306,11 @@ public class FindForm
 //        if ( !sourceTextBox.getText().trim().isEmpty() ) {
 //            metadata.put( "dcore.source[0]", sourceTextBox.getText().trim() );
 //        }
-//
-//        if ( !createdByTextBox.getText().trim().isEmpty() ) {
-//            metadata.put( "createdBy", createdByTextBox.getText().trim() );
-//        }
-//
+
+        if ( !createdByTextBox.getText().trim().isEmpty() ) {
+            metadata.put( "createdBy", createdByTextBox.getText().trim() );
+        }
+
 //        if ( !descriptionByTextBox.getText().trim().isEmpty() ) {
 //            metadata.put( "dcore.description[0]", descriptionByTextBox.getText().trim() );
 //        }

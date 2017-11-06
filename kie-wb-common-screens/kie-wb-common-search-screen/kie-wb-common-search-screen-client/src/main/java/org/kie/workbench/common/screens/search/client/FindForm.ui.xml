@@ -151,9 +151,9 @@
                                                         </b:Column>
                                                         <b:Column size="MD_4">
                                                             <b:FormGroup>
-                                                                <b:FormLabel text="{i18n.IsValidForPrivateSectorReportsMetaData}" addStyleNames="col-md-9"/>
+                                                                <b:FormLabel text="{i18n.IsValidForPrimarySectorReportsMetaData}" addStyleNames="col-md-9"/>
                                                                 <b:Column size="MD_3">
-                                                                    <b:CheckBox ui:field="isValidForPrivateSectorReports"/>
+                                                                    <b:CheckBox ui:field="isValidForPrimarySectorReports"/>
                                                                 </b:Column>
                                                             </b:FormGroup>
                                                         </b:Column>

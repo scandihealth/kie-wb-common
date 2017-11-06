@@ -42,7 +42,7 @@ public class SearchPageRow extends AbstractPathPageRow {
     private boolean lprMetaIsValidForLPRReports;
     private boolean lprMetaIsValidForDUSASAbroadReports;
     private boolean lprMetaIsValidForDUSASSpecialityReports;
-    private boolean lprMetaIsValidForPrivateSectorReports;
+    private boolean lprMetaIsValidForPrimarySectorReports;
 
     public SearchPageRow() {
         super();
@@ -67,7 +67,7 @@ public class SearchPageRow extends AbstractPathPageRow {
                           boolean lprMetaIsValidForLPRReports,
                           boolean lprMetaIsValidForDUSASAbroadReports,
                           boolean lprMetaIsValidForDUSASSpecialityReports,
-                          boolean lprMetaIsValidForPrivateSectorReports ) {
+                          boolean lprMetaIsValidForPrimarySectorReports ) {
         super( path );
         this.creator = creator;
         this.createdDate = createdDate;
@@ -83,7 +83,7 @@ public class SearchPageRow extends AbstractPathPageRow {
         this.lprMetaIsValidForLPRReports = lprMetaIsValidForLPRReports;
         this.lprMetaIsValidForDUSASAbroadReports = lprMetaIsValidForDUSASAbroadReports;
         this.lprMetaIsValidForDUSASSpecialityReports = lprMetaIsValidForDUSASSpecialityReports;
-        this.lprMetaIsValidForPrivateSectorReports = lprMetaIsValidForPrivateSectorReports;
+        this.lprMetaIsValidForPrimarySectorReports = lprMetaIsValidForPrimarySectorReports;
     }
 
     @Override
@@ -197,7 +197,7 @@ public class SearchPageRow extends AbstractPathPageRow {
         return lprMetaIsValidForDUSASSpecialityReports;
     }
 
-    public boolean getLprMetaIsValidForPrivateSectorReports() {
-        return lprMetaIsValidForPrivateSectorReports;
+    public boolean getLprMetaIsValidForPrimarySectorReports() {
+        return lprMetaIsValidForPrimarySectorReports;
     }
 }

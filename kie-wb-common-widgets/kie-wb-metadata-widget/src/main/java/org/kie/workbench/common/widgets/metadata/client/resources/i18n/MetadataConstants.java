@@ -179,5 +179,5 @@ public interface MetadataConstants extends
 
     String IsValidForMetaData();
 
-    String IsValidForPrivateSectorReportsMetaData();
+    String IsValidForPrimarySectorReportsMetaData();
 }

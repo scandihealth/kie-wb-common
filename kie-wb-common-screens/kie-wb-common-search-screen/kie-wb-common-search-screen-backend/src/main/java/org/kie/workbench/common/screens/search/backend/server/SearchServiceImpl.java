@@ -268,7 +268,7 @@ public class SearchServiceImpl implements SearchService {
                     lprMetaAttributes.isValidForLPRReports(),
                     lprMetaAttributes.isValidForDUSASAbroadReports(),
                     lprMetaAttributes.isValidForDUSASSpecialityReports(),
-                    lprMetaAttributes.isValidForPrivateSectorReports() );
+                    lprMetaAttributes.isValidForPrimarySectorReports() );
             result.add( row );
         }
 

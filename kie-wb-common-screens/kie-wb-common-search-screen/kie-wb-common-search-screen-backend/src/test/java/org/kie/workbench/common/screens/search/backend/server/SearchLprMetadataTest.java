@@ -53,7 +53,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         rule2.errorNumber = 100L;
         rule2.errorText = "other error text";
         rule2.errorType = LprErrorType.WARN;
-        rule2.ruleGroup = LprRuleGroup.PSYKI;
+        rule2.ruleGroup = LprRuleGroup.PROCEDURE;
         rule2.reportReceivedFromDate = 150L;
         rule2.reportReceivedToDate = 250L;
         rule2.encounterStartFromDate = 0L;
@@ -360,14 +360,14 @@ public class SearchLprMetadataTest extends BaseIndexTest {
 
         //rule group search
         searchAttributes = new HashMap<String, Object>() {{
-            put( LprMetadataConsts.RULE_GROUP, LprRuleGroup.PSYKI.getId() );
+            put( LprMetadataConsts.RULE_GROUP, LprRuleGroup.PROCEDURE.getId() );
         }};
         {
             final int hits = config.getSearchIndex().searchByAttrsHits( searchAttributes, getClusterSegment() );
             assertEquals( 2, hits );
             final List<KObject> results = config.getSearchIndex().searchByAttrs( searchAttributes, new IOSearchService.NoOpFilter(), getClusterSegment() );
             assertEquals( 2, results.size() );
-            verifyAll( results, LprMetadataConsts.RULE_GROUP, LprRuleGroup.PSYKI.getId() );
+            verifyAll( results, LprMetadataConsts.RULE_GROUP, LprRuleGroup.PROCEDURE.getId() );
         }
 
         //draft version search

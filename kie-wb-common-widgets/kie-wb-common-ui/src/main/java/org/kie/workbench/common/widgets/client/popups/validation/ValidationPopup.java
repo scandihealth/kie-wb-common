@@ -32,7 +32,7 @@ import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterO
  */
 public class ValidationPopup extends BaseModal {
 
-    private static ValidationPopup instance = new ValidationPopup();
+    private static ValidationPopup instance;
 
     protected final MessageTableWidget<ValidationMessage> dataGrid = new MessageTableWidget<ValidationMessage>( MessageTableWidget.Mode.PAGED ) {{
         setDataProvider( new ListDataProvider<ValidationMessage>() );
@@ -56,7 +56,7 @@ public class ValidationPopup extends BaseModal {
         dataGrid.addLevelColumn( 10, new MessageTableWidget.ColumnExtractor<Level>() {
             @Override
             public Level getValue( final Object row ) {
-                final Level level = ( (ValidationMessage) row ).getLevel();
+                final Level level = (( ValidationMessage ) row).getLevel();
                 return level != null ? level : Level.ERROR;
             }
         } );
@@ -64,19 +64,21 @@ public class ValidationPopup extends BaseModal {
         dataGrid.addTextColumn( 90, new MessageTableWidget.ColumnExtractor<String>() {
             @Override
             public String getValue( final Object row ) {
-                return ( (ValidationMessage) row ).getText();
+                return (( ValidationMessage ) row).getText();
             }
         } );
     }
 
     private void setMessages( final List<ValidationMessage> messages ) {
-        final ListDataProvider<ValidationMessage> listDataProvider = (ListDataProvider<ValidationMessage>) this.dataGrid.getDataProvider();
+        final ListDataProvider<ValidationMessage> listDataProvider = ( ListDataProvider<ValidationMessage> ) this.dataGrid.getDataProvider();
         listDataProvider.getList().clear();
         listDataProvider.getList().addAll( messages );
         this.dataGrid.setVisibleRangeAndClearData( new Range( 0, 5 ), true );
     }
 
     public static void showMessages( final List<ValidationMessage> messages ) {
+        if ( instance == null )
+            instance = new ValidationPopup();
         instance.setMessages( messages );
         instance.show();
     }

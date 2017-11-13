@@ -11,6 +11,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.metadata.model.LprRuleType;
+import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.guvnor.common.services.shared.validation.ValidationService;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
@@ -37,6 +38,7 @@ import org.uberfire.ext.editor.commons.client.file.ArchivePopup;
 import org.uberfire.ext.editor.commons.client.file.LPRDeletePopup;
 import org.uberfire.ext.editor.commons.client.file.MoveToProductionPopup;
 import org.uberfire.ext.editor.commons.client.file.SaveOperationService;
+import org.uberfire.ext.editor.commons.client.menu.MenuItems;
 import org.uberfire.ext.editor.commons.service.DeleteService;
 import org.uberfire.ext.editor.commons.version.VersionService;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
@@ -52,11 +54,11 @@ import org.uberfire.workbench.model.menu.MenuItem;
 public abstract class LPREditor extends KieEditor {
 
     private Command moveToProdCmdWaitingForValidation = null;
-    private final static String VALIDATION_ERROR_MESSAGE_TYPE = "VALIDATION_ERROR_";
+    public final static String VALIDATION_ERROR = "VALIDATION_ERROR_";
     private boolean lockedByOtherUser;
 
     @Inject
-    private Caller<LPRManageProductionService> lprProdService;
+    protected Caller<LPRManageProductionService> lprProdService;
 
     @Inject
     private Caller<DeleteService> deleteService;
@@ -65,16 +67,16 @@ public abstract class LPREditor extends KieEditor {
     private Caller<VersionService> versionService;
 
     @Inject
-    private SessionInfo sessionInfo;
+    protected SessionInfo sessionInfo;
 
     @Inject
-    private Event<PublishMessagesEvent> publishMessages;
+    protected Event<PublishMessagesEvent> publishMessages;
 
     @Inject
-    private Event<UnpublishMessagesEvent> unpublishMessages;
+    protected Event<UnpublishMessagesEvent> unpublishMessages;
 
     @Inject
-    private LPRFileMenuBuilder lprMenuBuilder;
+    protected LPRFileMenuBuilder lprMenuBuilder;
 
     public LPREditor() {
     }
@@ -109,7 +111,6 @@ public abstract class LPREditor extends KieEditor {
                 .addValidate( onValidate() )
                 .addVersionMenu( versionRecordManager.buildMenu() )
                 .build();
-
     }
 
     @WorkbenchPartTitleDecoration
@@ -120,7 +121,8 @@ public abstract class LPREditor extends KieEditor {
     @WorkbenchPartTitle
     public String getTitleText() {
         String titleText = versionRecordManager.getCurrentPath().getFileName(); //filename
-        titleText = titleText.substring( 0, titleText.lastIndexOf( '.' ) ); //strip extension
+        int endIndex = titleText.lastIndexOf( '.' ); //get extension index
+        titleText = endIndex < 0 ? titleText : titleText.substring( 0, endIndex ); //strip extension
         if ( metadata != null ) {
             //add rule status
             DateTimeFormat dateFormatter = DateTimeFormat.getFormat( ApplicationPreferences.getDroolsDateFormat() );
@@ -202,7 +204,7 @@ public abstract class LPREditor extends KieEditor {
     }
 
     @SuppressWarnings("unchecked")
-    protected Command getValidationCallback( final Caller<? extends ValidationService> validationService, final KieEditorView view ) {
+    public Command getValidationCallback( final Caller<? extends ValidationService> validationService, final KieEditorView view ) {
         return new Command() {
             @Override
             public void execute() {
@@ -210,7 +212,7 @@ public abstract class LPREditor extends KieEditor {
                     @Override
                     public void callback( final List<ValidationMessage> results ) {
                         String fileName = versionRecordManager.getCurrentPath().getFileName();
-                        unpublishErrorMessages( VALIDATION_ERROR_MESSAGE_TYPE + fileName ); //remove any old error logs about validation errors
+                        unpublishErrorMessages( VALIDATION_ERROR + fileName ); //remove any old error logs about validation errors
                         if ( results == null || results.isEmpty() ) {
                             notification.fire( new NotificationEvent( CommonConstants.INSTANCE.ItemValidatedSuccessfully(),
                                     NotificationEvent.NotificationType.SUCCESS ) );
@@ -221,7 +223,7 @@ public abstract class LPREditor extends KieEditor {
                         } else {
                             moveToProdCmdWaitingForValidation = null;
                             for ( ValidationMessage result : results ) {
-                                publishErrorMessage( result.getText(), VALIDATION_ERROR_MESSAGE_TYPE + fileName, result.getColumn(), result.getLine() );
+                                publishErrorMessage( result.getText(), VALIDATION_ERROR + fileName, result.getColumn(), result.getLine() );
                             }
                             ValidationPopup.showMessages( results );
                         }
@@ -238,7 +240,6 @@ public abstract class LPREditor extends KieEditor {
 
     private void updateUI( boolean reloadIfArchived ) {
         updateEnabledStateOnMenuItems();
-        baseView.refreshTitle( getTitleText() );
         changeTitleNotification.fire( new ChangeTitleWidgetEvent( place, getTitleText(), getTitle() ) );
         if ( metadata != null && metadata.getArchivedDate() > 0 && !isReadOnly ) {
             isReadOnly = true;
@@ -259,32 +260,27 @@ public abstract class LPREditor extends KieEditor {
     }
 
     private void updateEnabledStateOnMenuItems() {
-        if ( this.metadata != null ) {
-            for ( MenuItem mi : menus.getItemsMap().values() ) {
-                //only allow save if rule is not archived
-                if ( CommonConstants.INSTANCE.Save().equals( mi.getCaption() ) ) {
-                    boolean enabled = !isReadOnly &&
-                            this.metadata.getArchivedDate() == 0 &&
-                            versionRecordManager.isCurrentLatest();
-                    mi.setEnabled( enabled );
-                }
-                //only allow delete and 'move to production' if rule is not in production and not archived
-                if ( CommonConstants.INSTANCE.Delete().equals( mi.getCaption() ) || CommonConstants.INSTANCE.LPRMoveToProduction().equals( mi.getCaption() ) ) {
-                    boolean enabled = !isReadOnly &&
-                            this.metadata.getProductionDate() == 0 &&
-                            this.metadata.getArchivedDate() == 0 &&
-                            versionRecordManager.isCurrentLatest();
-                    mi.setEnabled( enabled );
-                }
-                //only allow archive if rule is in production and not already archived
-                if ( CommonConstants.INSTANCE.LPRArchive().equals( mi.getCaption() ) ) {
-                    boolean enabled = !isReadOnly &&
-                            this.metadata.getProductionDate() > 0 &&
-                            this.metadata.getArchivedDate() == 0 &&
-                            versionRecordManager.isCurrentLatest();
-                    mi.setEnabled( enabled );
-                }
-            }
+        if ( this.metadata != null && menus != null ) {
+            //only allow save if rule is not archived
+            boolean isEnabled = !isReadOnly &&
+                    this.metadata.getArchivedDate() == 0 &&
+                    versionRecordManager.isCurrentLatest();
+            menus.getItemsMap().get( MenuItems.SAVE ).setEnabled( isEnabled );
+
+            //only allow delete and 'move to production' if rule is not in production and not archived
+            isEnabled = !isReadOnly &&
+                    this.metadata.getProductionDate() == 0 &&
+                    this.metadata.getArchivedDate() == 0 &&
+                    versionRecordManager.isCurrentLatest();
+            menus.getItemsMap().get( MenuItems.DELETE ).setEnabled( isEnabled );
+            menus.getItemsMap().get( MenuItems.MOVETOPRODUCTION ).setEnabled( isEnabled );
+
+            //only allow archive if rule is in production and not already archived
+            isEnabled = !isReadOnly &&
+                    this.metadata.getProductionDate() > 0 &&
+                    this.metadata.getArchivedDate() == 0 &&
+                    versionRecordManager.isCurrentLatest();
+            menus.getItemsMap().get( MenuItems.ARCHIVE ).setEnabled( isEnabled );
         }
     }
 
@@ -316,12 +312,28 @@ public abstract class LPREditor extends KieEditor {
 
 
     /****************************************************************************************
+     *                                  UNIT TEST SUPPORT
+     ****************************************************************************************/
+
+    public void setMetadata( Metadata metadata ) {
+        this.metadata = metadata;
+    }
+
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public SaveOperationService.SaveOperationNotifier getSaveNotifier() {
+        return IOC.getBeanManager().lookupBean( SaveOperationService.SaveOperationNotifier.class ).getInstance();
+    }
+
+    /****************************************************************************************
      *                                  PRIVATE CLASSES
      ****************************************************************************************/
 
-    private class MoveToProductionCommand implements Command {
-        private final String MOVE_TO_PROD_DIRTY_ERROR_MESSAGE_TYPE = "MOVE_TO_PROD_DIRTY_ERROR_";
-        private final String MOVE_TO_PROD_SAVE_ERROR_MESSAGE_TYPE = "MOVE_TO_PROD_SAVE_ERROR_";
+    public class MoveToProductionCommand implements Command {
+        public final static String MOVE_TO_PROD_DIRTY_ERROR_MESSAGE_TYPE = "MOVE_TO_PROD_DIRTY_ERROR_";
+        public final static String MOVE_TO_PROD_SAVE_ERROR_MESSAGE_TYPE = "MOVE_TO_PROD_SAVE_ERROR_";
 
         @Override
         public void execute() {
@@ -337,16 +349,16 @@ public abstract class LPREditor extends KieEditor {
             unpublishErrorMessages( MOVE_TO_PROD_DIRTY_ERROR_MESSAGE_TYPE + fileName ); //remove any old error logs about unsaved changes
 
             //check rule has no validation errors before moving to production
-            moveToProdCmdWaitingForValidation = getShowPopupCommand();
+            moveToProdCmdWaitingForValidation = getShowPopupCommand( getSaveInProdCommand() );
             onValidate().execute();
         }
 
-        private Command getShowPopupCommand() {
+        public Command getShowPopupCommand( final Command popupOkCommand ) {
             return new Command() {
                 @Override
                 public void execute() {
                     moveToProdCmdWaitingForValidation = null; //we have executed, remove ourselves from the waiting position
-                    MoveToProductionPopup popup = new MoveToProductionPopup( getSaveInProdCommand() );
+                    MoveToProductionPopup popup = new MoveToProductionPopup( popupOkCommand );
                     popup.show();
                 }
             };
@@ -380,7 +392,6 @@ public abstract class LPREditor extends KieEditor {
                     if ( errorText != null ) {
                         publishErrorMessage( errorText, MOVE_TO_PROD_SAVE_ERROR_MESSAGE_TYPE + fileName, 0, 0 );
                         notification.fire( new NotificationEvent( errorText, NotificationEvent.NotificationType.ERROR ) );
-                        updateEnabledStateOnMenuItems();
                         return; //abort command
                     }
                     unpublishErrorMessages( MOVE_TO_PROD_SAVE_ERROR_MESSAGE_TYPE + fileName ); //remove any old error logs about save errors
@@ -391,14 +402,14 @@ public abstract class LPREditor extends KieEditor {
                     baseView.showSaving();
                     save( "Produktionsættelse" );
                     concurrentUpdateSessionInfo = null;
-                    final SaveOperationService.SaveOperationNotifier notifier = IOC.getBeanManager().lookupBean( SaveOperationService.SaveOperationNotifier.class ).getInstance();
+                    final SaveOperationService.SaveOperationNotifier notifier = getSaveNotifier();
                     notifier.notify( versionRecordManager.getCurrentPath() );
                 }
             };
         }
     }
 
-    private class ArchiveCommand implements Command {
+    public class ArchiveCommand implements Command {
         private final String ARCHIVE_DIRTY_ERROR_MESSAGE_TYPE = "ARCHIVE_DIRTY_ERROR_";
         private final String ARCHIVE_SAVE_ERROR_MESSAGE_TYPE = "ARCHIVE_SAVE_ERROR_";
 
@@ -443,7 +454,6 @@ public abstract class LPREditor extends KieEditor {
                     if ( errorMsg != null ) {
                         publishErrorMessage( errorMsg, ARCHIVE_SAVE_ERROR_MESSAGE_TYPE + fileName, 0, 0 );
                         notification.fire( new NotificationEvent( errorMsg, NotificationEvent.NotificationType.ERROR ) );
-                        updateEnabledStateOnMenuItems();
                         return; //abort command
                     }
                     unpublishErrorMessages( ARCHIVE_SAVE_ERROR_MESSAGE_TYPE + fileName ); //remove any old error logs about save errors
@@ -453,7 +463,7 @@ public abstract class LPREditor extends KieEditor {
                     baseView.showSaving();
                     save( "Arkivering" );
                     concurrentUpdateSessionInfo = null;
-                    final SaveOperationService.SaveOperationNotifier notifier = IOC.getBeanManager().lookupBean( SaveOperationService.SaveOperationNotifier.class ).getInstance();
+                    final SaveOperationService.SaveOperationNotifier notifier = getSaveNotifier();
                     notifier.notify( versionRecordManager.getCurrentPath() );
                 }
             } );

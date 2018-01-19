@@ -697,8 +697,11 @@ public class AsyncPackageDataModelOracleImpl implements AsyncPackageDataModelOra
                                } );
 
         } else if ( fieldType.equals( DataType.TYPE_STRING ) ) {
-            callback.callback( OracleUtils.joinArrays( OperatorsOracle.STRING_OPERATORS,
-                                                       OperatorsOracle.EXPLICIT_LIST_OPERATORS ) );
+            callback.callback( OracleUtils.joinArrays(
+                    OperatorsOracle.STRING_OPERATORS,
+                    OperatorsOracle.EXPLICIT_LIST_OPERATORS,
+                    new String[]{"contains"}
+            ) );
             return;
 
         } else if ( DataType.isNumeric( fieldType ) ) {
@@ -759,7 +762,7 @@ public class AsyncPackageDataModelOracleImpl implements AsyncPackageDataModelOra
                                    }
                                } );
         } else if ( fieldType.equals( DataType.TYPE_STRING ) ) {
-            callback.callback( OperatorsOracle.STRING_CONNECTIVES );
+            callback.callback( OracleUtils.joinArrays( OperatorsOracle.STRING_CONNECTIVES, new String[]{"contains"} ) );
             return;
 
         } else if ( DataType.isNumeric( fieldType ) ) {

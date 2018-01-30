@@ -977,7 +977,7 @@ public class SearchServiceImplTest {
         Date searchDate = ( Date ) searchAttrs.get( SEARCH_REPORT_RECEIVED_DATE );
         DateRange dateRange = ( DateRange ) capturedArgument.get( REPORT_RECEIVED_FROM_DATE );
         assertTrue( dateRange.before().equals( searchDate ) );
-        assertTrue( dateRange.after().equals( new Date( 0L ) ) );
+        assertTrue( dateRange.after().equals( new Date( Long.MIN_VALUE ) ) );
         dateRange = ( DateRange ) capturedArgument.get( REPORT_RECEIVED_TO_DATE );
         assertTrue( dateRange.before().equals( new Date( Long.MAX_VALUE ) ) );
         assertTrue( dateRange.after().equals( searchDate ) );
@@ -985,7 +985,7 @@ public class SearchServiceImplTest {
         searchDate = ( Date ) searchAttrs.get( SEARCH_ENCOUNTER_START_DATE );
         dateRange = ( DateRange ) capturedArgument.get( ENCOUNTER_START_FROM_DATE );
         assertTrue( dateRange.before().equals( searchDate ) );
-        assertTrue( dateRange.after().equals( new Date( 0L ) ) );
+        assertTrue( dateRange.after().equals( new Date( Long.MIN_VALUE ) ) );
         dateRange = ( DateRange ) capturedArgument.get( ENCOUNTER_START_TO_DATE );
         assertTrue( dateRange.before().equals( new Date( Long.MAX_VALUE ) ) );
         assertTrue( dateRange.after().equals( searchDate ) );
@@ -993,7 +993,7 @@ public class SearchServiceImplTest {
         searchDate = ( Date ) searchAttrs.get( SEARCH_ENCOUNTER_END_DATE );
         dateRange = ( DateRange ) capturedArgument.get( ENCOUNTER_END_FROM_DATE );
         assertTrue( dateRange.before().equals( searchDate ) );
-        assertTrue( dateRange.after().equals( new Date( 0L ) ) );
+        assertTrue( dateRange.after().equals( new Date( Long.MIN_VALUE ) ) );
         dateRange = ( DateRange ) capturedArgument.get( ENCOUNTER_END_TO_DATE );
         assertTrue( dateRange.before().equals( new Date( Long.MAX_VALUE ) ) );
         assertTrue( dateRange.after().equals( searchDate ) );
@@ -1001,7 +1001,7 @@ public class SearchServiceImplTest {
         searchDate = ( Date ) searchAttrs.get( SEARCH_EPISODE_OF_CARE_START_DATE );
         dateRange = ( DateRange ) capturedArgument.get( EPISODE_OF_CARE_START_FROM_DATE );
         assertTrue( dateRange.before().equals( searchDate ) );
-        assertTrue( dateRange.after().equals( new Date( 0L ) ) );
+        assertTrue( dateRange.after().equals( new Date( Long.MIN_VALUE ) ) );
         dateRange = ( DateRange ) capturedArgument.get( EPISODE_OF_CARE_START_TO_DATE );
         assertTrue( dateRange.before().equals( new Date( Long.MAX_VALUE ) ) );
         assertTrue( dateRange.after().equals( searchDate ) );

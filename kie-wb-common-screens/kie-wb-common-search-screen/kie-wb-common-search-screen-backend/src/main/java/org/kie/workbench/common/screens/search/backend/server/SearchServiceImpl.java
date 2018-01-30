@@ -185,22 +185,22 @@ public class SearchServiceImpl implements SearchService {
 
             Date reportReceivedDate = ( Date ) attrs.remove( SEARCH_REPORT_RECEIVED_DATE );
             if ( reportReceivedDate != null ) {
-                attrs.put( REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+                attrs.put( REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( Long.MIN_VALUE ) ) );
                 attrs.put( REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
             }
             Date encounterStartDate = ( Date ) attrs.remove( SEARCH_ENCOUNTER_START_DATE );
             if ( encounterStartDate != null ) {
-                attrs.put( ENCOUNTER_START_FROM_DATE, toDateRange( encounterStartDate, new Date( 0L ) ) );
+                attrs.put( ENCOUNTER_START_FROM_DATE, toDateRange( encounterStartDate, new Date( Long.MIN_VALUE ) ) );
                 attrs.put( ENCOUNTER_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterStartDate ) );
             }
             Date encounterEndDate = ( Date ) attrs.remove( SEARCH_ENCOUNTER_END_DATE );
             if ( encounterEndDate != null ) {
-                attrs.put( ENCOUNTER_END_FROM_DATE, toDateRange( encounterEndDate, new Date( 0L ) ) );
+                attrs.put( ENCOUNTER_END_FROM_DATE, toDateRange( encounterEndDate, new Date( Long.MIN_VALUE ) ) );
                 attrs.put( ENCOUNTER_END_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterEndDate ) );
             }
             Date episodeOfCareStartDate = ( Date ) attrs.remove( SEARCH_EPISODE_OF_CARE_START_DATE );
             if ( episodeOfCareStartDate != null ) {
-                attrs.put( EPISODE_OF_CARE_START_FROM_DATE, toDateRange( episodeOfCareStartDate, new Date( 0L ) ) );
+                attrs.put( EPISODE_OF_CARE_START_FROM_DATE, toDateRange( episodeOfCareStartDate, new Date( Long.MIN_VALUE ) ) );
                 attrs.put( EPISODE_OF_CARE_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), episodeOfCareStartDate ) );
             }
             if ( pageRequest.getCreatedAfter() != null || pageRequest.getCreatedBefore() != null ) {

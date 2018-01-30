@@ -220,7 +220,7 @@ public class MetadataWidget
         reportReceivedFrom.addClearDateHandler( new ClearDateHandler() {
             @Override
             public void onClearDate( ClearDateEvent evt ) {
-                metadata.setReportReceivedFromDate( 0L );
+                metadata.setReportReceivedFromDate( Long.MIN_VALUE );
             }
         } );
 
@@ -248,7 +248,7 @@ public class MetadataWidget
         encounterStartFromDate.addClearDateHandler( new ClearDateHandler() {
             @Override
             public void onClearDate( ClearDateEvent evt ) {
-                metadata.setEncounterStartFromDate( 0L );
+                metadata.setEncounterStartFromDate( Long.MIN_VALUE );
             }
         } );
 
@@ -276,7 +276,7 @@ public class MetadataWidget
         encounterEndFromDate.addClearDateHandler( new ClearDateHandler() {
             @Override
             public void onClearDate( ClearDateEvent evt ) {
-                metadata.setEncounterEndFromDate( 0L );
+                metadata.setEncounterEndFromDate( Long.MIN_VALUE );
             }
         } );
 
@@ -304,7 +304,7 @@ public class MetadataWidget
         episodeOfCareStartFromDate.addClearDateHandler( new ClearDateHandler() {
             @Override
             public void onClearDate( ClearDateEvent evt ) {
-                metadata.setEpisodeOfCareStartFromDate( 0L );
+                metadata.setEpisodeOfCareStartFromDate( Long.MIN_VALUE );
             }
         } );
 

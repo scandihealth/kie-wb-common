@@ -214,7 +214,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (start of 1st interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 100 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( Long.MIN_VALUE ) ) );
             put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
@@ -230,7 +230,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (middle of 1st interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 120 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( Long.MIN_VALUE ) ) );
             put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
@@ -246,7 +246,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (middle of 1st interval start of 2nd interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 150 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( Long.MIN_VALUE ) ) );
             put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
@@ -266,7 +266,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (end of 2nd interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 250 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( Long.MIN_VALUE ) ) );
             put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
@@ -282,7 +282,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Report received search (outside interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 300 );
-            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.REPORT_RECEIVED_FROM_DATE, toDateRange( reportReceivedDate, new Date( Long.MIN_VALUE ) ) );
             put( LprMetadataConsts.REPORT_RECEIVED_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {
@@ -294,7 +294,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Encounter start search (middle of unlimited interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date encounterStartDate = new Date( 50 );
-            put( LprMetadataConsts.ENCOUNTER_START_FROM_DATE, toDateRange( encounterStartDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.ENCOUNTER_START_FROM_DATE, toDateRange( encounterStartDate, new Date( Long.MIN_VALUE ) ) );
             put( LprMetadataConsts.ENCOUNTER_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterStartDate ) );
         }};
         {
@@ -311,7 +311,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //Encounter end search (middle of 2 intervals)
         searchAttributes = new HashMap<String, Object>() {{
             Date encounterStartDate = new Date( 550 );
-            put( LprMetadataConsts.ENCOUNTER_END_FROM_DATE, toDateRange( encounterStartDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.ENCOUNTER_END_FROM_DATE, toDateRange( encounterStartDate, new Date( Long.MIN_VALUE ) ) );
             put( LprMetadataConsts.ENCOUNTER_END_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), encounterStartDate ) );
         }};
         {
@@ -332,7 +332,7 @@ public class SearchLprMetadataTest extends BaseIndexTest {
         //episode of care search (single day interval)
         searchAttributes = new HashMap<String, Object>() {{
             Date reportReceivedDate = new Date( 100 );
-            put( LprMetadataConsts.EPISODE_OF_CARE_START_FROM_DATE, toDateRange( reportReceivedDate, new Date( 0L ) ) );
+            put( LprMetadataConsts.EPISODE_OF_CARE_START_FROM_DATE, toDateRange( reportReceivedDate, new Date( Long.MIN_VALUE ) ) );
             put( LprMetadataConsts.EPISODE_OF_CARE_START_TO_DATE, toDateRange( new Date( Long.MAX_VALUE ), reportReceivedDate ) );
         }};
         {

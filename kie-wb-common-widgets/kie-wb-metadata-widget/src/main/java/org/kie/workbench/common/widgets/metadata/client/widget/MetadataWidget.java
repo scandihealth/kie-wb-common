@@ -39,6 +39,7 @@ import org.guvnor.common.services.shared.metadata.model.LprRuleGroup;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.FormControlStatic;
+import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.extras.datepicker.client.ui.base.events.ClearDateEvent;
 import org.gwtbootstrap3.extras.datepicker.client.ui.base.events.ClearDateHandler;
@@ -49,6 +50,7 @@ import org.uberfire.backend.vfs.impl.LockInfo;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.ext.widgets.common.client.common.DatePicker;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
+import org.uberfire.ext.widgets.common.client.common.NumericIntegerTextBox;
 import org.uberfire.ext.widgets.common.client.common.NumericLongTextBox;
 import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.mvp.Command;
@@ -125,6 +127,10 @@ public class MetadataWidget
     ListBox ruleGroup;
     @UiField
     ListBox errorType;
+    @UiField(provided = true)
+    NumericIntegerTextBox errorByDays = new NumericIntegerTextBox( true );
+    @UiField
+    FormGroup errorByDaysGroup;
     @UiField
     FormControlStatic lockedBy;
     @UiField
@@ -383,7 +389,27 @@ public class MetadataWidget
         errorType.addChangeHandler( new ChangeHandler() {
             @Override
             public void onChange( ChangeEvent changeEvent ) {
-                metadata.setErrorType( LprErrorType.valueOf( errorType.getSelectedValue() ) );
+                LprErrorType errorType = LprErrorType.valueOf( MetadataWidget.this.errorType.getSelectedValue() );
+                metadata.setErrorType( errorType );
+                if ( LprErrorType.WARN.equals( errorType ) ) {
+                    errorByDaysGroup.setVisible( true );
+                } else {
+                    errorByDaysGroup.setVisible( false );
+                }
+            }
+        } );
+
+        errorByDays.setValue( metadata.getErrorByDays() != null ? metadata.getErrorByDays().toString() : "" );
+        errorByDaysGroup.setVisible( LprErrorType.WARN.equals( LprErrorType.valueOf( errorType.getSelectedValue() ) ) );
+        errorByDays.addChangeHandler( new ChangeHandler() {
+            @Override
+            public void onChange( ChangeEvent event ) {
+                Integer value = null;
+                try{
+                    value = Integer.parseInt( errorByDays.getValue() );
+                } catch ( NumberFormatException ignored ) {
+                }
+                metadata.setErrorByDays( value );
             }
         } );
     }

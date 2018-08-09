@@ -76,6 +76,24 @@
                     </b:Column>
                 </b:Row>
                 <b:Row>
+                    <b:Column size="MD_4">
+                    </b:Column>
+                    <b:Column size="MD_4">
+                    </b:Column>
+                    <b:Column size="MD_4">
+                        <b:FormGroup ui:field="errorByDaysGroup">
+                            <b:FormLabel for="errorByDays" addStyleNames="col-md-6">
+                                <ui:text from="{i18n.ErrorByDaysMetaData}"/>
+                            </b:FormLabel>
+                            <b:Column size="MD_6">
+                                <b:Tooltip title="{i18n.ErrorByDaysTip}" placement="LEFT" trigger="FOCUS">
+                                    <uf:NumericIntegerTextBox b:id="errorByDays" ui:field="errorByDays"/>
+                                </b:Tooltip>
+                            </b:Column>
+                        </b:FormGroup>
+                    </b:Column>
+                </b:Row>
+                <b:Row>
                     <b:Column size="MD_12">
                         <b:FormGroup>
                             <b:FormLabel text="{i18n.ErrorTextMetaData}" addStyleNames="col-md-2"/>

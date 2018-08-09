@@ -27,7 +27,7 @@
                     <b:FormGroup>
                         <b:FormLabel text="{i18n.Version}" addStyleNames="col-md-3"/>
                         <b:Column size="MD_9">
-                            <b:FormControlStatic>${version.org.kie.workbench.app}+9</b:FormControlStatic>
+                            <b:FormControlStatic>${version.org.kie.workbench.app}+10</b:FormControlStatic>
                             <b:FormControlStatic>${version.org.kie.workbench.app.timestamp}</b:FormControlStatic>
                         </b:Column>
                     </b:FormGroup>

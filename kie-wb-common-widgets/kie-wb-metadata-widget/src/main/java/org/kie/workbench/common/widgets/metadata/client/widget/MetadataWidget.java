@@ -128,9 +128,9 @@ public class MetadataWidget
     @UiField
     ListBox errorType;
     @UiField(provided = true)
-    NumericIntegerTextBox errorByDays = new NumericIntegerTextBox( true );
+    NumericIntegerTextBox warningTimeLimit = new NumericIntegerTextBox( true );
     @UiField
-    FormGroup errorByDaysGroup;
+    FormGroup warningTimeLimitGroup;
     @UiField
     FormControlStatic lockedBy;
     @UiField
@@ -392,24 +392,24 @@ public class MetadataWidget
                 LprErrorType errorType = LprErrorType.valueOf( MetadataWidget.this.errorType.getSelectedValue() );
                 metadata.setErrorType( errorType );
                 if ( LprErrorType.WARN.equals( errorType ) ) {
-                    errorByDaysGroup.setVisible( true );
+                    warningTimeLimitGroup.setVisible( true );
                 } else {
-                    errorByDaysGroup.setVisible( false );
+                    warningTimeLimitGroup.setVisible( false );
                 }
             }
         } );
 
-        errorByDays.setValue( metadata.getErrorByDays() != null ? metadata.getErrorByDays().toString() : "" );
-        errorByDaysGroup.setVisible( LprErrorType.WARN.equals( LprErrorType.valueOf( errorType.getSelectedValue() ) ) );
-        errorByDays.addChangeHandler( new ChangeHandler() {
+        warningTimeLimit.setValue( metadata.getWarningTimeLimit() != null ? metadata.getWarningTimeLimit().toString() : "" );
+        warningTimeLimitGroup.setVisible( LprErrorType.WARN.equals( LprErrorType.valueOf( errorType.getSelectedValue() ) ) );
+        warningTimeLimit.addChangeHandler( new ChangeHandler() {
             @Override
             public void onChange( ChangeEvent event ) {
                 Integer value = null;
                 try{
-                    value = Integer.parseInt( errorByDays.getValue() );
+                    value = Integer.parseInt( warningTimeLimit.getValue() );
                 } catch ( NumberFormatException ignored ) {
                 }
-                metadata.setErrorByDays( value );
+                metadata.setWarningTimeLimit( value );
             }
         } );
     }

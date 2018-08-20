@@ -181,7 +181,7 @@ public interface MetadataConstants extends
 
     String IsValidForPrimarySectorReportsMetaData();
 
-    String ErrorByDaysMetaData();
+    String WarningTimeLimitMetaData();
 
-    String ErrorByDaysTip();
+    String WarningTimeLimitTip();
 }

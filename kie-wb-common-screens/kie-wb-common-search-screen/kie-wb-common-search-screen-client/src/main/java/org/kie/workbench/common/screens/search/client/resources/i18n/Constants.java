@@ -126,7 +126,7 @@ public interface Constants
 
     String IsValidForDUSASSpecialityReportsMetaData();
 
-    String IsValidForPrimarySectorReportsMetaData();
+    String IsValidForPrivateSectorReportsMetaData();
 
     String EncounterStartDate();
 

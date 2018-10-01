@@ -239,12 +239,12 @@ public class SearchResultTable extends AbstractPathPagedTable<SearchPageRow> {
         };
         dataGrid.addColumn( isValidForDUSASSpecialityReports, Constants.INSTANCE.IsValidForDUSASSpecialityReportsMetaData() );
 
-        final Column<SearchPageRow, Boolean> isValidForPrimarySectorReports = new Column<SearchPageRow, Boolean>( new DisabledCheckboxCell() ) {
+        final Column<SearchPageRow, Boolean> isValidForPrivateSectorReports = new Column<SearchPageRow, Boolean>( new DisabledCheckboxCell() ) {
             public Boolean getValue( SearchPageRow row ) {
-                return row.getLprMetaIsValidForPrimarySectorReports();
+                return row.getLprMetaIsValidForPrivateSectorReports();
             }
         };
-        dataGrid.addColumn( isValidForPrimarySectorReports, Constants.INSTANCE.IsValidForPrimarySectorReportsMetaData() );
+        dataGrid.addColumn( isValidForPrivateSectorReports, Constants.INSTANCE.IsValidForPrivateSectorReportsMetaData() );
 
 /*
         final Column<SearchPageRow, Boolean> isDisabledColumn = new Column<SearchPageRow, Boolean>( new CheckboxCellImpl( true ) ) {

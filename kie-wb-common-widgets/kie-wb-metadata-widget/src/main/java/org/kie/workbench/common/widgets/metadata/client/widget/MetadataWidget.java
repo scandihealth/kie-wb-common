@@ -102,7 +102,7 @@ public class MetadataWidget
     @UiField
     CheckBox isValidForDUSASSpecialityReports;
     @UiField
-    CheckBox isValidForPrimarySectorReports;
+    CheckBox isValidForPrivateSectorReports;
     @UiField
     DatePicker reportReceivedFrom;
     @UiField
@@ -352,11 +352,11 @@ public class MetadataWidget
             }
         } );
 
-        isValidForPrimarySectorReports.setValue( metadata.isValidForPrimarySectorReports() );
-        isValidForPrimarySectorReports.addClickHandler( new ClickHandler() {
+        isValidForPrivateSectorReports.setValue( metadata.isValidForPrivateSectorReports() );
+        isValidForPrivateSectorReports.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                metadata.setValidForPrimarySectorReports( isValidForPrimarySectorReports.getValue() );
+                metadata.setValidForPrivateSectorReports( isValidForPrivateSectorReports.getValue() );
             }
         } );
 

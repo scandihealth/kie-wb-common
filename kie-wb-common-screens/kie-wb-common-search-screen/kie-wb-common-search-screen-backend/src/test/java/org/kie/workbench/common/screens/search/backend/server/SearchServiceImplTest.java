@@ -901,7 +901,7 @@ public class SearchServiceImplTest {
             put( IS_VALID_FOR_LPR_REPORTS, true );
             put( IS_VALID_FOR_DUSAS_ABROAD_REPORTS, true );
             put( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS, true );
-            put( IS_VALID_FOR_PRIMARY_SECTOR_REPORTS, false );
+            put( IS_VALID_FOR_PRIVATE_SECTOR_REPORTS, false );
         }};
 
         final QueryMetadataPageRequest pageRequest = new QueryMetadataPageRequest( searchAttrs,
@@ -971,7 +971,7 @@ public class SearchServiceImplTest {
         assertEquals( searchAttrs.get( IS_VALID_FOR_LPR_REPORTS ), capturedArgument.get( IS_VALID_FOR_LPR_REPORTS ) );
         assertEquals( searchAttrs.get( IS_VALID_FOR_DUSAS_ABROAD_REPORTS ), capturedArgument.get( IS_VALID_FOR_DUSAS_ABROAD_REPORTS ) );
         assertEquals( searchAttrs.get( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS ), capturedArgument.get( IS_VALID_FOR_DUSAS_SPECIALITY_REPORTS ) );
-        assertEquals( searchAttrs.get( IS_VALID_FOR_PRIMARY_SECTOR_REPORTS ), capturedArgument.get( IS_VALID_FOR_PRIMARY_SECTOR_REPORTS ) );
+        assertEquals( searchAttrs.get( IS_VALID_FOR_PRIVATE_SECTOR_REPORTS ), capturedArgument.get( IS_VALID_FOR_PRIVATE_SECTOR_REPORTS ) );
 
         //each search date should be transformed into two date ranges
         Date searchDate = ( Date ) searchAttrs.get( SEARCH_REPORT_RECEIVED_DATE );

@@ -65,6 +65,8 @@ import static org.guvnor.common.services.shared.metadata.model.LprMetadataConsts
 public class FindForm
         extends Composite {
 
+    private String NULL_VALUE = "NULL_VALUE";
+
     interface FindFormBinder
             extends
             UiBinder<Widget, FindForm> {
@@ -224,6 +226,7 @@ public class FindForm
         }
         ruleGroupListBox.setSelectedIndex( 0 );
 
+        errorTypeListBox.addItem( "", NULL_VALUE );
         for ( LprErrorType errorType : LprErrorType.values() ) {
             errorTypeListBox.addItem( errorType.getDisplayText(), errorType.toString() );
         }
@@ -282,8 +285,8 @@ public class FindForm
             metadata.put( RULE_GROUP, ruleGroup );
         }
 
-        LprErrorType errorType = LprErrorType.valueOf( errorTypeListBox.getSelectedValue() );
-        if ( errorType != LprErrorType.OK ) {
+        if ( !NULL_VALUE.equals( errorTypeListBox.getSelectedValue() ) ) {
+           LprErrorType errorType = LprErrorType.valueOf( errorTypeListBox.getSelectedValue() );
             metadata.put( ERROR_TYPE, errorType );
         }
 

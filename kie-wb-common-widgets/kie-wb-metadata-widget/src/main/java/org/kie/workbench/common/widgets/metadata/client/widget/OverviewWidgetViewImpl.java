@@ -29,6 +29,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
+import org.gwtbootstrap3.client.shared.event.ShowEvent;
+import org.gwtbootstrap3.client.shared.event.ShowHandler;
+import org.gwtbootstrap3.client.shared.event.TabShowEvent;
+import org.gwtbootstrap3.client.shared.event.TabShowHandler;
 import org.gwtbootstrap3.client.ui.NavTabs;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
@@ -114,6 +118,15 @@ public class OverviewWidgetViewImpl
             }
         } );
 
+        extendedVersionHistory.setOnCurrentVersionRefreshed( new ParameterizedCommand<VersionRecord>() {
+            @Override
+            public void execute( VersionRecord record ) {
+                metadata.setNote( record.comment() );
+                setLastModified( record.author(), record.date() );
+                extendedVersionHistory.refresh();
+            }
+        } );
+
         initWidget( uiBinder.createAndBindUi( this ) );
 
         final TabPane versionHistoryPane = new TabPane() {{
@@ -143,11 +156,17 @@ public class OverviewWidgetViewImpl
             setDataTargetWidget( metadataPane );
         }} );
 
-        navTabs.add( new TabListItem( "Udvidet historik" ) {{
+        TabListItem extendedVersionHistoryTabListItem = new TabListItem( MetadataConstants.INSTANCE.ExtendedVersionHistory() ) {{
             addStyleName( "uf-dropdown-tab-list-item" );
             setDataTargetWidget( extendedVersionHistoryPane );
-        }} );
-
+        }};
+        navTabs.add(extendedVersionHistoryTabListItem);
+        extendedVersionHistoryTabListItem.addShowHandler(new TabShowHandler() {
+            @Override
+            public void onShow(TabShowEvent show) {
+                extendedVersionHistory.refresh();
+            }
+        });
 
         navTabs.getElement().setAttribute( "data-uf-lock", "false" );
         versionHistoryPane.setActive( true );

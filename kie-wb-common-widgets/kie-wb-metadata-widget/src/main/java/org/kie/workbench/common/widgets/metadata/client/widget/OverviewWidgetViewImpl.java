@@ -29,6 +29,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
+import org.gwtbootstrap3.client.shared.event.ShowEvent;
+import org.gwtbootstrap3.client.shared.event.ShowHandler;
+import org.gwtbootstrap3.client.shared.event.TabShowEvent;
+import org.gwtbootstrap3.client.shared.event.TabShowHandler;
 import org.gwtbootstrap3.client.ui.NavTabs;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
@@ -39,6 +43,7 @@ import org.kie.workbench.common.widgets.metadata.client.resources.i18n.MetadataC
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.impl.LockInfo;
 import org.uberfire.client.workbench.type.ClientResourceType;
+import org.uberfire.ext.editor.commons.client.history.ExtendedVersionHistoryPresenter;
 import org.uberfire.ext.editor.commons.client.history.VersionHistoryPresenter;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
@@ -86,6 +91,7 @@ public class OverviewWidgetViewImpl
     DiscussionWidgetPresenter discussionArea;
 
     VersionHistoryPresenter versionHistory;
+    ExtendedVersionHistoryPresenter extendedVersionHistory;
     MetadataWidget metadata;
 
     public OverviewWidgetViewImpl() {
@@ -94,19 +100,30 @@ public class OverviewWidgetViewImpl
     @Inject
     public OverviewWidgetViewImpl( final BusyIndicatorView busyIndicatorView,
                                    final DiscussionWidgetPresenter discussionArea,
-                                   final VersionHistoryPresenter versionHistory ) {
+                                   final VersionHistoryPresenter versionHistory,
+                                   final ExtendedVersionHistoryPresenter extendedVersionHistory) {
 
         this.metadata = new MetadataWidget( busyIndicatorView );
 
         this.discussionArea = discussionArea;
 
         this.versionHistory = versionHistory;
+        this.extendedVersionHistory = extendedVersionHistory;
 
         versionHistory.setOnCurrentVersionRefreshed( new ParameterizedCommand<VersionRecord>() {
             @Override
             public void execute( VersionRecord record ) {
                 metadata.setNote( record.comment() );
                 setLastModified( record.author(), record.date() );
+            }
+        } );
+
+        extendedVersionHistory.setOnCurrentVersionRefreshed( new ParameterizedCommand<VersionRecord>() {
+            @Override
+            public void execute( VersionRecord record ) {
+                metadata.setNote( record.comment() );
+                setLastModified( record.author(), record.date() );
+                extendedVersionHistory.refresh();
             }
         } );
 
@@ -120,8 +137,13 @@ public class OverviewWidgetViewImpl
             add( metadata );
         }};
 
+        final TabPane extendedVersionHistoryPane = new TabPane() {{
+            add( extendedVersionHistory );
+        }};
+
         tabContent.add( versionHistoryPane );
         tabContent.add( metadataPane );
+        tabContent.add( extendedVersionHistoryPane );
 
         navTabs.add( new TabListItem( MetadataConstants.INSTANCE.VersionHistory() ) {{
             addStyleName( "uf-dropdown-tab-list-item" );
@@ -133,6 +155,18 @@ public class OverviewWidgetViewImpl
             addStyleName( "uf-dropdown-tab-list-item" );
             setDataTargetWidget( metadataPane );
         }} );
+
+        TabListItem extendedVersionHistoryTabListItem = new TabListItem( MetadataConstants.INSTANCE.ExtendedVersionHistory() ) {{
+            addStyleName( "uf-dropdown-tab-list-item" );
+            setDataTargetWidget( extendedVersionHistoryPane );
+        }};
+        navTabs.add(extendedVersionHistoryTabListItem);
+        extendedVersionHistoryTabListItem.addShowHandler(new TabShowHandler() {
+            @Override
+            public void onShow(TabShowEvent show) {
+                extendedVersionHistory.refresh();
+            }
+        });
 
         navTabs.getElement().setAttribute( "data-uf-lock", "false" );
         versionHistoryPane.setActive( true );
@@ -151,6 +185,7 @@ public class OverviewWidgetViewImpl
     @Override
     public void setVersionHistory( Path path ) {
         versionHistory.init( path );
+        extendedVersionHistory.init( path );
     }
 
     @Override
@@ -217,6 +252,7 @@ public class OverviewWidgetViewImpl
     @Override
     public void refresh( String version ) {
         versionHistory.refresh( version );
+        extendedVersionHistory.refresh( version );
     }
 
     public void setForceUnlockHandler( final Runnable handler ) {

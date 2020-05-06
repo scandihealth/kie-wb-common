@@ -59,6 +59,8 @@ public interface MetadataConstants extends
 
     String VersionHistory();
 
+    String ExtendedVersionHistory();
+
     String SubjectMetaData();
 
     String TagsMetaData();

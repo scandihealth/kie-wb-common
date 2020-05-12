@@ -10,7 +10,6 @@
 
   <artifactId>kie-wb-common-ui</artifactId>
   <packaging>jar</packaging>
-  <version>6.5.0.csc-SNAPSHOT</version>
 
   <name>Kie Workbench - Common - UI</name>
   <description>Kie Workbench - Common - UI</description>

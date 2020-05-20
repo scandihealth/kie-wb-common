@@ -10,7 +10,6 @@
 
   <artifactId>kie-wb-common-ui</artifactId>
   <packaging>jar</packaging>
-  <version>6.5.0.csc-SNAPSHOT</version>
 
   <name>Kie Workbench - Common - UI</name>
   <description>Kie Workbench - Common - UI</description>
@@ -241,6 +240,7 @@
   <properties>
     <maven.build.timestamp.format>dd-MM-yyyy HH:mm</maven.build.timestamp.format>
     <!-- Version shown for example in About dialog. Will be usually overridden by productisation. -->
+    <changelist>SHAPSHOT</changelist>
     <version.org.kie.workbench.app>6.5.0-DXC</version.org.kie.workbench.app>
     <version.org.kie.workbench.app.timestamp>${maven.build.timestamp}</version.org.kie.workbench.app.timestamp>
   </properties>

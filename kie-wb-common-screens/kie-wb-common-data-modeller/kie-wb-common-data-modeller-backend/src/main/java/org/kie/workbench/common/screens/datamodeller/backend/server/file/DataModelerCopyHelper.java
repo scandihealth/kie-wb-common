@@ -32,7 +32,8 @@ public class DataModelerCopyHelper extends DataModelerServiceRefactoringHelper i
 
     @Override
     public void postProcess( Path source,
-                             Path destination ) {
+                             Path destination,
+                             final String comment ) {
         _postProcess( source, destination );
     }
 
